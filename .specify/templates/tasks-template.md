@@ -49,6 +49,7 @@ description: "Task list template for feature implementation"
 
 - [ ] T001 Create project structure per implementation plan
 - [ ] T002 Initialize HTML entry point and basic CSS
+- [ ] T002a Add local MagTech.ai logo to `assets/` and reference in header
 - [ ] T003 [P] Configure test runner (Mocha, Jest, or similar)
 - [ ] T004 [P] Setup linting (ESLint) if used
 
@@ -153,6 +154,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Performance optimization across all stories
 - [ ] TXXX [P] Additional edge case tests in tests/unit/ and tests/integration/
 - [ ] TXXX Browser compatibility testing (Chrome, Firefox, Safari, Edge)
+- [ ] TXXX Responsive layout validation at 320px, 768px, 1280px widths
 - [ ] TXXX Run quickstart.md validation
 
 ---

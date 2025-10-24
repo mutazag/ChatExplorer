@@ -37,6 +37,7 @@
 - [ ] **Test Coverage**: All functions and modules will have tests written BEFORE implementation?
 - [ ] **File-Based Data**: Feature reads from static files (JSON/HTML) with documented format?
 - [ ] **Browser Compatibility**: Feature uses standard Web APIs compatible with modern browsers?
+- [ ] **UI & Branding**: UI is responsive (320px–desktop) and includes the MagTech.ai logo from local assets?
 
 **Result**: ✅ PASS | ⚠️ VIOLATIONS REQUIRE JUSTIFICATION IN COMPLEXITY TABLE
 
