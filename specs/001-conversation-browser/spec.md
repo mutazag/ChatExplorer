@@ -30,7 +30,7 @@ As a user, after selecting a data folder, I need to see all conversations from i
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid `conversations.json`, **When** the app loads the selected folder, **Then** the left pane lists all conversations sorted chronologically [NEEDS CLARIFICATION: ascending (oldest→newest) or descending (newest→oldest)]
+1. **Given** a valid `conversations.json`, **When** the app loads the selected folder, **Then** the left pane lists all conversations sorted chronologically descending (newest→oldest)
 2. **Given** conversations without titles, **When** the list renders, **Then** a fallback label (e.g., first message excerpt or “Untitled”) is displayed
 
 ---
@@ -61,7 +61,7 @@ As a user, I want the app to handle missing/invalid `conversations.json` and lar
 **Acceptance Scenarios**:
 
 1. **Given** `conversations.json` is missing or malformed, **When** loading, **Then** a clear error is shown with guidance and no crashes occur
-2. **Given** `conversations.json` contains >1000 conversations, **When** listing, **Then** the UI remains responsive with basic pagination or lazy rendering [NEEDS CLARIFICATION: pagination size]
+2. **Given** `conversations.json` contains >1000 conversations, **When** listing, **Then** the UI remains responsive with pagination of 25 conversations per page
 
 ---
 
@@ -86,13 +86,13 @@ As a user, I want the app to handle missing/invalid `conversations.json` and lar
 
 - **FR-001**: System MUST read and parse `conversations.json` from the selected folder
 - **FR-002**: System MUST extract for each conversation: id, title (or fallback), and timestamp
-- **FR-003**: System MUST render the left pane list ordered chronologically [NEEDS CLARIFICATION: asc vs desc]
+- **FR-003**: System MUST render the left pane list ordered chronologically descending (newest→oldest)
 - **FR-004**: System MUST display at least title and human-readable timestamp for each list item
 - **FR-005**: System MUST allow selecting a conversation and highlight the active item
 - **FR-006**: System MUST render the selected conversation’s message thread with role, timestamp, and text in chronological order
-- **FR-007**: System MUST handle missing `title` by using a sensible fallback (first message excerpt or “Untitled”)
+- **FR-007**: System MUST handle missing `title` by using any available identifier from the conversation record (e.g., `conversation_id`, `id`, `uuid`). If no identifier is present, fallback to the first message excerpt or “Untitled”.
 - **FR-008**: System MUST handle malformed or missing `conversations.json` with clear error messaging and no crash
-- **FR-009**: System SHOULD support large files (≥1000 conversations) with responsive interactions [NEEDS CLARIFICATION: paging size]
+- **FR-009**: System SHOULD support large files (≥1000 conversations) with responsive interactions using pagination of 25 conversations per page
 - **FR-010**: System MUST avoid network calls and operate entirely client-side using local files
 
 ### Key Entities *(include if feature involves data)*
@@ -114,10 +114,10 @@ As a user, I want the app to handle missing/invalid `conversations.json` and lar
 - **SC-002**: Selecting a conversation updates the detail pane in ≤500ms
 - **SC-003**: 0 crashes for missing/malformed `conversations.json`; helpful error shown within 1s
 - **SC-004**: 95% of usability test participants locate and open a target conversation in ≤10s
-- **SC-005**: Sorting correctness: 100% of items ordered per selected direction
+- **SC-005**: Sorting correctness: 100% of items ordered newest→oldest
 
 ## Assumptions
 
 - `conversations.json` is a JSON array of conversation objects that include at minimum: `id`, `title` (optional), and `create_time` (epoch seconds) [based on typical ChatGPT export]
-- If `title` is missing or empty, we use the first non-system message snippet as fallback
-- Chronological order will be one of: ascending (oldest→newest) or descending (newest→oldest); default TBD
+- If `title` is missing or empty, prefer any available identifier from the conversation record (e.g., `conversation_id`, `id`, `uuid`); if none exists, use the first non-system message snippet as a last resort
+- Chronological order is descending (newest→oldest)
