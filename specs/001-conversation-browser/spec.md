@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "After a folder is selected, show conversations from conversations.json in the left pane ordered chronologically; clicking a chat thread shows the chat in the right pane."
 
+## Clarifications
+
+### Session 2025-10-25
+
+- Q: Which timestamp should drive the left‑pane “newest first” sort? → A: Sort by `update_time`; fallback to `create_time`.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -86,7 +92,7 @@ As a user, I want the app to handle missing/invalid `conversations.json` and lar
 
 - **FR-001**: System MUST read and parse `conversations.json` from the selected folder
 - **FR-002**: System MUST extract for each conversation: id, title (or fallback), and timestamp
-- **FR-003**: System MUST render the left pane list ordered chronologically descending (newest→oldest)
+- **FR-003**: System MUST render the left pane list ordered chronologically descending (newest→oldest) using `update_time` when available, otherwise `create_time`
 - **FR-004**: System MUST display at least title and human-readable timestamp for each list item
 - **FR-005**: System MUST allow selecting a conversation and highlight the active item
 - **FR-006**: System MUST render the selected conversation’s message thread with role, timestamp, and text in chronological order
@@ -99,7 +105,7 @@ As a user, I want the app to handle missing/invalid `conversations.json` and lar
 
 - **Conversation**: id, title, create_time, update_time, summary (optional)
 - **Message**: id, role (user/assistant/system), create_time, text
-- **ConversationList**: array of Conversation; sort key and direction
+- **ConversationList**: array of Conversation; sort key: `update_time` if present else `create_time`; direction: descending (newest→oldest)
 
 ## Success Criteria *(mandatory)*
 
