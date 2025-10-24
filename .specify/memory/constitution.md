@@ -1,50 +1,142 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+==================
+Version: 1.0.0 (Initial ratification)
+Modified Principles: N/A (initial version)
+Added Sections: All principles established
+Removed Sections: None
+Templates Status:
+  ✅ .specify/templates/plan-template.md - reviewed, compatible
+  ✅ .specify/templates/spec-template.md - reviewed, compatible
+  ✅ .specify/templates/tasks-template.md - reviewed, compatible
+Follow-up TODOs: None
+-->
+
+# ChatGPT Browser Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Client-Side Only Architecture
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All application logic MUST execute in the browser using vanilla HTML and JavaScript.
+MUST NOT use server-side processing, backend services, or external APIs.
+MUST NOT integrate with databases; all data MUST be sourced from local files.
+Data files MUST be loaded directly into the browser using file system access or static serving.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: Ensures maximum portability, zero deployment complexity, and complete user
+data privacy by keeping all processing local.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Minimal Dependencies
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Application MUST use vanilla JavaScript and HTML without frameworks or build tools.
+MUST avoid external libraries unless absolutely necessary for core functionality.
+If a library is required, it MUST be justified and documented in complexity tracking.
+All dependencies MUST be versioned and vendored locally (no CDN dependencies).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Reduces attack surface, ensures long-term maintainability, eliminates build
+complexity, and guarantees offline functionality.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Test Coverage (NON-NEGOTIABLE)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+All functions and modules MUST have corresponding unit tests.
+Tests MUST be written BEFORE implementation (TDD mandatory).
+Test files MUST be organized in a `tests/` directory mirroring the source structure.
+Tests MUST run in the browser or via a simple test runner (e.g., Node.js for pure JS logic).
+Every pull request MUST include tests; untested code MUST NOT be merged.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: Client-side applications are notoriously difficult to debug in production;
+comprehensive tests ensure reliability and prevent regressions.
+
+### IV. File-Based Data Model
+
+Application MUST read data from static local files (JSON, HTML, or other structured formats).
+MUST NOT write to files (read-only philosophy unless explicit user download/export).
+File format MUST be documented in data-model.md for each feature.
+File loading MUST handle errors gracefully (missing files, malformed JSON, etc.).
+
+**Rationale**: Simplifies data management, enables version control of data, and maintains
+compatibility with ChatGPT export formats.
+
+### V. Browser Compatibility
+
+Code MUST support modern evergreen browsers (Chrome, Firefox, Safari, Edge latest versions).
+MUST use standard Web APIs (File API, Fetch API, DOM manipulation).
+MUST NOT use experimental or non-standard browser features without fallbacks.
+ES6+ syntax is allowed; transpilation is discouraged but acceptable if documented.
+
+**Rationale**: Ensures broad accessibility while leveraging modern platform capabilities.
+
+## Technology Stack Constraints
+
+**Mandatory Technologies**:
+
+- HTML5 for structure
+- Vanilla JavaScript (ES6+) for logic
+- CSS3 for styling
+- Browser File API for local file access
+
+**Prohibited Technologies**:
+
+- Server-side frameworks (Node.js servers, PHP, Python, etc.)
+- Databases (SQL, NoSQL, IndexedDB exceptions allowed if justified)
+- Frontend frameworks (React, Vue, Angular) unless complexity justified
+- Build tools (Webpack, Rollup) unless complexity justified
+- External runtime dependencies requiring npm install or similar
+
+**Testing Technologies**:
+
+- Browser-based test runners preferred (e.g., Mocha, Jasmine in-browser)
+- Node.js-based test runners acceptable for pure JS logic (Jest, Vitest)
+- All test dependencies MUST be documented
+
+## Development Workflow
+
+**Feature Development Process**:
+
+1. Specification phase: Document user stories with acceptance scenarios
+2. Test-first: Write failing tests for all functions/modules
+3. Implementation: Write minimal code to pass tests
+4. Refactor: Clean up while keeping tests green
+5. Documentation: Update README, quickstart.md, and inline comments
+6. Review: Verify constitution compliance before merge
+
+**Code Review Gates**:
+
+- All tests MUST pass
+- Test coverage MUST be 100% for new functions
+- No console errors in browser
+- Code MUST follow established patterns (document in style guide if needed)
+- Complexity violations MUST be justified in plan.md
+
+**Quality Standards**:
+
+- Functions MUST be pure where possible (no side effects)
+- Global state MUST be minimized and documented
+- DOM manipulation MUST be isolated in dedicated modules
+- Error handling MUST be explicit (no silent failures)
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices and conventions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Amendment Process**:
+
+- Amendments MUST be proposed via pull request to this file
+- Amendments MUST include impact analysis on existing code and templates
+- Version MUST be incremented per semantic versioning rules
+- LAST_AMENDED_DATE MUST be updated to amendment merge date
+
+**Versioning Policy**:
+
+- MAJOR: Principle removal, redefinition, or incompatible constraint changes
+- MINOR: New principle added or material expansion of existing principle
+- PATCH: Clarifications, typo fixes, formatting improvements
+
+**Compliance Review**:
+
+- All features MUST complete constitution check in plan.md before implementation
+- Violations MUST be documented in complexity tracking table
+- Rejected simpler alternatives MUST be explicitly stated
+- Annual review of constitution alignment with project evolution
+
+**Version**: 1.0.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-25
