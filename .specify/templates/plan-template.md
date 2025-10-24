@@ -17,21 +17,28 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]  
+**Storage**: [e.g., Local JSON files, Browser File API, Static HTML or NEEDS CLARIFICATION]  
+**Testing**: [e.g., Mocha (browser), Jest (Node.js for unit tests) or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Modern browsers (Chrome, Firefox, Safari, Edge) or NEEDS CLARIFICATION]
+**Project Type**: [e.g., client-side web application - determines source structure]  
+**Performance Goals**: [e.g., <100ms file parsing, smooth 60fps UI or NEEDS CLARIFICATION]  
+**Constraints**: [e.g., No build step, offline-capable, no external API calls or NEEDS CLARIFICATION]  
+**Scale/Scope**: [e.g., Support ChatGPT exports up to 10MB, 1000s of conversations or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Client-Side Only**: Feature uses ONLY HTML + vanilla JavaScript, no backend/server components?
+- [ ] **No Database Integration**: Feature reads from local files only, no database connections?
+- [ ] **Minimal Dependencies**: Feature avoids frameworks/libraries OR justifies in complexity table?
+- [ ] **Test Coverage**: All functions and modules will have tests written BEFORE implementation?
+- [ ] **File-Based Data**: Feature reads from static files (JSON/HTML) with documented format?
+- [ ] **Browser Compatibility**: Feature uses standard Web APIs compatible with modern browsers?
+
+**Result**: ✅ PASS | ⚠️ VIOLATIONS REQUIRE JUSTIFICATION IN COMPLEXITY TABLE
 
 ## Project Structure
 
@@ -56,43 +63,24 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+# Client-side web application (DEFAULT for this project)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+├── modules/           # JavaScript modules (feature-specific logic)
+├── utils/            # Utility functions (shared helpers)
+├── parsers/          # Data parsing (JSON, HTML extraction)
+└── ui/               # UI components (DOM manipulation)
 
 tests/
-├── contract/
-├── integration/
-└── unit/
+├── unit/             # Unit tests for functions/modules
+└── integration/      # Integration tests (file loading, UI workflows)
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+index.html            # Main entry point
+styles.css            # Styling
+data/                 # Sample/test data files
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Client-side application with modular JavaScript organization.
+All code runs in browser; no backend services.
 
 ## Complexity Tracking
 

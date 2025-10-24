@@ -8,7 +8,7 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Tests are MANDATORY per constitution. All functions and modules MUST have tests written BEFORE implementation.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -20,10 +20,9 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Client-side project**: `src/`, `tests/` at repository root
+- Tests organized: `tests/unit/` for pure functions, `tests/integration/` for file loading + UI
+- All paths shown below assume client-side structure
 
 <!-- 
   ============================================================================
@@ -49,8 +48,9 @@ description: "Task list template for feature implementation"
 **Purpose**: Project initialization and basic structure
 
 - [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T002 Initialize HTML entry point and basic CSS
+- [ ] T003 [P] Configure test runner (Mocha, Jest, or similar)
+- [ ] T004 [P] Setup linting (ESLint) if used
 
 ---
 
@@ -62,12 +62,10 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T005 Setup file loading utilities (Browser File API wrapper)
+- [ ] T006 [P] Implement error handling framework (graceful failures)
+- [ ] T007 [P] Create base UI rendering utilities (DOM helpers)
+- [ ] T008 Setup data parsing foundation (JSON validation, HTML extraction)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +77,21 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (MANDATORY per constitution) ⚠️
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Unit tests for [module/function] in tests/unit/test_[name].js
+- [ ] T011 [P] [US1] Integration test for [file loading/UI workflow] in tests/integration/test_[name].js
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T012 [P] [US1] Create [Parser/Module] in src/modules/[name].js
+- [ ] T013 [P] [US1] Create [Utility] functions in src/utils/[name].js
+- [ ] T014 [US1] Implement [UI Component] in src/ui/[component].js (depends on T012, T013)
+- [ ] T015 [US1] Wire up [feature] in index.html
+- [ ] T016 [US1] Add error handling for edge cases
+- [ ] T017 [US1] Verify all tests pass
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -105,16 +103,16 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (MANDATORY per constitution) ⚠️
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T018 [P] [US2] Unit tests for [module/function] in tests/unit/test_[name].js
+- [ ] T019 [P] [US2] Integration test for [file loading/UI workflow] in tests/integration/test_[name].js
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T020 [P] [US2] Create [Parser/Module] in src/modules/[name].js
+- [ ] T021 [US2] Implement [Utility] functions in src/utils/[name].js
+- [ ] T022 [US2] Implement [UI Component] in src/ui/[component].js
 - [ ] T023 [US2] Integrate with User Story 1 components (if needed)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
@@ -127,16 +125,16 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 (MANDATORY per constitution) ⚠️
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [P] [US3] Unit tests for [module/function] in tests/unit/test_[name].js
+- [ ] T025 [P] [US3] Integration test for [file loading/UI workflow] in tests/integration/test_[name].js
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T026 [P] [US3] Create [Parser/Module] in src/modules/[name].js
+- [ ] T027 [US3] Implement [Utility] functions in src/utils/[name].js
+- [ ] T028 [US3] Implement [UI Component] in src/ui/[component].js
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -153,8 +151,8 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
 - [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
+- [ ] TXXX [P] Additional edge case tests in tests/unit/ and tests/integration/
+- [ ] TXXX Browser compatibility testing (Chrome, Firefox, Safari, Edge)
 - [ ] TXXX Run quickstart.md validation
 
 ---
@@ -198,13 +196,13 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch all tests for User Story 1 together:
+Task: "Unit tests for [module] in tests/unit/test_[name].js"
+Task: "Integration test for [workflow] in tests/integration/test_[name].js"
 
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+# Launch all modules for User Story 1 together:
+Task: "Create [Parser] in src/modules/[name].js"
+Task: "Create [Utility] in src/utils/[name].js"
 ```
 
 ---
