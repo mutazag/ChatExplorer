@@ -1,14 +1,14 @@
 <!--
 Sync Impact Report
 ==================
-Version: 1.0.0 (Initial ratification)
-Modified Principles: N/A (initial version)
-Added Sections: All principles established
+Version: 1.0.0 → 1.1.0
+Modified Principles: Added new principle VI (UI & Branding)
+Added Sections: Principle VI. UI & Branding; Added UI gates to templates
 Removed Sections: None
 Templates Status:
-  ✅ .specify/templates/plan-template.md - reviewed, compatible
-  ✅ .specify/templates/spec-template.md - reviewed, compatible
-  ✅ .specify/templates/tasks-template.md - reviewed, compatible
+  ✅ .specify/templates/plan-template.md - updated (added UI & Branding gate)
+  ✅ .specify/templates/spec-template.md - reviewed (no change needed)
+  ✅ .specify/templates/tasks-template.md - updated (logo + responsive tasks)
 Follow-up TODOs: None
 -->
 
@@ -66,6 +66,17 @@ ES6+ syntax is allowed; transpilation is discouraged but acceptable if documente
 
 **Rationale**: Ensures broad accessibility while leveraging modern platform capabilities.
 
+### VI. UI & Branding
+
+UI MUST be sleek, lightweight, and responsive across screen sizes (min width 320px to desktop).
+Primary screen MUST include the MagTech.ai logo in the header/top area.
+Logo asset MUST be stored locally under `assets/logo.(svg|png)`; no remote/CDN usage.
+Styling MUST use minimal CSS; no UI frameworks unless explicitly justified in complexity tracking.
+Accessibility MUST meet WCAG AA basics: 4.5:1 color contrast, visible focus states, keyboard navigation.
+
+**Rationale**: A responsive, branded UI improves usability and consistency, while local assets and
+minimal CSS maintain performance, privacy, and long-term maintainability.
+
 ## Technology Stack Constraints
 
 **Mandatory Technologies**:
@@ -82,6 +93,11 @@ ES6+ syntax is allowed; transpilation is discouraged but acceptable if documente
 - Frontend frameworks (React, Vue, Angular) unless complexity justified
 - Build tools (Webpack, Rollup) unless complexity justified
 - External runtime dependencies requiring npm install or similar
+
+**Branding Assets**:
+
+- All branding (e.g., MagTech.ai logo) MUST be stored locally in `assets/` and referenced relatively.
+- No external font or asset CDNs; vendor locally if required and justified.
 
 **Testing Technologies**:
 
@@ -107,6 +123,8 @@ ES6+ syntax is allowed; transpilation is discouraged but acceptable if documente
 - No console errors in browser
 - Code MUST follow established patterns (document in style guide if needed)
 - Complexity violations MUST be justified in plan.md
+- UI MUST render responsively without layout breakage at 320px, 768px, and 1280px widths
+- Header MUST display the MagTech.ai logo sourced from `assets/`
 
 **Quality Standards**:
 
@@ -139,4 +157,4 @@ This constitution supersedes all other development practices and conventions.
 - Rejected simpler alternatives MUST be explicitly stated
 - Annual review of constitution alignment with project evolution
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-25
+**Version**: 1.1.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-25
