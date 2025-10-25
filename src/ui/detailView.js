@@ -41,9 +41,18 @@ export function renderDetail(host, conversation) {
       icon.alt = 'Assistant';
     }
     const label = document.createElement('span');
-    label.textContent = roleName + ':';
-    header.appendChild(icon);
-    header.appendChild(label);
+    
+    // For user messages, reverse DOM order so that with right-aligned/row-reverse styles
+    // it visually appears as: <icon> User:
+    // if (roleName === 'user') {
+    //   label.textContent = ":" + roleName;
+    //   header.appendChild(label);
+    //   header.appendChild(icon);
+    // } else {
+      label.textContent = roleName + ':';
+      header.appendChild(icon);
+      header.appendChild(label);
+    // }
 
     // Bubble: sanitized markdown
     const bubble = document.createElement('div');

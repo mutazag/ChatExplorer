@@ -60,22 +60,25 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 [data-detail] th.align-right, [data-detail] td.align-right { text-align: right; }
 
 /* Inline media styles */
-[data-detail] .msg-media { margin: .4rem 0; display: grid; gap: .5rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-[data-detail] .msg-media img { max-width: 100%; height: auto; max-height: 40vh; object-fit: contain; border-radius: 6px; display: block; background: rgba(0,0,0,.03); }
+[data-detail] .msg-media { margin: .4rem 0; display: grid; gap: .5rem; }
+[data-detail] .msg-media img { max-width: 100%; height: auto; border-radius: 6px; display: block; background: rgba(0,0,0,.03); }
 [data-detail] .msg-media audio,
 [data-detail] .msg-media video { width: 100%; max-width: 640px; outline: none; }
 [data-detail] .msg-media a.media-fallback { display: inline-block; padding: .25rem .5rem; border-radius: 4px; border: 1px solid rgba(0,0,0,.15); text-decoration: none; }
 
 /* Message bubbles by role */
 [data-detail] .msg { display: grid; grid-template-columns: 1fr; gap: .2rem; }
-[data-detail] .msg .msg-header { display: inline-flex; gap: .35rem; align-items: center; font-size: .9rem; color: var(--muted); }
+[data-detail] .msg .msg-header { display: inline-flex; gap: .35rem; align-items: center; font-size: .9rem; color: var(--muted); justify-self: start; text-align: start; }
 [data-detail] .msg .msg-header img { width: 18px; height: 18px; opacity: .9; }
 [data-detail] .msg .bubble { display: inline-block; max-width: min(720px, 100%); padding: .5rem .65rem; border-radius: 14px; box-shadow: var(--elev); border: 1px solid var(--border); background: var(--bubble-assistant); text-align: start; }
 [data-detail] .msg--assistant .bubble { background: var(--bubble-assistant); justify-self: start; }
 [data-detail] .msg--user .bubble { background: var(--bubble-user); justify-self: end; }
 [data-detail] .msg--user .bubble { text-align: start; }
 [data-detail] .msg--user { text-align: right; }
-[data-detail] .msg .timestamp { font-size: .8rem; color: var(--muted); opacity: 0; transform: translateY(-2px); transition: opacity .15s ease, transform .15s ease; }
+[data-detail] .msg .timestamp { font-size: .8rem; color: var(--muted); opacity: 0; transform: translateY(-2px); transition: opacity .15s ease, transform .15s ease; justify-self: start; text-align: start; }
+/* Align user header and timestamp to the right to match the bubble */
+[data-detail] .msg--user .msg-header { justify-self: end; text-align: end; }
+[data-detail] .msg--user .timestamp { justify-self: end; text-align: end; }
 @media (prefers-reduced-motion: reduce) {
   [data-detail] .msg .timestamp { transition: none; }
 }
@@ -92,7 +95,7 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
 /* Direction-aware tweaks */
 [data-detail] .msg.is-rtl .msg-header { flex-direction: row-reverse; }
-[data-detail] .msg .timestamp { text-align: start; }
+/* base timestamp text alignment handled above; user variant aligns to end */
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
