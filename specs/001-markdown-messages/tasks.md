@@ -109,10 +109,11 @@ description: "Executable task list for Markdown message rendering"
 
 **Purpose**: Finishing touches, performance, docs
 
-- [ ] T024 [P] Add ordered list edge-case tests (multi-digit numbering) in `tests/conversation-browser/markdown.spec.js`
+- [x] T024 [P] Add ordered list edge-case tests (multi-digit numbering) in `tests/conversation-browser/markdown.spec.js`
 - [ ] T025 Performance spot-check: large Markdown render <16ms per message (document results) in `specs/001-markdown-messages/quickstart.md`
-- [ ] T026 [P] Documentation updates in `specs/001-markdown-messages/quickstart.md`
+- [x] T026 [P] Documentation updates in `specs/001-markdown-messages/quickstart.md`
 - [ ] T027 Code cleanup and small refactors across `src/utils/markdown.js` and `src/ui/detailView.js`
+ - [x] T028 [P] Add GFM pipe table support (parser + sanitizer tags) with tests in `tests/conversation-browser/markdown.spec.js`
 
 ---
 

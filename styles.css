@@ -20,6 +20,15 @@ body { margin: 0; font-family: system-ui, Segoe UI, Roboto, sans-serif; }
 [data-detail] pre { background: rgba(0,0,0,.04); padding: .5rem; border-radius: 6px; overflow: auto; }
 [data-detail] code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
+/* Markdown tables */
+[data-detail] table { border-collapse: collapse; width: 100%; margin: .5rem 0; }
+[data-detail] th,
+[data-detail] td { border: 1px solid #ddd; padding: 4px 8px; vertical-align: top; }
+[data-detail] th { background: color-mix(in oklab, canvas 92%, black 8%); }
+[data-detail] th.align-left, [data-detail] td.align-left { text-align: left; }
+[data-detail] th.align-center, [data-detail] td.align-center { text-align: center; }
+[data-detail] th.align-right, [data-detail] td.align-right { text-align: right; }
+
 /* Inline media styles */
 [data-detail] .msg-media { margin: .4rem 0; display: grid; gap: .5rem; }
 [data-detail] .msg-media img { max-width: 100%; height: auto; border-radius: 6px; display: block; background: rgba(0,0,0,.03); }

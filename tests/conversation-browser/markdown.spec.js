@@ -54,3 +54,34 @@ test('markdown: plain text fallback paragraphs and escaping', () => {
   assert(node.textContent.includes('Hello') && node.textContent.includes('Second line'), 'content present');
   assert(!node.querySelector('b'), 'embedded HTML is escaped, not rendered');
 });
+
+test('markdown: ordered list supports multi-digit numbering', () => {
+  const md = '10. ten\n11. eleven\n12. twelve';
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const ol = node.querySelector('ol');
+  assert(ol, 'ordered list rendered for multi-digit indexes');
+  const items = ol ? ol.querySelectorAll('li') : [];
+  assert(items.length === 3, 'contains three list items');
+  const texts = Array.from(items).map(li => li.textContent.trim());
+  assert(texts[0] === 'ten' && texts[1] === 'eleven' && texts[2] === 'twelve', 'items preserve content order');
+});
+
+test('markdown: GFM table renders with alignment and inline formatting', () => {
+  const md = `| Col A | Col B |\n| :--- | ---: |\n| **bold** | right |\n| item | *em* |`;
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const table = node.querySelector('table');
+  assert(table, 'table element rendered');
+  const ths = node.querySelectorAll('thead th');
+  assert(ths.length === 2, 'two header columns');
+  assert(ths[0].classList.contains('align-left'), 'first column left-aligned');
+  assert(ths[1].classList.contains('align-right'), 'second column right-aligned');
+  // body
+  const rows = node.querySelectorAll('tbody tr');
+  assert(rows.length === 2, 'two body rows');
+  const firstBold = rows[0].querySelector('td:first-child strong');
+  assert(firstBold, 'inline formatting inside table cell (bold)');
+  const secondEm = rows[1].querySelector('td:last-child em');
+  assert(secondEm, 'inline formatting inside table cell (italic)');
+});

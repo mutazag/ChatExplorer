@@ -14,13 +14,15 @@ function escapeHtml(str) {
 function splitCodeFences(src) {
   const parts = [];
   let i = 0;
-  const fence = /```([\s\S]*?)```/g; // non-greedy
+  // Support fenced code blocks with 3 or more backticks, matching the same length
+  const fence = /(`{3,})([\s\S]*?)\1/g; // non-greedy, backreference to equal fence length
   let lastIndex = 0;
   let m;
   while ((m = fence.exec(src))) {
     const before = src.slice(lastIndex, m.index);
     if (before) parts.push({ type: 'text', value: before });
-    const code = m[1].replace(/^\n|\n$/g, '');
+    // m[2] is the inner content; trim a single leading/trailing newline if present
+    const code = m[2].replace(/^\n|\n$/g, '');
     parts.push({ type: 'codeblock', value: code });
     lastIndex = fence.lastIndex;
   }
@@ -55,6 +57,48 @@ function groupBlocks(text) {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
+    // Tables (GFM-style pipe tables)
+    // Detect a header line with '|' followed by a separator line of --- style
+    const next = lines[i + 1];
+    const looksLikeHeader = line && line.includes('|');
+    const isSeparator = (l) => {
+      if (!l) return false;
+      const t = l.trim();
+      // examples: | --- | :---: | ---: | --- |
+      const cell = ':?-{3,}:?';
+      const re = new RegExp(`^\\|?\\s*${cell}(?:\\s*\\|\\s*${cell})+\\s*\\|?$`);
+      return re.test(t);
+    };
+    if (looksLikeHeader && isSeparator(next)) {
+      // parse header cells
+      const splitCells = (l) => {
+        let s = String(l).trim();
+        if (s.startsWith('|')) s = s.slice(1);
+        if (s.endsWith('|')) s = s.slice(0, -1);
+        return s.split('|').map(c => c.trim());
+      };
+      const headerCells = splitCells(line);
+      const alignSpecs = splitCells(next).map(seg => {
+        const t = seg.trim();
+        const left = t.startsWith(':');
+        const right = t.endsWith(':');
+        if (left && right) return 'center';
+        if (right) return 'right';
+        if (left) return 'left';
+        return 'left';
+      });
+      i += 2; // consume header + separator
+      const rows = [];
+      while (i < lines.length) {
+        const rline = lines[i];
+        if (!rline || !rline.includes('|')) break;
+        const rowCells = splitCells(rline);
+        rows.push(rowCells);
+        i++;
+      }
+      blocks.push({ type: 'table', header: headerCells, aligns: alignSpecs, rows });
+      continue;
+    }
     // Headings
     const hm = /^(#{1,6})\s+(.*)$/.exec(line);
     if (hm) {
@@ -113,13 +157,26 @@ function renderBlocksToHtml(blocks) {
     } else if (b.type === 'ol') {
       const items = b.items.map(t => `<li>${parseInline(t)}</li>`).join('');
       html.push(`<ol>${items}</ol>`);
+    } else if (b.type === 'table') {
+      const colClass = (i) => {
+        const a = (b.aligns && b.aligns[i]) || 'left';
+        if (a === 'center') return 'align-center';
+        if (a === 'right') return 'align-right';
+        return 'align-left';
+      };
+      const thead = `<thead><tr>${b.header.map((h, idx) => `<th class="${colClass(idx)}">${parseInline(h)}</th>`).join('')}</tr></thead>`;
+      const tbodyRows = (b.rows || []).map(r => {
+        return `<tr>${r.map((c, idx) => `<td class="${colClass(idx)}">${parseInline(c)}</td>`).join('')}</tr>`;
+      }).join('');
+      const tbody = `<tbody>${tbodyRows}</tbody>`;
+      html.push(`<table>${thead}${tbody}</table>`);
     }
   }
   return html.join('');
 }
 
 function sanitizeHtml(html) {
-  const allowedTags = new Set(['P','BR','STRONG','EM','CODE','PRE','UL','OL','LI','A','H1','H2','H3','H4','H5','H6']);
+  const allowedTags = new Set(['P','BR','STRONG','EM','CODE','PRE','UL','OL','LI','A','H1','H2','H3','H4','H5','H6','TABLE','THEAD','TBODY','TR','TH','TD']);
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
 
