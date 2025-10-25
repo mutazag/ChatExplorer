@@ -17,6 +17,8 @@ This feature renders images/audio/video inline in the conversation detail view.
 	- audio_transcription / audio_asset_pointer → <conversation_id>/audio/
 	- video_container_asset_pointer → <conversation_id>/video/
 	- generated images may be under user-*/
+- When a dataset is selected (e.g., `extract1`), resolved media URLs will include the dataset prefix, e.g., `data/extract1/file-<id>-<name>.<ext>`. Verify that `<img src>` and any fallback download links use these dataset-relative URLs.
+- No precomputed `_asset-manifest.json` is needed. The application builds its file index at runtime from the selected folder (File API) or by parsing the dataset directory listing.
 - Ensure resolved paths are reachable as relative URLs when served (http://localhost) or opened directly
 
 ## Implementation notes

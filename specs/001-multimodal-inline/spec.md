@@ -80,14 +80,31 @@ Acceptance Scenarios:
 
 #### Media Asset Resolution (Pointers → Files)
 
-- FR-009: The system MUST resolve media asset pointers in multimodal parts to local files when available under the selected export folder.
-- FR-010: For pointers with scheme `file-service://file-<ID>`, the system MUST map to the first file whose basename starts with `file-<ID>` within the export tree (prefix match), e.g., `file-1Cym1F...-Screenshot_...jpg`.
+- FR-009: The system MUST resolve media asset pointers in multimodal parts to local files when available under the selected export folder. The asset index MUST be built client-side at runtime by inspecting available files (from user-picked File API inputs or by parsing dataset directory listings) — no precomputed manifests are required or used.
+- FR-010: For pointers with scheme `file-service://file-<ID>`, the system MUST map to the first file whose basename starts with `file-<ID>` within the export tree (prefix match), e.g., `file-1Cym1F...-Screenshot_...jpg`. When a dataset is loaded via `data/<dataset>` (e.g., `data/extract1`), the resolved relative path MUST include the dataset prefix, e.g., `data/extract1/file-1Cym1F...-Screenshot_...jpg`.
 - FR-011: For pointers with scheme `sediment://file_<ID>`, the system MUST map to the first file whose basename starts with `file_<ID>` (underscore variant) within the export tree (prefix match).
 - FR-012: For generated images with a generation identifier (e.g., `generation.gen_id`), the system MUST search under user content folders (e.g., `user-*/`) for matching file prefixes and include them as images if found.
 - FR-013: For `audio_transcription` and related audio parts, the system MUST search within a folder named after the `conversation_id` (e.g., `.../<conversation_id>/audio/`) for files whose basenames start with the `asset_pointer` ID (prefix match) and attach them as audio media.
 - FR-014: For `video_container_asset_pointer` and related video parts, the system MUST search within `.../<conversation_id>/video/` for files whose basenames start with the `asset_pointer` ID (prefix match) and attach them as video media.
 - FR-015: If multiple matches exist, the system MUST choose deterministically (shortest basename; then lexicographically) and record the selected path.
 - FR-016: If no local file is found for a pointer, the system MUST degrade to a labeled download link using the pointer ID and declared type.
+  
+Implementation notes for FR-010:
+
+- Input example (image):
+	- `content_type`: `multimodal_text`
+	- Part: `{ content_type: 'image_asset_pointer', asset_pointer: 'file-service://file-SnhAVAcycHQEv8Xu15wTXK', width, height, metadata }`
+- Resolution:
+	- Extract prefix `file-SnhAVAcycHQEv8Xu15wTXK`
+	- Build an asset index in the browser:
+		- If the user picked a folder/files, use the provided File objects and their paths (e.g., `webkitRelativePath`) to enumerate candidates.
+		- If a dataset is selected (e.g., `data/extract1`), fetch the dataset directory index HTML and parse anchors to enumerate files; optionally fetch subdirectory indices for `user-*` and `<conversation_id>/(audio|video)/` folders.
+		- Search the in-memory index for files whose basename starts with the prefix
+	- Choose deterministic match and construct a dataset-relative URL, e.g., `./data/extract1/file-SnhAVAcycHQEv8Xu15wTXK-Screenshot_20250723_204157_Duolingo.jpg`
+- Rendering:
+	- Set `<img src>` to the resolved relative URL
+	- Any fallback `<a>` link MUST use `href` equal to the same resolved relative URL
+	- Continue to enforce FR-017 safe URL policies against the resolved URL
 
 ### Key Entities
 

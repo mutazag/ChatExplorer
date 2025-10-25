@@ -99,3 +99,37 @@ assets/
 ## Complexity Tracking
 
 No violations. This feature adheres to the constitution (vanilla JS, client-only, locally stored assets, test-first, responsive UI with local logo).
+
+## Design: Image pointer resolution (file-service)
+
+When a multimodal part contains `{ content_type: 'image_asset_pointer', asset_pointer: 'file-service://file-<ID>' }`, resolve to a dataset-relative path as follows:
+
+1) Parse pointer → scheme=`file-service`, prefix=`file-<ID>`
+2) Look up matches in an asset index built entirely client-side:
+    - If the user picked a folder/files: index is built from the File objects (e.g., using `webkitRelativePath`).
+    - If a dataset is selected (e.g., `data/extract1`): index is built by fetching the dataset directory index HTML and parsing anchors to enumerate files; optionally recurse into known subfolders (`user-*`, `<conversation_id>/audio/`, `<conversation_id>/video/`).
+    - No precomputed `_asset-manifest.json` is used.
+3) Deterministic selection among matches: shortest basename first; tie-break lexicographically by full relative path.
+4) Construct the resolved relative URL including dataset name, e.g., `./data/extract1/file-SnhAVAcy...-Screenshot_...jpg`.
+5) Rendering contract:
+    - `<img src>` MUST use the resolved relative URL
+    - Fallback `<a class="media-fallback" href>` MUST use the same resolved relative URL
+    - Apply safe URL policy (allow http/https, protocol-relative, relative, data:image/audio/video; block javascript:, blob:)
+
+Example:
+
+- Input pointer: `file-service://file-SnhAVAcycHQEv8Xu15wTXK`
+- Dataset: `data/extract1`
+- Resolved: `data/extract1/file-SnhAVAcycHQEv8Xu15wTXK-Screenshot_20250723_204157_Duolingo.jpg`
+
+Notes:
+
+- Images typically reside at the dataset root or under `user-*` subfolders; the index includes both via directory listing parsing. The algorithm remains prefix-based and dataset-scoped.
+- If no match is found, inline rendering is skipped and a labeled download link is produced using the original pointer information.
+
+## Dataset directory crawl (no manifest)
+
+- For dataset-based runs, attempt to GET `data/<dataset>/` and parse the HTML directory index to extract `<a href>` entries.
+- Include files at the dataset root and, when available, iterate over links ending with `/` for subfolders of interest (`user-*`, `<conversation_id>/audio/`, `<conversation_id>/video/`).
+- Normalize discovered hrefs to dataset-relative paths and feed them into the asset index for prefix matching.
+- Guardrails: cap recursion depth (e.g., depth ≤ 2), ignore `../`, and deduplicate results.

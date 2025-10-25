@@ -84,3 +84,52 @@ export async function fetchConversationsJson(path) {
 }
 
 export const __test__ = { probeConversations, parseDirectoryIndex };
+
+// Parse a directory index page and return { files, dirs } arrays of href names (not prefixed)
+async function readDirectoryIndex(path) {
+  try {
+    const res = await fetch(path.endsWith('/') ? path : `${path}/`, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) return { files: [], dirs: [] };
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    const text = await res.text();
+    if (!(ct.includes('text/html') || /<html[\s>]/i.test(text))) return { files: [], dirs: [] };
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const anchors = Array.from(doc.querySelectorAll('a[href]'));
+    const hrefs = anchors.map((a) => a.getAttribute('href') || '')
+      .filter((h) => h && !h.startsWith('../'));
+    const files = hrefs.filter((h) => !h.endsWith('/'));
+    const dirs = hrefs.filter((h) => h.endsWith('/')).map((h) => h.replace(/\/$/, ''));
+    return { files, dirs };
+  } catch (_) {
+    return { files: [], dirs: [] };
+  }
+}
+
+// Enumerate dataset files by crawling the directory index up to a limited depth.
+// Returns paths prefixed with the dataset path (e.g., data/extract1/<file>)
+export async function listDatasetFiles(rootPath, options = {}) {
+  const maxDepth = Number.isFinite(options.maxDepth) ? options.maxDepth : 2;
+  const visited = new Set();
+  const results = new Set();
+
+  async function walk(path, depth) {
+    const key = path.endsWith('/') ? path : `${path}/`;
+    if (visited.has(key) || depth < 0) return;
+    visited.add(key);
+    const { files, dirs } = await readDirectoryIndex(path);
+    for (const f of files) {
+      const full = `${path}/${f}`.replace(/\/+/g, '/');
+      results.add(full);
+    }
+    if (depth === 0) return;
+    for (const d of dirs) {
+      if (d === '.' || d === '') continue;
+      // Guard against deep recursion and ignore parent links
+      await walk(`${path}/${d}`, depth - 1);
+    }
+  }
+
+  await walk(rootPath.replace(/\/$/, ''), maxDepth);
+  return Array.from(results).sort();
+}
