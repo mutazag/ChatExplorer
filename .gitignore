@@ -1,2 +1,11 @@
 # Ignore all folders inside data directory, but keep data/.gitkeep
 data/*/
+
+# Universal OS/editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.tmp
+*.swp

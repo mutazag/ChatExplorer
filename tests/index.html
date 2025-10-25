@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NewChatBrowser Tests</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1rem; }
+      .pass { color: #0a0; }
+      .fail { color: #a00; }
+      pre { background: #f7f7f7; padding: .5rem; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Tests</h1>
+    <div id="results"></div>
+
+    <script type="module" src="./lib/harness.js"></script>
+    <script type="module" src="./conversation-browser/parse.spec.js"></script>
+    <script type="module" src="./conversation-browser/sortPaginate.spec.js"></script>
+  </body>
+  </html>
