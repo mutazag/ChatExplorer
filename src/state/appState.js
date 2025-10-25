@@ -7,6 +7,7 @@ const state = {
   stats: null,
   modelDefault: 'Claude Sonnet 4.5',
   modelSession: null,
+  audit: [],
 };
 
 function emit(type, detail) {
@@ -47,11 +48,13 @@ export function setPage(page) {
 export function setModelDefault(name) {
   state.modelDefault = name;
   try { localStorage.setItem('ncb:modelDefault', name); } catch {}
+  state.audit.push({ t: Date.now(), action: 'model.default.set', value: name });
   emit('model:changed', getState());
 }
 
 export function setModelSession(name) {
   state.modelSession = name;
+  state.audit.push({ t: Date.now(), action: 'model.session.set', value: name });
   emit('model:changed', getState());
 }
 
@@ -60,4 +63,8 @@ export function loadPersisted() {
     const m = localStorage.getItem('ncb:modelDefault');
     if (m) state.modelDefault = m;
   } catch {}
+}
+
+export function getAudit() {
+  return [...state.audit];
 }
