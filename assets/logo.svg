@@ -11,7 +11,7 @@
     <circle cx="18" cy="-12" r="8" fill="#22d3ee"/>
     <circle cx="36" cy="-12" r="8" fill="#a78bfa"/>
   </g>
-  <text x="70" y="38" font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="26" fill="#e6eaf2">MagTech</text>
-  <text x="170" y="38" font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="600" font-size="26" fill="#7dd3fc">.ai</text>
-  <title>MagTech.ai</title>
+  <text x="70" y="38" font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="26" fill="#e6eaf2">MAG Tech</text>
+  <text x="197" y="38" font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="600" font-size="26" fill="#7dd3fc">.ai</text>
+  <title>MAGTech.ai</title>
 </svg>
