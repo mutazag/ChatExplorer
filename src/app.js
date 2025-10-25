@@ -24,7 +24,7 @@ btnPick.addEventListener('click', async () => {
   try {
     const files = await pickFolderOrFiles();
     const raw = await loadConversationsFromFiles(files);
-    const { normalized, stats } = normalizeConversationsWithWarnings(raw);
+    const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
     const sorted = sortConversations(normalized);
     setConversations(sorted, stats);
     draw();

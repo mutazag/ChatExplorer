@@ -2,7 +2,11 @@ export function normalizeFileList(fileListOrArray) {
   const arr = Array.from(fileListOrArray || []);
   return arr
     .filter(Boolean)
-    .map((f) => ({ name: f.name || '', file: f }));
+    .map((f) => ({
+      name: f.name || '',
+      path: (f.webkitRelativePath || f.name || '').replace(/\\/g, '/'),
+      file: f,
+    }));
 }
 
 export function findFileByName(files, nameLower) {

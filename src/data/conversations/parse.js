@@ -1,12 +1,15 @@
-export function normalizeConversations(input) {
+import { buildAssetIndex, parseAssetPointer } from '../../utils/assetIndex.js';
+
+export function normalizeConversations(input, filesForIndex) {
   if (!Array.isArray(input)) return [];
+  const assetIndex = filesForIndex ? buildAssetIndex(filesForIndex) : null;
   const out = [];
   for (const c of input) {
     if (!c || !c.conversation_id) continue;
     const id = String(c.conversation_id);
     const create_time = toNumberOrNull(c.create_time);
     const update_time = toNumberOrNull(c.update_time);
-    const pathMessages = reconstructActivePathMessages(c);
+    const pathMessages = reconstructActivePathMessages(c, assetIndex);
     const title = normalizeTitle(c, id, pathMessages);
     out.push({ id, title, create_time, update_time, messages: pathMessages });
   }
@@ -18,9 +21,9 @@ function toNumberOrNull(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-export function normalizeConversationsWithWarnings(input) {
+export function normalizeConversationsWithWarnings(input, filesForIndex) {
   const total = Array.isArray(input) ? input.length : 0;
-  const normalized = normalizeConversations(input);
+  const normalized = normalizeConversations(input, filesForIndex);
   const loaded = normalized.length;
   const skipped = Math.max(0, total - loaded);
   return { normalized, stats: { total, loaded, skipped } };
@@ -34,7 +37,7 @@ function normalizeTitle(c, id, messages) {
   return first ? first.text.slice(0, 80) : 'Untitled';
 }
 
-function reconstructActivePathMessages(c) {
+function reconstructActivePathMessages(c, assetIndex) {
   const mapping = c && c.mapping && typeof c.mapping === 'object' ? c.mapping : null;
   const current = c && c.current_node ? String(c.current_node) : null;
   if (!mapping || !current || !mapping[current]) return [];
@@ -55,7 +58,7 @@ function reconstructActivePathMessages(c) {
     const role = (m.author && m.author.role) || null;
     const hidden = role === 'system' && m.metadata && m.metadata.is_visually_hidden_from_conversation === true;
     if (hidden) continue;
-    const { text, hasImage } = toRenderableContent(m.content);
+    const { text, hasImage, media } = toRenderableContent(m.content, assetIndex, String(c.conversation_id));
     msgs.push({
       id: String(m.id || n.id || ''),
       role: role || 'unknown',
@@ -63,29 +66,68 @@ function reconstructActivePathMessages(c) {
       update_time: toNumberOrNull(m.update_time),
       text: text,
       hasImage: hasImage || false,
+      media: Array.isArray(media) ? media : [],
     });
   }
   return msgs;
 }
 
-function toRenderableContent(content) {
-  if (!content || !content.content_type) return { text: '', hasImage: false };
+function toRenderableContent(content, assetIndex, conversationId) {
+  if (!content || !content.content_type) return { text: '', hasImage: false, media: [] };
   if (content.content_type === 'text') {
     const parts = Array.isArray(content.parts) ? content.parts : [];
-    return { text: parts.join(' ').trim(), hasImage: false };
+    return { text: parts.join(' ').trim(), hasImage: false, media: [] };
   }
   if (content.content_type === 'multimodal_text') {
     const parts = Array.isArray(content.parts) ? content.parts : [];
     let text = '';
     let hasImage = false;
+    const media = [];
     for (const p of parts) {
       if (typeof p === 'string') {
         text += (text ? ' ' : '') + p;
-      } else if (p && p.content_type === 'image_asset_pointer') {
-        hasImage = true;
+      } else if (p && typeof p === 'object') {
+        if (p.content_type === 'image_asset_pointer') {
+          const pointer = parseAssetPointer(p.asset_pointer || p.url || '');
+          const resolved = resolveFirst(assetIndex, pointer, conversationId, 'image');
+          hasImage = true;
+          media.push({ kind: 'image', src: resolved || (p.asset_pointer || ''), mime: p.mime_type || null, alt: p.alt || 'Image', pointer });
+        } else if (p.content_type === 'audio_asset_pointer' || p.content_type === 'input_audio') {
+          const pointer = parseAssetPointer(p.asset_pointer || p.url || '');
+          const resolved = resolveFirst(assetIndex, pointer, conversationId, 'audio');
+          media.push({ kind: 'audio', src: resolved || (p.asset_pointer || ''), mime: p.mime_type || (p.format ? `audio/${p.format}` : null), alt: p.alt || 'Audio', pointer });
+        } else if (p.content_type === 'video_container_asset_pointer' || p.content_type === 'video_asset_pointer') {
+          const pointer = parseAssetPointer(p.asset_pointer || p.url || '');
+          const resolved = resolveFirst(assetIndex, pointer, conversationId, 'video');
+          media.push({ kind: 'video', src: resolved || (p.asset_pointer || ''), mime: p.mime_type || null, alt: p.alt || 'Video', pointer });
+        } else if (p.content_type === 'real_time_user_audio_video_asset_pointer') {
+          // Composite: may include nested video_container_asset_pointer and audio_asset_pointer
+          const v = p.video_container_asset_pointer;
+          if (v && (v.asset_pointer || v.url)) {
+            const pointer = parseAssetPointer(v.asset_pointer || v.url);
+            const resolved = resolveFirst(assetIndex, pointer, conversationId, 'video');
+            media.push({ kind: 'video', src: resolved || (v.asset_pointer || ''), mime: v.mime_type || (v.format ? `video/${v.format}` : null), alt: 'Video', pointer });
+          }
+          const a = p.audio_asset_pointer;
+          if (a && (a.asset_pointer || a.url)) {
+            const pointer = parseAssetPointer(a.asset_pointer || a.url);
+            const resolved = resolveFirst(assetIndex, pointer, conversationId, 'audio');
+            media.push({ kind: 'audio', src: resolved || (a.asset_pointer || ''), mime: a.mime_type || (a.format ? `audio/${a.format}` : null), alt: 'Audio', pointer });
+          }
+        } else if (p.content_type === 'audio_transcription' && p.asset_pointer) {
+          const pointer = parseAssetPointer(p.asset_pointer);
+          const resolved = resolveFirst(assetIndex, pointer, conversationId, 'audio');
+          media.push({ kind: 'audio', src: resolved || p.asset_pointer, mime: p.mime_type || null, alt: 'Audio', pointer });
+        }
       }
     }
-    return { text: text.trim(), hasImage };
+    return { text: text.trim(), hasImage, media };
   }
-  return { text: '', hasImage: false };
+  return { text: '', hasImage: false, media: [] };
+}
+
+function resolveFirst(assetIndex, pointer, conversationId, kindHint) {
+  if (!assetIndex || !pointer) return '';
+  const results = assetIndex.resolvePointer(pointer, { conversationId, kind: kindHint });
+  return results && results[0] ? results[0] : '';
 }

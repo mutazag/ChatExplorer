@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  title: Multimodal Inline (No external API)
+  version: 1.0.0
+  description: |
+    This client-only feature has no network endpoints. Schemas below document the UI contracts
+    for normalized entities used within the application.
+servers: []
+paths: {}
+components:
+  schemas:
+    MediaItem:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [image, audio, video, file]
+        url:
+          type: string
+        mime:
+          type: string
+        alt:
+          type: string
+        name:
+          type: string
+      required: [kind]
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+        create_time:
+          type: number
+        text:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaItem'

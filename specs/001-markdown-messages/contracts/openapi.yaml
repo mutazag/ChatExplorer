@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: Markdown Rendering (No external API)
+  version: 1.0.0
+  description: |
+    This feature is client-only with no network calls.
+    Schemas document the UI contracts for entities used in rendering.
+servers: []
+paths: {}
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+        create_time:
+          type: number
+        text:
+          type: string
+    RenderedMessage:
+      type: object
+      properties:
+        html:
+          type: string
