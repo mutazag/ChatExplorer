@@ -4,36 +4,21 @@ import { normalizeConversationsWithWarnings } from './data/conversations/parse.j
 import { sortConversations } from './core/sortPaginate.js';
 import { renderList } from './ui/listView.js';
 import { renderDetail } from './ui/detailView.js';
-import { renderModelBadge } from './ui/badges/modelBadge.js';
 import { renderStatusChip } from './ui/badges/statusChip.js';
-import { on, getState, setConversations, setSelection, setPage, loadPersisted } from './state/appState.js';
+import { on, getState, setConversations, setSelection, setPage } from './state/appState.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
-import { mountSettings } from './ui/settingsPanel.js';
 
 const left = document.getElementById('left');
 const right = document.getElementById('right');
 const btnPick = document.getElementById('btn-pick');
-const btnSettings = document.getElementById('btn-settings');
-const modelBadge = document.getElementById('model-badge');
 const statusChip = document.getElementById('status-chip');
-const dialog = document.getElementById('settings-dialog');
 const errorLive = document.createElement('div');
 errorLive.id = 'error-live';
 errorLive.setAttribute('aria-live', 'polite');
 errorLive.style.minHeight = '1rem';
 document.body.prepend(errorLive);
 
-loadPersisted();
-renderModelBadge(modelBadge, getState());
-
-on('model:changed', (s) => renderModelBadge(modelBadge, s));
 on('conversations:changed', (s) => renderStatusChip(statusChip, s.stats));
-
-mountSettings(dialog);
-btnSettings.addEventListener('click', () => {
-  mountSettings(dialog);
-  dialog.showModal();
-});
 
 btnPick.addEventListener('click', async () => {
   try {
