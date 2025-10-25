@@ -55,7 +55,7 @@ description: "Executable task list for Markdown message rendering"
 - [x] T008 [US1] Implement headings/lists/inline code/bold/italic parsing in `src/utils/markdown.js`
 - [x] T009 [US1] Implement fenced code block rendering `<pre><code>` in `src/utils/markdown.js`
 - [x] T010 [US1] Render Markdown HTML in detail view after role label in `src/ui/detailView.js`
-- [ ] T011 [US1] Verify tests pass locally via `tests/index.html`
+ - [x] T011 [US1] Verify tests pass locally via `tests/index.html`
 
 **Checkpoint**: US1 independently delivers readable Markdown
 
@@ -77,7 +77,7 @@ description: "Executable task list for Markdown message rendering"
 - [x] T014 [US2] Add allowlist sanitizer (P, BR, STRONG, EM, CODE, PRE, UL, OL, LI, A, H1–H6) in `src/utils/markdown.js`
 - [x] T015 [US2] Link normalization: only http(s), mailto, #; set target and rel in `src/utils/markdown.js`
 - [x] T016 [US2] Ensure detail view uses sanitized HTML only in `src/ui/detailView.js`
-- [ ] T017 [US2] Verify tests pass locally via `tests/index.html`
+ - [x] T017 [US2] Verify tests pass locally via `tests/index.html`
 
 **Checkpoint**: US2 independently guarantees safety of rendered content
 
@@ -99,7 +99,7 @@ description: "Executable task list for Markdown message rendering"
 - [x] T020 [US3] Add paragraph grouping and line-break handling in `src/utils/markdown.js`
 - [x] T021 [US3] Add aria-label="code block" to `<pre>` in `src/utils/markdown.js`
 - [x] T022 [US3] Ensure empty/null text renders no body content in `src/ui/detailView.js`
-- [ ] T023 [US3] Verify tests pass locally via `tests/index.html`
+ - [x] T023 [US3] Verify tests pass locally via `tests/index.html`
 
 **Checkpoint**: US3 completes fallback and a11y behavior
 
