@@ -5,6 +5,7 @@ const state = {
   pageSize: 25,
   selectedId: null,
   stats: null,
+  selectedDataset: null,
 };
 
 function emit(type, detail) {
@@ -40,5 +41,10 @@ export function setSelection(id) {
 export function setPage(page) {
   state.page = page;
   emit('page:changed', getState());
+}
+
+export function setSelectedDataset(dataset) {
+  state.selectedDataset = dataset; // { id, path, name? }
+  emit('dataset:selected', getState());
 }
 

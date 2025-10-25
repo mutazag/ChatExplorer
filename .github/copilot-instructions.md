@@ -29,9 +29,9 @@ npm test; npm run lint
 JavaScript (ES6+), HTML5, CSS3: Follow standard conventions
 
 ## Recent Changes
+- master: Added [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION] + [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]
+- master: Added [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION] + [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]
 - 001-multimodal-inline: Added JavaScript (ES6+), HTML5, CSS3 + None (vanilla). Tests run in-browser via the existing harness in `tests/`.
-- 001-multimodal-inline: Added [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION] + [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]
-- 001-markdown-messages: Added JavaScript (ES6+), HTML5, CSS3 + None (vanilla). Tests: in-browser harness under `tests/`.
 
 
 <!-- MANUAL ADDITIONS START -->

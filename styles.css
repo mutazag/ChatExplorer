@@ -31,3 +31,14 @@ body { margin: 0; font-family: system-ui, Segoe UI, Roboto, sans-serif; }
   .layout { grid-template-columns: 1fr; }
   .left { border-right: none; border-bottom: 1px solid rgba(0,0,0,.1); }
 }
+
+/* Dataset list styles */
+.dataset-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
+.dataset-list [role="option"] { padding: .5rem .6rem; border-radius: 6px; cursor: pointer; outline: none; border: 1px solid transparent; }
+.dataset-list [role="option"]:hover { background: rgba(0,0,0,.04); }
+.dataset-list [role="option"]:focus { box-shadow: 0 0 0 2px #3b82f6; }
+.dataset-list [role="option"].is-active { border-color: #3b82f6; background: rgba(59,130,246,.06); }
+.dataset-item { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: .5rem; }
+.dataset-item .icon { width: 20px; height: 20px; opacity: .85; }
+.dataset-item .name { font-weight: 500; }
+.dataset-item .meta { color: rgba(0,0,0,.6); font-size: .9rem; }

@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+	title: Folder Selector (Static Files)
+	version: 1.0.2
+	description: |
+		No API is exposed for dataset listing. The client discovers folders under /data via directory index parsing.
+		Time labels are derived from HTTP Last-Modified headers on conversations.json when available.
+servers:
+	- url: /
+paths:
+	/data/{dataset}/conversations.json:
+		head:
+			summary: Probe for presence and Last-Modified
+			parameters:
+				- name: dataset
+					in: path
+					required: true
+					schema:
+						type: string
+			responses:
+				'200':
+					description: File exists; Last-Modified may be present
+				'404':
+					description: Not found
+		get:
+			summary: Conversations JSON for a dataset (static file)
+			parameters:
+				- name: dataset
+					in: path
+					required: true
+					schema:
+						type: string
+			responses:
+				'200':
+					description: Chat export conversations
+					content:
+						application/json:
+							schema:
+								type: array
+								items:
+									type: object
+				'404':
+					description: Not found
