@@ -10,7 +10,7 @@ const sample = [
 test('listView: renders page of items and fires select', () => {
   const host = document.createElement('div');
   let selected = null;
-  renderList(host, sample, { page: 1, pageSize: 2, selectedId: null }, (id) => (selected = id));
+  renderList(host, sample, { page: 1, pageSize: 2, selectedId: null }, { onSelect: (id) => (selected = id) });
   const items = host.querySelectorAll('[data-item]');
   assert(items.length === 2, 'renders two items for page size 2');
   assert(items[0].textContent.includes('A'), 'includes title A');
@@ -20,7 +20,21 @@ test('listView: renders page of items and fires select', () => {
 
 test('listView: title fallback uses identifier when title empty', () => {
   const host = document.createElement('div');
-  renderList(host, sample, { page: 2, pageSize: 2, selectedId: null }, () => {});
+  renderList(host, sample, { page: 2, pageSize: 2, selectedId: null }, { onSelect: () => {} });
   const items = host.querySelectorAll('[data-item]');
   assert(items[0].textContent.includes('3'), 'uses id "3" when title empty');
+});
+
+test('listView: pager invokes onPage', () => {
+  const host = document.createElement('div');
+  let page = 1;
+  renderList(
+    host,
+    sample,
+    { page, pageSize: 1, selectedId: null },
+    { onSelect: () => {}, onPage: (p) => { page = p; } }
+  );
+  const next = host.querySelector('[data-pager-next]');
+  next.click();
+  assert(page === 2, 'next triggered onPage(2)');
 });

@@ -22,3 +22,11 @@ function toNumberOrNull(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 }
+
+export function normalizeConversationsWithWarnings(input) {
+  const total = Array.isArray(input) ? input.length : 0;
+  const normalized = normalizeConversations(input);
+  const loaded = normalized.length;
+  const skipped = Math.max(0, total - loaded);
+  return { normalized, stats: { total, loaded, skipped } };
+}

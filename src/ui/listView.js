@@ -5,7 +5,9 @@ function titleOrId(c) {
   return t || String(c.id);
 }
 
-export function renderList(host, conversations, { page = 1, pageSize = 25, selectedId = null } = {}, onSelect = () => {}) {
+export function renderList(host, conversations, { page = 1, pageSize = 25, selectedId = null } = {}, callbacks = {}) {
+  const onSelect = typeof callbacks === 'function' ? callbacks : (callbacks.onSelect || (() => {}));
+  const onPage = (typeof callbacks === 'object' && callbacks.onPage) ? callbacks.onPage : (() => {});
   host.innerHTML = '';
   const total = conversations.length;
   if (!total) {
@@ -73,14 +75,6 @@ export function renderList(host, conversations, { page = 1, pageSize = 25, selec
   });
 
   // Pager events dispatch via onSelect of first/last items to keep draw() simple
-  btnPrev.addEventListener('click', () => {
-    const prevStart = Math.max(0, start - pageSize);
-    const prevId = conversations[prevStart]?.id;
-    onSelect(String(prevId ?? slice[0]?.id));
-  });
-  btnNext.addEventListener('click', () => {
-    const nextStart = Math.min(total - 1, start + pageSize);
-    const nextId = conversations[nextStart]?.id;
-    onSelect(String(nextId ?? slice[slice.length - 1]?.id));
-  });
+  btnPrev.addEventListener('click', () => onPage(Math.max(1, page - 1)));
+  btnNext.addEventListener('click', () => onPage(page + 1));
 }

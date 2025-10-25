@@ -15,7 +15,7 @@ Status: Ready
 
 ## Phase 3 — File Detection & Validation
 - [x] Implement `data/conversations/loadConversationsFile.js` to find `conversations.json`
-- [ ] Validate presence; compute basic metadata; show status chip in UI
+- [x] Validate presence; compute basic metadata; show status chip in UI
 - [x] Error handling: missing, unreadable, or too large files with user guidance
 
 ## Phase 4 — State & Emission

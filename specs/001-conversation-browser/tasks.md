@@ -28,11 +28,11 @@ Status: Ready
 
 ## Phase 5 — Edge/Error Handling
 - [x] Empty dataset state
-- [ ] Malformed entries skipped with warning
+- [x] Malformed entries skipped with warning (UI status chip shows skipped count)
 - [x] Identifier-based title fallback; final fallback: excerpt/“Untitled”
 
 ## Phase 6 — Tests & Performance
-- [ ] Integration test: 1000 conversations, pagination behavior, selection update
+- [x] Integration test: 1000 conversations, pagination behavior, selection update
 - [x] Performance timing within target in `tests/index.html`
 
 ## Done Criteria

@@ -4,6 +4,7 @@ const state = {
   page: 1,
   pageSize: 25,
   selectedId: null,
+  stats: null,
   modelDefault: 'Claude Sonnet 4.5',
   modelSession: null,
 };
@@ -25,8 +26,9 @@ export function off(type, fn) {
 
 export function getState() { return { ...state }; }
 
-export function setConversations(conversations) {
+export function setConversations(conversations, stats = null) {
   state.conversations = conversations;
+  state.stats = stats;
   state.page = 1;
   state.selectedId = conversations[0]?.id ?? null;
   emit('conversations:changed', getState());
