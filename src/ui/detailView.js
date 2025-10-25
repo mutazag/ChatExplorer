@@ -1,6 +1,17 @@
 export function renderDetail(host, conversation) {
   host.innerHTML = '';
-  if (!conversation || !Array.isArray(conversation.messages)) return;
+  if (!conversation) {
+    const empty = document.createElement('p');
+    empty.textContent = 'No conversation selected.';
+    host.appendChild(empty);
+    return;
+  }
+  if (!Array.isArray(conversation.messages)) {
+    const empty = document.createElement('p');
+    empty.textContent = 'This conversation has no messages.';
+    host.appendChild(empty);
+    return;
+  }
   const msgs = [...conversation.messages].sort((a, b) => (a.create_time ?? 0) - (b.create_time ?? 0));
   const wrapper = document.createElement('div');
   wrapper.setAttribute('data-detail', '');
