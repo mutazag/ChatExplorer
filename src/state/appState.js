@@ -6,6 +6,8 @@ const state = {
   selectedId: null,
   stats: null,
   selectedDataset: null,
+  theme: 'light',
+  leftPaneVisible: true,
 };
 
 function emit(type, detail) {
@@ -46,5 +48,15 @@ export function setPage(page) {
 export function setSelectedDataset(dataset) {
   state.selectedDataset = dataset; // { id, path, name? }
   emit('dataset:selected', getState());
+}
+
+export function setTheme(theme) {
+  state.theme = theme === 'dark' ? 'dark' : 'light';
+  emit('theme:changed', getState());
+}
+
+export function setLeftPaneVisible(visible) {
+  state.leftPaneVisible = !!visible;
+  emit('pane:changed', getState());
 }
 
