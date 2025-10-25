@@ -54,12 +54,12 @@ export function renderDetail(host, conversation) {
     bubble.innerHTML = safeHtml;
 
     row.appendChild(header);
-    row.appendChild(bubble);
-    // Render media items, if any
+    // Render media items INSIDE the bubble
     if (Array.isArray(m.media) && m.media.length) {
       const mediaEl = renderMediaItems(m.media);
-      if (mediaEl) row.appendChild(mediaEl);
+      if (mediaEl) bubble.appendChild(mediaEl);
     }
+    row.appendChild(bubble);
     // Timestamp (hidden by default; reveal via hover/focus/tap)
     if (m.create_time) {
       const ts = document.createElement('div');
