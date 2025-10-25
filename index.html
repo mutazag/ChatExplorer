@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NewChatBrowser</title>
+    <link rel="icon" href="assets/logo.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <img src="assets/logo.svg" alt="MagTech.ai" class="logo" />
+      <h1>NewChatBrowser</h1>
+      <div class="spacer"></div>
+      <span id="model-badge"></span>
+      <button id="btn-settings" type="button">Settings</button>
+      <button id="btn-pick" type="button">Select Export Folder</button>
+    </header>
+
+    <main class="layout">
+      <section id="left" class="pane left"></section>
+      <section id="right" class="pane right"></section>
+    </main>
+
+    <dialog id="settings-dialog"></dialog>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+  </html>
