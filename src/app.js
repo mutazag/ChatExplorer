@@ -1,5 +1,5 @@
 import { pickFolderOrFiles, renderDatasetChoices, renderEmptyDatasets, browseFilesLegacy } from './features/folder/selectFolder.js';
-import { discoverDatasets, fetchConversationsJson } from './data/datasets/discovery.js';
+import { discoverDatasets, fetchConversationsJson, listDatasetFiles } from './data/datasets/discovery.js';
 import { loadConversationsFromFiles } from './data/conversations/loadConversationsFile.js';
 import { normalizeConversationsWithWarnings } from './data/conversations/parse.js';
 import { sortConversations } from './core/sortPaginate.js';
@@ -61,7 +61,8 @@ btnPick.addEventListener('click', async () => {
         // Auto-load single dataset
         setSelectedDataset(datasets[0]);
         const raw = await fetchConversationsJson(datasets[0].path);
-        const { normalized, stats } = normalizeConversationsWithWarnings(raw, []);
+        const files = await listDatasetFiles(datasets[0].path, { maxDepth: 2 });
+        const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
         const sorted = sortConversations(normalized);
         setConversations(sorted, stats);
         draw();
@@ -72,7 +73,8 @@ btnPick.addEventListener('click', async () => {
           onChoose: async (d) => {
             setSelectedDataset(d);
             const raw = await fetchConversationsJson(d.path);
-            const { normalized, stats } = normalizeConversationsWithWarnings(raw, []);
+            const files = await listDatasetFiles(d.path, { maxDepth: 2 });
+            const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
             const sorted = sortConversations(normalized);
             setConversations(sorted, stats);
             draw();
@@ -114,7 +116,8 @@ async function showDatasetChooser() {
     } else if (datasets.length === 1) {
       setSelectedDataset(datasets[0]);
       const raw = await fetchConversationsJson(datasets[0].path);
-      const { normalized, stats } = normalizeConversationsWithWarnings(raw, []);
+      const files = await listDatasetFiles(datasets[0].path, { maxDepth: 2 });
+      const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
       const sorted = sortConversations(normalized);
       setConversations(sorted, stats);
       draw();
@@ -125,7 +128,8 @@ async function showDatasetChooser() {
         onChoose: async (d) => {
           setSelectedDataset(d);
           const raw = await fetchConversationsJson(d.path);
-          const { normalized, stats } = normalizeConversationsWithWarnings(raw, []);
+          const files = await listDatasetFiles(d.path, { maxDepth: 2 });
+          const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
           const sorted = sortConversations(normalized);
           setConversations(sorted, stats);
           draw();

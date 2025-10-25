@@ -1,7 +1,9 @@
 // Build and query an index over selected export files for asset pointer resolution
 
 function toRelPath(f) {
-  const p = (f && (f.webkitRelativePath || f.path || f.name)) || '';
+  if (!f) return '';
+  if (typeof f === 'string') return String(f).replace(/\\/g, '/');
+  const p = (f.webkitRelativePath || f.path || f.name) || '';
   return String(p).replace(/\\/g, '/');
 }
 

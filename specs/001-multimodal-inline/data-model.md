@@ -14,7 +14,7 @@ Branch: 001-multimodal-inline
 
 ### MediaItem
 - kind: 'image' | 'audio' | 'video' | 'file'
-- url: string (relative URL preferred; resolved from pointer when possible)
+- url: string (dataset-relative URL when a dataset is selected, e.g., `data/extract1/file-<id>-<name>.<ext>`; otherwise a relative path derived from picked files)
 - mime: string | undefined
 - alt: string | undefined (images)
 - name: string | undefined (download label for files)
@@ -36,6 +36,7 @@ Branch: 001-multimodal-inline
 	- sediment://file_<ID> → basename starts with file_<ID>
 	- audio under <conversation_id>/audio/, video under <conversation_id>/video/
 	- generated images under user-* folders
+- When loaded via dataset discovery (`data/<dataset>`), resolved URLs MUST include the dataset prefix in the path so that `<img src>` and fallback `<a href>` resolve correctly from `index.html`.
 - Preserve message order based on create_time; attach media list after text
 - Omit hidden/system scaffolding nodes (unchanged from existing parser)
 
