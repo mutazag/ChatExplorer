@@ -95,6 +95,7 @@ Independent Test: At small width, conversation dominates; list accessible via co
 - [ ] T021 [US3] Add responsive CSS in `styles.css` (<= 860px): collapse list by default, expand conversation area >=60%
 - [ ] T022 [US3] Ensure pane toggle reveals list as overlay/slide-in on small screens via CSS class
 - [ ] T023 [US3] Update `index.html`/`src/app.js` to add an accessible control to open/close list on small screens
+- [X] T023A [US3] Add mobile dropdown conversation selector above threads in `src/ui/detailView.js` with styles in `styles.css`; wire selection via hash for redraw
 
 Checkpoint: US3 independently improves small-screen readability
 

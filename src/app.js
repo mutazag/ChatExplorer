@@ -7,12 +7,15 @@ import { renderList } from './ui/listView.js';
 import { renderDetail } from './ui/detailView.js';
 import { renderStatusChip } from './ui/badges/statusChip.js';
 import { on, getState, setConversations, setSelection, setPage, setSelectedDataset } from './state/appState.js';
+import { initThemeToggle, initPaneToggle } from './ui/controls.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
 
 const left = document.getElementById('left');
 const right = document.getElementById('right');
 const btnPick = document.getElementById('btn-pick');
 const btnChangeDataset = document.getElementById('btn-change-dataset');
+const btnTheme = document.getElementById('btn-theme');
+const btnPane = document.getElementById('btn-pane');
 const statusChip = document.getElementById('status-chip');
 const errorLive = document.createElement('div');
 errorLive.id = 'error-live';
@@ -141,6 +144,10 @@ if (btnChangeDataset) {
 
 // Initialize controls visibility
 updateControlsVisibility();
+
+// Initialize UI controls (theme & pane)
+initThemeToggle(btnTheme);
+initPaneToggle(btnPane, { layoutEl: document.querySelector('.layout'), leftPaneEl: left });
 
 function draw() {
   const s = getState();
