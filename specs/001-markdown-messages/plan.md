@@ -1,39 +1,35 @@
-# Implementation Plan: Conversation detail renders Markdown messages
+# Implementation Plan: Markdown Messages
 
-**Branch**: `001-markdown-messages` | **Date**: 2025-10-25 | **Spec**: specs/001-markdown-messages/spec.md
+**Branch**: `001-markdown-messages` | **Date**: 2025-10-28 | **Spec**: `spec.md`
 **Input**: Feature specification from `/specs/001-markdown-messages/spec.md`
-
-**Note**: This plan follows the `/speckit.plan` workflow using the plan template.
 
 ## Summary
 
-Render message content as sanitized Markdown in the conversation detail pane. Support a safe subset (headings, lists, bold/italic, inline and fenced code, links, paragraphs). Sanitize output via an allowlist and normalize links to http(s)/mailto/# with target="_blank" and rel="noopener noreferrer nofollow". Provide plain-text fallback and a11y (aria-label on <pre>). Fully client-side, no external dependencies.
+Add safe auto-linking for plain `http(s)` URLs in message text while preserving authored Markdown links and preventing unsafe schemes. The feature integrates with the existing Markdown rendering pipeline (`renderMarkdownToSafeHtml`) and the app's sanitizer to produce accessible anchors with `target="_blank"` and safe `rel` attributes.
 
 ## Technical Context
 
-**Language/Version**: JavaScript (ES6+), HTML5, CSS3  
-**Primary Dependencies**: None (vanilla). Tests: in-browser harness under `tests/`.  
-**Storage**: Local JSON exports; no persistence; static assets only.  
-**Testing**: In-browser tests (unit + integration) under `tests/conversation-browser/`.  
-**Target Platform**: Modern evergreen browsers (Chrome/Edge latest on Windows).  
-**Project Type**: Client-side web app; DOM components in `src/ui`.  
-**Performance Goals**: Render typical messages in <16ms; linear-time parsing; zero external network calls.  
-**Constraints**: No backend, no external libs, no CDNs; offline-capable; a11y basics (WCAG AA).  
-**Scale/Scope**: All conversations; content length can vary; subset of Markdown only (no embedded HTML).
-
-Unknowns: None — scope and security rules are fully specified in spec; no clarifications required.
+**Language/Version**: JavaScript (ES6+), HTML5  
+**Primary Dependencies**: None (vanilla JS). Prefer built-in regex-based auto-linking or a small vendored library if justified.  
+**Storage**: No new storage; uses existing in-memory message objects and static `data/` datasets.  
+**Testing**: Browser-based unit and integration tests (Mocha or in-browser harness already present in `tests/`).  
+**Target Platform**: Modern evergreen browsers (Chrome, Edge, Firefox, Safari).  
+**Project Type**: Client-side web application (no backend).  
+**Performance Goals**: Message render (including auto-linking) should complete under 200ms on typical hardware for standard-size messages.  
+**Constraints**: No new remote dependencies without justification; maintain strict sanitizer integration to avoid XSS.  
+**Scale/Scope**: Designed for ChatGPT export-sized messages; no changes to large-batch server processing are required.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [x] **Client-Side Only**: Uses ONLY HTML + vanilla JavaScript, no backend/server components.
-- [x] **No Database Integration**: Reads from local files only, no database connections.
-- [x] **Minimal Dependencies**: Avoids frameworks/libraries; uses in-house utilities only.
-- [x] **Test Coverage**: Tests are or will be written BEFORE/ALONGSIDE implementation; mandatory.
-- [x] **File-Based Data**: Uses static files; format documented in spec and tests.
+- [x] **Client-Side Only**: Feature uses ONLY HTML + vanilla JavaScript, no backend/server components.
+- [x] **No Database Integration**: Feature reads from local files only, no database connections.
+- [x] **Minimal Dependencies**: Feature avoids external frameworks; a small vendored auto-link helper is allowed if justified.
+- [x] **Test Coverage**: Tests will be added for auto-linking and sanitization before implementation.
+- [x] **File-Based Data**: No additional file formats; uses existing message JSON.
 - [x] **Browser Compatibility**: Uses standard Web APIs compatible with modern browsers.
-- [x] **UI & Branding**: Respects responsive constraints; branding remains in header.
+- [x] **UI & Branding**: No UI layout changes that violate the constitution; accessible anchors added per WCAG guidance.
 
 **Result**: ✅ PASS
 
@@ -42,46 +38,44 @@ Unknowns: None — scope and security rules are fully specified in spec; no clar
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+specs/001-markdown-messages/
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/
+└── tasks.md (future)
 ```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Source Code (locations to change)
 
 ```text
-# Client-side web application (DEFAULT for this project)
 src/
-├── utils/            # Utility functions (markdown, time)
-├── data/             # Data parsing/normalization
-└── ui/               # UI components (list/detail)
-
-tests/
-└── conversation-browser/  # Unit + integration tests for browser UI and parsing
-
-index.html            # Main entry point
-styles.css            # Styling
-data/                 # Sample/test data files
+├── ui/detailView.js        # integrate auto-linking into rendering pipeline
+├── utils/markdown.js       # update renderMarkdownToSafeHtml or wrapper
+├── utils/sanitizer.js      # ensure sanitizer allows only safe anchors
+└── tests/                  # unit and integration tests
 ```
 
-**Structure Decision**: Client-side application with modular JavaScript organization.
-All code runs in browser; no backend services.
+**Structure Decision**: Implement feature within `src/utils/markdown.js` with small helper in `src/utils/links.js` and add tests under `tests/unit/` and `tests/integration/`.
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+No constitution violations detected; no additional complexity table required.
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+## Phase 0 (Research) deliverables
+
+- `research.md`: confirm auto-link approach (regex vs small vendored lib), sanitizer integration pattern, and accessibility handling for truncation and aria-labels.
+
+## Phase 1 (Design) deliverables
+
+- `data-model.md`: document message entity and renderedHtml expectations.
+- `quickstart.md`: developer steps to run tests and verify behavior locally.
+- `contracts/`: not applicable for client-only feature; create README noting no external APIs.
+
+## Acceptance gates (pre-implementation)
+
+1. `research.md` completed and reviewed.
+2. Unit tests defined for auto-linking behavior in `tests/unit/`.
+3. Integration test created that renders a sample conversation and asserts anchors and rel/target attributes.
+

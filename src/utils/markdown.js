@@ -1,4 +1,5 @@
 // Minimal Markdown to safe HTML renderer
+import { autolinkHtml } from './links.js';
 // Supports: headings, bold, italic, inline code, fenced code blocks, paragraphs, links, UL/OL lists
 // Then sanitizes against an allowlist of tags/attributes
 
@@ -238,13 +239,26 @@ export function renderMarkdownToSafeHtml(markdown) {
   }
   const joined = rendered.join('');
 
+  // Run autolinker to convert plain http(s) text into anchors (data-raw-href)
+  const autolinked = autolinkHtml(joined);
+
   // Convert placeholder links with data-raw-href into real hrefs (before sanitization)
   const linkTmp = document.createElement('div');
-  linkTmp.innerHTML = joined;
+  linkTmp.innerHTML = autolinked;
   linkTmp.querySelectorAll('a[data-raw-href]').forEach(a => {
-    const href = a.getAttribute('data-raw-href') || '';
+    const raw = a.getAttribute('data-raw-href') || '';
     a.removeAttribute('data-raw-href');
-    a.setAttribute('href', href);
+    const href = String(raw).trim();
+    // Enforce allowed schemes early: http(s), mailto, and fragment anchors
+    const allowed = href.startsWith('https://') || href.startsWith('http://') || href.startsWith('mailto:') || href.startsWith('#');
+    if (allowed) {
+      a.setAttribute('href', href);
+      // Pre-set safe navigation attributes; sanitizer will still verify later
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer nofollow');
+    } else {
+      // Do not set href for unsafe schemes; leave as plain text (sanitizer will finalize)
+    }
   });
   const withHrefs = linkTmp.innerHTML;
 
