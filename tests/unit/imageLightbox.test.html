@@ -1,13 +1,66 @@
 <!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Unit tests: imageLightbox (placeholder)</title>
-  <link rel="stylesheet" href="/src/ui/imageLightbox.css" />
-  <script src="/src/ui/imageLightbox.js"></script>
-</head>
-<body>
-  <h1>imageLightbox unit test placeholder</h1>
-  <p>This placeholder is ready for Mocha/Chai tests; project uses in-browser harnesses for now.</p>
-</body>
-</html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>imageLightbox Unit Tests</title>
+    <link rel="stylesheet" href="../../src/ui/imageLightbox.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1rem; }
+      .pass { color: #0a0; }
+      .fail { color: #a00; }
+    </style>
+  </head>
+  <body>
+    <h1>imageLightbox Unit</h1>
+    <div id="results"></div>
+
+    <button id="origin">Origin</button>
+
+    <script type="module" src="../lib/harness.js"></script>
+    <script>
+      // Load utilities and lightbox script (IIFE globals)
+      const scripts = [
+        '../../src/utils/a11y.js',
+        '../../src/utils/mediaResolver.js',
+        '../../src/ui/imageLightbox.js'
+      ];
+      scripts.forEach(src => {
+        const s = document.createElement('script');
+        s.src = src; s.defer = false; document.head.appendChild(s);
+      });
+    </script>
+
+    <script type="module">
+      import { test, assert } from '../lib/harness.js';
+
+      function waitFrames(n=2){
+        return new Promise(r => {
+          let i=0; const step=()=>{ if(++i>=n) r(); else requestAnimationFrame(step); };
+          requestAnimationFrame(step);
+        });
+      }
+
+      await test('open/close API creates and removes overlay', async () => {
+        const origin = document.getElementById('origin');
+        origin.focus();
+        window.imageLightbox.open('data:image/gif;base64,R0lGODlhAQABAAAAACw=', origin);
+        await waitFrames();
+        assert(!!document.querySelector('.image-lightbox'), 'overlay should exist after open');
+        window.imageLightbox.close();
+        await waitFrames();
+        assert(!document.querySelector('.image-lightbox'), 'overlay should be removed after close');
+      });
+
+      await test('focus restore returns to origin element', async () => {
+        const origin = document.getElementById('origin');
+        origin.focus();
+        window.imageLightbox.open('data:image/gif;base64,R0lGODlhAQABAAAAACw=', origin);
+        await waitFrames();
+        window.imageLightbox.close();
+        await waitFrames(3);
+        assert(document.activeElement === origin, 'focus should restore to origin');
+      });
+    </script>
+  </body>
+  </html>

@@ -18,7 +18,7 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 - [x] T001 Create JS module for lightbox UI at `src/ui/imageLightbox.js`
 - [x] T002 Create CSS for lightbox styling at `src/ui/imageLightbox.css`
-- [ ] T003 Create unit test harness for lightbox state at `tests/unit/imageLightbox.test.html`
+ - [x] T003 Create unit test harness for lightbox state at `tests/unit/imageLightbox.test.html`
 - [x] T004 Add integration test page `tests/integration/imageLightbox-integration.html` with sample conversation HTML referencing `data/` images
  - [ ] T031 Add video test asset(s) under `tests/assets/` (e.g., `sample-video.mp4` or `.webm`, small and license-safe) and document path in harness pages
  - [ ] T032 Add audio test asset(s) under `tests/assets/` (e.g., `sample-audio.mp3` or `.ogg`, small and license-safe) and document path in harness pages
@@ -31,11 +31,11 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 3 (US1): Open image in pop-out (Priority P1)
 
-- [ ] T011 [US1] Write unit tests for open/close/focus-restore in `tests/unit/imageLightbox.test.html` (Mocha assertions)
+ - [x] T011 [US1] Write unit tests for open/close/focus-restore in `tests/unit/imageLightbox.test.html` (Mocha assertions)
 - [ ] T008 [US1] Ensure global click binding is initialized and images are marked with `data-lightbox` in renderers (e.g., `src/ui/detailView.js`); calling `imageLightbox.open(src, originElement)` from the global handler
 - [x] T009 [US1] Implement `open(src, originElement)` and `close()` in `src/ui/imageLightbox.js` using state model and a modal DOM container (create markup dynamically)
 - [x] T010 [US1] Implement backdrop click and ESC key handler in `src/ui/imageLightbox.js` to close the modal and restore focus to `originElement`
-- [ ] T012 [US1] Add basic integration test that opens an inline image and verifies overlay and focus restore at `tests/integration/imageLightbox-integration.html`
+ - [x] T012 [US1] Add basic integration test that opens an inline image and verifies overlay and focus restore at `tests/integration/imageLightbox-integration.html`
 
 ## Phase 4 (US2): Zoom & Pan (Priority P1)
 
