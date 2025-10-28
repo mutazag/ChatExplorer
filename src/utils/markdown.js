@@ -1,4 +1,5 @@
 // Minimal Markdown to safe HTML renderer
+import { autolinkHtml } from './links.js';
 // Supports: headings, bold, italic, inline code, fenced code blocks, paragraphs, links, UL/OL lists
 // Then sanitizes against an allowlist of tags/attributes
 
@@ -238,9 +239,12 @@ export function renderMarkdownToSafeHtml(markdown) {
   }
   const joined = rendered.join('');
 
+  // Run autolinker to convert plain http(s) text into anchors (data-raw-href)
+  const autolinked = autolinkHtml(joined);
+
   // Convert placeholder links with data-raw-href into real hrefs (before sanitization)
   const linkTmp = document.createElement('div');
-  linkTmp.innerHTML = joined;
+  linkTmp.innerHTML = autolinked;
   linkTmp.querySelectorAll('a[data-raw-href]').forEach(a => {
     const href = a.getAttribute('data-raw-href') || '';
     a.removeAttribute('data-raw-href');
