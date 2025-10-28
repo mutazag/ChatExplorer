@@ -146,6 +146,3 @@ Notes:
 
 This repository doesn't include a license file by default. Add a `LICENSE` file if you plan to publish or redistribute.
 
----
-
-If you'd like, I can: add a README section showing concrete example asset-pointer → resolved path examples, or add a short troubleshooting section for common issues (CORS when loading local files from static servers, large images, etc.).
