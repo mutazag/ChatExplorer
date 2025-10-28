@@ -1,6 +1,6 @@
-# Tasks: Image pop-out (zoom & pan)
+# Tasks: Media pop-out (images, video, audio)
 
-**Feature**: Image pop-out (spec: ./spec.md)
+**Feature**: Media pop-out — images, video, audio (spec: ./spec.md)
 
 ## Overview
 
@@ -8,9 +8,9 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 -### Summary
 
-- Total tasks: 20
-- User stories: US1 (Open pop-out), US2 (Zoom & Pan)
-- Suggested MVP: implement US1 fully (open/close, accessibility, focus restore) then US2.
+- Total tasks: 30
+- User stories: US1 (Open image), US2 (Zoom & Pan image), US3 (Video pop-out), US4 (Audio pop-out)
+- Suggested MVP: implement US1 fully (open/close, accessibility, focus restore) then US2; follow with US3 (video) and US4 (audio).
 
 ---
 
@@ -58,6 +58,22 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ---
 
+## Phase 6 (US3): Video pop-out (Priority P1)
+
+- [ ] T021 [US3] Extend `src/ui/imageLightbox.js` to support `kind: 'video'` rendering using an HTML5 `<video>` with `controls`, sized proportionally to viewport (preserve intrinsic aspect ratio; default 16:9 when unknown).
+- [ ] T022 [US3] Mark rendered videos in `src/ui/detailView.js` with `data-lightbox="true"` (similar to images); ensure safe URL resolution via `mediaResolver`.
+- [ ] T023 [US3] Add integration test `tests/integration/mediaLightbox-video.html` to verify open/close, proportional sizing, and focus restore.
+- [ ] T024 [US3] Add performance harness `tests/perf/mediaLightbox-video-perf.html` to measure open latency (same SC-001 threshold).
+- [ ] T025 [US3] A11y: Ensure focus trap works with the video element and that Tab order reaches native controls; document keyboard interactions in quickstart.
+
+## Phase 7 (US4): Audio pop-out (Priority P1)
+
+- [ ] T026 [US4] Extend `src/ui/imageLightbox.js` to support `kind: 'audio'` rendering using an HTML5 `<audio>` with `controls` centered; no zoom/pan.
+- [ ] T027 [US4] Mark rendered audios in `src/ui/detailView.js` with `data-lightbox="true"`; ensure safe URL resolution via `mediaResolver`.
+- [ ] T028 [US4] Add integration test `tests/integration/mediaLightbox-audio.html` to verify open/close and focus restore.
+- [ ] T029 [US4] Add minimal perf check in `tests/perf/mediaLightbox-audio-perf.html` (open latency under SC-001 threshold); no interaction metrics required.
+- [ ] T030 [US4] A11y: Verify keyboard accessibility (Tab to controls, Space/Enter to toggle play) and document in quickstart.
+
 ## Dependencies & Execution Order
 
 1. Phase 1 (T001-T004) must run first to provide scaffolding and test harness.
@@ -74,18 +90,22 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Task counts
 
-- Total tasks: 20
+- Total tasks: 30
 - Setup: 4
 - Foundational: 3
 - US1: 5
 - US2: 5
+- US3: 5
+- US4: 5
 - Polish: 1
 - Measurement: 2
 
 ## Independent test criteria (per user story)
 
-- US1 (Open pop-out): Clicking/activating an inline image opens modal, overlay visible, pressing ESC or clicking overlay closes modal and restores focus to origin element.
-- US2 (Zoom & Pan): After opening modal, user can zoom in/out, pan when zoomed, reset to fit-to-viewport; interactions work across mouse, keyboard, and touch in integration tests.
+- US1 (Open image): Clicking/activating an inline image opens modal, overlay visible; ESC/overlay closes modal and restores focus to origin element.
+- US2 (Zoom & Pan image): After opening modal, user can zoom in/out, pan when zoomed, reset to fit-to-viewport; interactions work across mouse, keyboard, and touch.
+- US3 (Video pop-out): Clicking/activating an inline video opens a proportional video player with native controls; ESC/overlay closes and restores focus.
+- US4 (Audio pop-out): Clicking/activating an inline audio opens a centered audio player with native controls; ESC/overlay closes and restores focus.
 
 ## Suggested MVP
 

@@ -1,11 +1,11 @@
-# Implementation Plan: Image pop-out (zoom & pan)
+# Implementation Plan: Media pop-out — images (zoom & pan), video, and audio
 
 **Branch**: `001-image-popout` | **Date**: 2025-10-28 | **Spec**: ./spec.md
 **Input**: Feature specification from `/specs/001-image-popout/spec.md`
 
 ## Summary
 
-Provide a client-side, accessible image lightbox for inline images in the conversation browser. The lightbox opens on image activation, fits the image to the viewport, supports zoom and pan interactions (mouse, keyboard, touch), and closes on overlay click or ESC while restoring focus. The feature will be implemented in vanilla JavaScript and CSS with a test-first approach per project constitution.
+Provide a client-side, accessible media lightbox for inline media in the conversation browser. For images, the pop-out supports fit-to-viewport display with zoom and pan. For video, it opens a proportional HTML5 player with native controls (no zoom/pan). For audio, it opens a simple centered audio player with native controls. All pop-outs close on overlay click or ESC and restore focus. Implement in vanilla JavaScript and CSS with a test-first approach per project constitution.
 
 ## Technical Context
 
@@ -14,7 +14,7 @@ Provide a client-side, accessible image lightbox for inline images in the conver
 **Storage**: No persistence required. Uses in-memory state. Media assets are resolved via existing asset-resolution logic (local `data/` or http(s) as allowed by spec).
 **Testing**: Browser-based unit tests (Mocha in-browser) for UI behavior and small Node-based tests for pure logic if needed. Tests must be written first per constitution.
 **Target Platform**: Modern evergreen browsers (Chrome, Edge, Firefox, Safari). Primary development/test environment: latest Chrome on Windows and mobile browsers for touch verification.
-**Project Type**: Client-side web application — UI component and a small module for pan/zoom state.
+**Project Type**: Client-side web application — UI component and small modules for pan/zoom state (images) and generic media handling.
 **Performance Goals**: Initial pop-out render under 300ms on representative hardware for 95% of openings; smooth pan/zoom interactions aiming for 60fps where possible (subject to image decoding costs).
 **Constraints**: No build step preferred; must work from local files and static hosting. Any third-party library requires justification and constitution complexity tracking.
 **Scale/Scope**: UI-only feature; no new backend APIs. Works with typical chat export datasets (images up to ~10MB); large images should be handled by progressive loading or browser-native scaling.
@@ -68,16 +68,17 @@ Decision: Implement a small in-house pan/zoom module (Option A) unless a vetted 
 
 ## Phase 2: Tasks (high-level)
 
-- Write unit tests for lightbox state machine (open/close/zoom/pan/focus restore).
-- Implement lightbox UI and pan/zoom module.
-- Add keyboard and touch handlers; ensure focus trap and aria labels.
-- Add integration tests (in-browser) validating acceptance scenarios.
+- Write unit tests for lightbox state machine (open/close/zoom/pan/focus restore for images; open/close for video/audio).
+- Implement lightbox UI and pan/zoom module (images); extend lightbox to support video/audio players with native controls.
+- Add keyboard and touch handlers; ensure focus trap and aria labels across media types.
+- Add integration tests (in-browser) validating acceptance scenarios (images, video, audio).
 - Cross-browser/manual mobile testing; iterate on performance.
 
 ## Risks & Mitigations
 
-- Large image decoding could block UI: mitigate with progressive rendering and using requestAnimationFrame for transforms.
+- Large media decoding could block UI: mitigate with progressive rendering and using requestAnimationFrame for transforms.
 - Complex gesture conflicts on mobile: mitigate by limiting gesture mapping and testing on representative devices.
+- Video autoplay restrictions: rely on user gesture to start playback; do not auto-play in pop-out.
 
 ## Outputs
 
@@ -85,5 +86,6 @@ Decision: Implement a small in-house pan/zoom module (Option A) unless a vetted 
 - `specs/001-image-popout/data-model.md` (Phase 1)
 - `specs/001-image-popout/quickstart.md` (Phase 1)
 - `specs/001-image-popout/contracts/` (Phase 1 - README)
+ - Updated tests and harness pages for image/video/audio
 
 *** End of plan.md
