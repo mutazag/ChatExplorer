@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ImageLightbox — Perf Harness</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px; }
+    .sample { max-width: 640px; margin-bottom: 16px; }
+    button { padding: 8px 12px; }
+    pre { background:#f6f8fa;padding:12px;border-radius:6px; }
+    .result.pass { color: green; }
+    .result.fail { color: red; }
+  </style>
+</head>
+<body>
+  <h1>ImageLightbox — Performance harness</h1>
+  <p>This page measures the latency from activating an inline image to the lightbox overlay appearing (fit-to-viewport) and reports an average time across several runs.</p>
+
+  <div class="sample">
+    <img id="sampleImage" data-lightbox="true" src="../assets/MagTech%20Transperant.png" alt="Sample" />
+  </div>
+
+  <link rel="stylesheet" href="/src/ui/imageLightbox.css" />
+  <script src="/src/modules/imagePanZoom.js"></script>
+  <script src="/src/ui/imageLightbox.js"></script>
+
+  <button id="runBtn">Run measurement (3 iterations)</button>
+  <div id="out"></div>
+
+  <script>
+    // Configuration
+    const ITERATIONS = 3;
+    const THRESHOLD_MS = 300; // SC-001 threshold
+    const LIGHTBOX_SELECTOR_CANDIDATES = [
+      '.image-lightbox', '.lightbox', '#imageLightbox', '.lightbox-overlay', '.image-lightbox__container'
+    ];
+
+    function findLightbox() {
+      for (const s of LIGHTBOX_SELECTOR_CANDIDATES) {
+        const el = document.querySelector(s);
+        if (el) return el;
+      }
+      return null;
+    }
+
+    function waitForLightbox(timeout = 2000) {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        const t0 = setInterval(() => {
+          const lb = findLightbox();
+          if (lb) {
+            clearInterval(t0);
+            resolve({ found: true, time: performance.now() - start, el: lb });
+          }
+        }, 16);
+        setTimeout(() => {
+          clearInterval(t0);
+          resolve({ found: false, time: null, el: null });
+        }, timeout);
+      });
+    }
+
+    async function closeLightboxIfPresent() {
+      const lb = findLightbox();
+      if (!lb) return;
+      // Try common close patterns
+      const closeBtn = lb.querySelector('[data-lightbox-close], .close, .lightbox-close');
+      if (closeBtn) { closeBtn.click(); return; }
+      // Try overlay click
+      if (lb.classList.contains('lightbox-overlay') || lb.classList.contains('image-lightbox')) {
+        lb.click();
+        return;
+      }
+      // Try ESC keyboard
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      // As a last resort, remove the element (non-invasive for tests)
+      setTimeout(() => { const el = findLightbox(); if (el) el.remove(); }, 200);
+    }
+
+    async function measureOnce() {
+      // Trigger activation by clicking the sample image
+      const img = document.getElementById('sampleImage');
+      const t0 = performance.now();
+      img.click();
+      const res = await waitForLightbox(2000);
+      if (!res.found) return { success: false };
+      const latency = res.time;
+      // close
+      await closeLightboxIfPresent();
+      return { success: true, latency };
+    }
+
+    document.getElementById('runBtn').addEventListener('click', async () => {
+      const out = document.getElementById('out');
+      out.innerHTML = '<p>Running...</p>';
+      const results = [];
+      for (let i = 0; i < ITERATIONS; ++i) {
+        // slight delay between runs
+        await new Promise(r => setTimeout(r, 250));
+        const r = await measureOnce();
+        results.push(r);
+        out.innerHTML += `<div>Run ${i+1}: ${r.success ? r.latency.toFixed(1)+'ms' : '<span class="result fail">no lightbox detected</span>'}</div>`;
+      }
+
+      const successful = results.filter(r => r.success);
+      if (successful.length === 0) {
+        out.innerHTML += '<p class="result fail">FAIL: No lightbox behavior detected. Ensure the project lightbox is loaded and selectors are standard.</p>';
+        return;
+      }
+      const avg = successful.reduce((s, r) => s + r.latency, 0) / successful.length;
+      const pass = avg <= THRESHOLD_MS;
+      out.innerHTML += `<p>Average latency: <strong>${avg.toFixed(1)}ms</strong> — ${pass ? '<span class="result pass">PASS</span>' : '<span class="result fail">FAIL</span>'} (threshold ${THRESHOLD_MS}ms)</p>`;
+      out.innerHTML += `<pre>Details: ${JSON.stringify(results, null, 2)}</pre>`;
+    });
+
+    // If the project's lightbox isn't wired to the sample image, provide instructions
+    document.addEventListener('DOMContentLoaded', () => {
+      const info = document.createElement('div');
+      info.innerHTML = '<p>If clicking the sample image does not open the project lightbox, ensure the project code binds activation handlers to inline images (see `src/ui/inlineMedia.js` in tasks). This harness triggers a native click on the image element.</p>';
+      document.body.insertBefore(info, document.getElementById('runBtn'));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>mediaLightbox Audio Integration</title>
+    <link rel="stylesheet" href="../../src/ui/imageLightbox.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1rem; }
+      .pass { color: #0a0; }
+      .fail { color: #a00; }
+      #fixture { margin-top: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>mediaLightbox Audio Integration</h1>
+    <div id="results"></div>
+
+    <div id="fixture">
+      <button id="before">Before</button>
+      <audio id="aud" data-lightbox="true" controls preload="none">
+        <source src="../assets/sample-audio.mp3" type="audio/mpeg" />
+      </audio>
+      <button id="after">After</button>
+    </div>
+
+    <script type="module" src="../lib/harness.js"></script>
+    <script>
+      const scripts = [
+        '../../src/utils/a11y.js',
+        '../../src/utils/mediaResolver.js',
+        '../../src/ui/imageLightbox.js'
+      ];
+      scripts.forEach(src => { const s = document.createElement('script'); s.src = src; s.defer = false; document.head.appendChild(s); });
+    </script>
+
+    <script type="module">
+      import { test, assert } from '../lib/harness.js';
+      const next = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+
+      await test('opens overlay on audio click', async () => {
+        const el = document.getElementById('aud');
+        el.focus();
+        el.click();
+        await next();
+        const overlay = document.querySelector('.image-lightbox');
+        assert(!!overlay, 'overlay should exist after click');
+        const inside = overlay.querySelector('.image-lightbox__audio');
+        assert(!!inside, 'audio element should be rendered inside overlay');
+      });
+
+      await test('ESC closes and restores focus to audio', async () => {
+        const el = document.getElementById('aud');
+        el.focus(); el.click();
+        await next();
+        const overlay = document.querySelector('.image-lightbox');
+        assert(!!overlay, 'overlay should exist before closing');
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await next();
+        assert(!document.querySelector('.image-lightbox'), 'overlay removed after ESC');
+        assert(document.activeElement === el, 'focus restored to triggering audio');
+      });
+    </script>
+  </body>
+</html>

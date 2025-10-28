@@ -9,3 +9,18 @@ Thumbs.db
 *.log
 *.tmp
 *.swp
+
+# Node.js/JavaScript
+node_modules/
+dist/
+build/
+coverage/
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+.env*
+
+# Generated artifacts
+*.min.js
+*.map

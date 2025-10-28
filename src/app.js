@@ -10,6 +10,13 @@ import { on, getState, setConversations, setSelection, setPage, setSelectedDatas
 import { initThemeToggle, initPaneToggle } from './ui/controls.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
 
+// Side-effect imports to enable the image lightbox feature across the app
+import './utils/a11y.js';
+import './utils/mediaResolver.js';
+import './modules/imageLightboxState.js';
+import './modules/imagePanZoom.js';
+import './ui/imageLightbox.js';
+
 const left = document.getElementById('left');
 const right = document.getElementById('right');
 const btnPick = document.getElementById('btn-pick');

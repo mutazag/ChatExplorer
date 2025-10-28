@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>mediaLightbox Video Integration</title>
+    <link rel="stylesheet" href="../../src/ui/imageLightbox.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1rem; }
+      .pass { color: #0a0; }
+      .fail { color: #a00; }
+      #fixture { margin-top: 1rem; }
+      #fixture video { max-width: 360px; cursor: zoom-in; }
+    </style>
+  </head>
+  <body>
+    <h1>mediaLightbox Video Integration</h1>
+    <div id="results"></div>
+
+    <div id="fixture">
+      <button id="before">Before</button>
+      <video id="vid" data-lightbox="true" controls preload="none">
+        <source src="../assets/sample-video.mp4" type="video/mp4" />
+      </video>
+      <button id="after">After</button>
+    </div>
+
+    <script type="module" src="../lib/harness.js"></script>
+    <script>
+      // Load utilities and lightbox script (IIFE globals)
+      const scripts = [
+        '../../src/utils/a11y.js',
+        '../../src/utils/mediaResolver.js',
+        '../../src/ui/imageLightbox.js'
+      ];
+      scripts.forEach(src => {
+        const s = document.createElement('script');
+        s.src = src; s.defer = false; document.head.appendChild(s);
+      });
+    </script>
+
+    <script type="module">
+      import { test, assert } from '../lib/harness.js';
+
+      function waitNextFrame() {
+        return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      }
+
+      await test('opens overlay on video click', async () => {
+        const el = document.getElementById('vid');
+        el.focus();
+        el.click();
+        await waitNextFrame();
+        const overlay = document.querySelector('.image-lightbox');
+        assert(!!overlay, 'overlay should exist after click');
+        const inside = overlay.querySelector('.image-lightbox__video');
+        assert(!!inside, 'video element should be rendered inside overlay');
+      });
+
+      await test('ESC closes and restores focus to video', async () => {
+        const el = document.getElementById('vid');
+        // Open
+        el.focus();
+        el.click();
+        await waitNextFrame();
+        const overlay = document.querySelector('.image-lightbox');
+        assert(!!overlay, 'overlay should exist before closing');
+        // Send ESC
+        const evt = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+        document.dispatchEvent(evt);
+        await waitNextFrame();
+        const overlayGone = !document.querySelector('.image-lightbox');
+        assert(overlayGone, 'overlay should be removed after ESC');
+        assert(document.activeElement === el, 'focus should return to the triggering video');
+      });
+    </script>
+  </body>
+</html>

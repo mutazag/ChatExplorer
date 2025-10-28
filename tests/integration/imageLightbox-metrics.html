@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ImageLightbox — Interaction Metrics</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px; }
+    .sample { max-width: 640px; margin-bottom: 16px; }
+    button { padding: 8px 12px; }
+    pre { background:#f6f8fa;padding:12px;border-radius:6px; }
+    .result.pass { color: green; }
+    .result.fail { color: red; }
+  </style>
+</head>
+<body>
+  <h1>ImageLightbox — Interaction metrics</h1>
+  <p>Integration checks: zoom (wheel) causes a scale transform, pan updates transform translation, and ESC closes the lightbox and restores focus.</p>
+
+  <div class="sample">
+    <img id="sampleImage" data-lightbox="true" src="../assets/MagTech%20Transperant.png" alt="Sample" />
+  </div>
+
+  <link rel="stylesheet" href="/src/ui/imageLightbox.css" />
+  <script src="/src/modules/imagePanZoom.js"></script>
+  <script src="/src/ui/imageLightbox.js"></script>
+
+  <button id="runBtn">Run interaction checks</button>
+  <div id="out"></div>
+
+  <script>
+    const LIGHTBOX_SELECTOR_CANDIDATES = ['.image-lightbox img','img.image-lightbox__img','.lightbox img','#imageLightbox img','.image-lightbox img'];
+
+    function findLightboxImage() {
+      for (const s of LIGHTBOX_SELECTOR_CANDIDATES) {
+        const el = document.querySelector(s);
+        if (el) return el;
+      }
+      return null;
+    }
+
+    async function openLightbox() {
+      const img = document.getElementById('sampleImage');
+      img.click();
+      // wait for lightbox image
+      for (let i=0;i<60;i++){
+        const lbImg = findLightboxImage();
+        if (lbImg) return lbImg;
+        await new Promise(r=>setTimeout(r, 50));
+      }
+      return null;
+    }
+
+    async function closeLightboxIfPresent() {
+      // Try ESC
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      await new Promise(r=>setTimeout(r,200));
+      // remove overlay as last resort
+      const overlay = document.querySelector('.lightbox, .image-lightbox, .lightbox-overlay, #imageLightbox');
+      if (overlay) overlay.remove();
+    }
+
+    document.getElementById('runBtn').addEventListener('click', async () => {
+      const out = document.getElementById('out'); out.innerHTML = '<p>Running...</p>';
+      const origin = document.getElementById('sampleImage'); origin.focus();
+      const lbImg = await openLightbox();
+      if (!lbImg) { out.innerHTML += '<p class="result fail">FAIL: lightbox image not found after open.</p>'; return; }
+      out.innerHTML += '<div>Lightbox opened and image found.</div>';
+
+      // 1) Wheel zoom: dispatch a wheel event
+      const rect = lbImg.getBoundingClientRect();
+      const wheelEvent = new WheelEvent('wheel', { deltaY: -100, clientX: rect.left + rect.width/2, clientY: rect.top + rect.height/2, bubbles: true });
+      lbImg.dispatchEvent(wheelEvent);
+      await new Promise(r=>setTimeout(r,200));
+
+      const style = window.getComputedStyle(lbImg);
+      let transform = style.transform || style.getPropertyValue('transform');
+      let scaled = /matrix\(|scale\(/.test(transform);
+      out.innerHTML += `<div>Transform after wheel: <pre>${transform}</pre></div>`;
+      out.innerHTML += `<div>${scaled ? '<span class="result pass">PASS</span> wheel caused transform' : '<span class="result fail">FAIL</span> no scale transform detected'}</div>`;
+
+      // If wheel didn't work, try clicking the zoom-in control (graceful fallback for tests)
+      if (!scaled) {
+        out.innerHTML += '<div>Attempting fallback: click zoom-in control</div>';
+        const ctrl = document.querySelector('.image-lightbox__controls button[data-zoom="in"]');
+        if (ctrl) {
+          ctrl.click();
+          await new Promise(r=>setTimeout(r,150));
+          const style2 = window.getComputedStyle(lbImg);
+          transform = style2.transform || style2.getPropertyValue('transform');
+          scaled = /matrix\(|scale\(/.test(transform);
+          out.innerHTML += `<div>Transform after control click: <pre>${transform}</pre></div>`;
+          out.innerHTML += `<div>${scaled ? '<span class="result pass">PASS</span> control caused transform' : '<span class="result fail">FAIL</span> control did not change transform'}</div>`;
+        } else {
+          out.innerHTML += '<div class="result fail">No zoom controls found</div>';
+        }
+      }
+
+      // 2) Simulate pan by dispatching pointer events (if supported)
+      let panSuccess = false;
+      try {
+        const startX = rect.left + rect.width/2;
+        const startY = rect.top + rect.height/2;
+        lbImg.dispatchEvent(new PointerEvent('pointerdown', { clientX: startX, clientY: startY, bubbles: true }));
+        lbImg.dispatchEvent(new PointerEvent('pointermove', { clientX: startX + 20, clientY: startY + 10, bubbles: true }));
+        lbImg.dispatchEvent(new PointerEvent('pointerup', { clientX: startX + 20, clientY: startY + 10, bubbles: true }));
+        await new Promise(r=>setTimeout(r,150));
+        const style2 = window.getComputedStyle(lbImg);
+        const transform2 = style2.transform || style2.getPropertyValue('transform');
+        panSuccess = /translate\(|matrix\(/.test(transform2) && transform2 !== transform;
+        out.innerHTML += `<div>Transform after pan attempt: <pre>${transform2}</pre></div>`;
+        out.innerHTML += `<div>${panSuccess ? '<span class="result pass">PASS</span> pan changed transform' : '<span class="result fail">FAIL</span> no pan change detected'}</div>`;
+      } catch (e) {
+        out.innerHTML += `<div class="result fail">Pan simulation error: ${e.message}</div>`;
+      }
+
+      // 3) ESC closes and focus restored
+      const preFocus = document.activeElement;
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      await new Promise(r=>setTimeout(r,200));
+      const lbAfter = findLightboxImage();
+      const closed = !lbAfter;
+      const finalFocus = document.activeElement;
+      const focusRestored = finalFocus === origin || (preFocus && preFocus === origin) || origin.contains(finalFocus);
+      out.innerHTML += `<div>ESC closed: ${closed ? '<span class="result pass">PASS</span>' : '<span class="result fail">FAIL</span>'}</div>`;
+      out.innerHTML += `<div>Focus restored to origin: ${focusRestored ? '<span class="result pass">PASS</span>' : '<span class="result fail">FAIL</span>'}</div>`;
+
+      // cleanup
+      await closeLightboxIfPresent();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const info = document.createElement('div');
+      info.innerHTML = '<p>Notes: This harness triggers native click/wheel/pointer events on the lightbox image and inspects computed CSS transform to judge zoom/pan. If your implementation uses different DOM structure or custom event APIs, adapt the selector lists above.</p>';
+      document.body.insertBefore(info, document.getElementById('runBtn'));
+    });
+  </script>
+</body>
+</html>
