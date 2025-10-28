@@ -79,6 +79,7 @@
       try {
         const pz = window.imagePanZoom.create(img);
         pz.attach && pz.attach();
+        console && console.debug && console.debug('[imageLightbox] panZoom attached');
         overlay._panZoom = pz;
         // detach on cleanup
         const prevCleanup = overlay._cleanup;
@@ -90,6 +91,22 @@
         // ignore
       }
     }
+
+    // Also listen for wheel events on overlay in case dispatching targets the overlay
+    function overlayWheel(e) {
+      try {
+        if (overlay._panZoom) {
+          overlay._panZoom.setScale(overlay._panZoom.scale + (e.deltaY > 0 ? -0.1 : 0.1), e.clientX, e.clientY);
+          e.preventDefault();
+        }
+      } catch (err) {}
+    }
+    overlay.addEventListener('wheel', overlayWheel, { passive: false });
+    const prevCleanup2 = overlay._cleanup;
+    overlay._cleanup = () => {
+      overlay.removeEventListener('wheel', overlayWheel);
+      prevCleanup2 && prevCleanup2();
+    };
   }
 
   function closeOverlay(overlay, origin) {
