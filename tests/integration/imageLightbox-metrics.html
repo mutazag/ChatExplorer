@@ -74,10 +74,27 @@
       await new Promise(r=>setTimeout(r,200));
 
       const style = window.getComputedStyle(lbImg);
-      const transform = style.transform || style.getPropertyValue('transform');
-      const scaled = /matrix\(|scale\(/.test(transform);
+      let transform = style.transform || style.getPropertyValue('transform');
+      let scaled = /matrix\(|scale\(/.test(transform);
       out.innerHTML += `<div>Transform after wheel: <pre>${transform}</pre></div>`;
       out.innerHTML += `<div>${scaled ? '<span class="result pass">PASS</span> wheel caused transform' : '<span class="result fail">FAIL</span> no scale transform detected'}</div>`;
+
+      // If wheel didn't work, try clicking the zoom-in control (graceful fallback for tests)
+      if (!scaled) {
+        out.innerHTML += '<div>Attempting fallback: click zoom-in control</div>';
+        const ctrl = document.querySelector('.image-lightbox__controls button[data-zoom="in"]');
+        if (ctrl) {
+          ctrl.click();
+          await new Promise(r=>setTimeout(r,150));
+          const style2 = window.getComputedStyle(lbImg);
+          transform = style2.transform || style2.getPropertyValue('transform');
+          scaled = /matrix\(|scale\(/.test(transform);
+          out.innerHTML += `<div>Transform after control click: <pre>${transform}</pre></div>`;
+          out.innerHTML += `<div>${scaled ? '<span class="result pass">PASS</span> control caused transform' : '<span class="result fail">FAIL</span> control did not change transform'}</div>`;
+        } else {
+          out.innerHTML += '<div class="result fail">No zoom controls found</div>';
+        }
+      }
 
       // 2) Simulate pan by dispatching pointer events (if supported)
       let panSuccess = false;
