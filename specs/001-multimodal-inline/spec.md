@@ -1,8 +1,8 @@
 # Feature Specification: Inline display of multimodal message content
 
-**Feature Branch**: `001-multimodal-inline`  
-**Created**: 2025-10-25  
-**Status**: Draft  
+**Feature Branch**: `001-multimodal-inline`
+**Created**: 2025-10-25
+**Status**: Draft
 **Input**: User description: "if content message in conversation browser is multimodal, the image or multimedia item should also be displayed in the conversation browser inline in the conversation thread"
 
 ## Clarifications
@@ -116,7 +116,7 @@ Acceptance Scenarios:
 - FR-014: For `video_container_asset_pointer` and related video parts, the system MUST search within `.../<conversation_id>/video/` for files whose basenames start with the `asset_pointer` ID (prefix match) and attach them as video media.
 - FR-015: If multiple matches exist, the system MUST choose deterministically (shortest basename; then lexicographically) and record the selected path.
 - FR-016: If no local file is found for a pointer, the system MUST degrade to a labeled download link using the pointer ID and declared type.
-  
+
   **Implementation notes moved to**: `specs/001-multimodal-inline/implementation-notes.md` (technical details and examples)
 ### Key Entities
 
