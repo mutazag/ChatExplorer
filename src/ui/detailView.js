@@ -155,6 +155,8 @@ function renderMediaItems(mediaList) {
     };
     if (kind === 'image') {
       if (safe) {
+        const wrap = document.createElement('span');
+        wrap.className = 'media-with-expand';
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.decoding = 'async';
@@ -164,9 +166,20 @@ function renderMediaItems(mediaList) {
         img.setAttribute('data-lightbox', 'true');
         img.onerror = () => {
           const node = fallback('Media failed to load.');
-          img.replaceWith(node);
+          wrap.replaceWith(node);
         };
-        container.appendChild(img);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'media-expand-btn';
+        btn.setAttribute('aria-label', 'Expand image');
+        btn.textContent = '⤢';
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault(); ev.stopPropagation();
+          try { window.imageLightbox && window.imageLightbox.open(img.src, img); } catch {}
+        });
+        wrap.appendChild(img);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
         added++;
       } else {
         container.appendChild(fallback('Media failed to load.'));
@@ -174,6 +187,8 @@ function renderMediaItems(mediaList) {
       }
     } else if (kind === 'audio') {
       if (safe) {
+        const wrap = document.createElement('span');
+        wrap.className = 'media-with-expand';
         const audio = document.createElement('audio');
         audio.controls = true;
         audio.setAttribute('aria-label', (item.alt || 'Audio') + (item.role ? ` from ${item.role}` : ''));
@@ -183,7 +198,21 @@ function renderMediaItems(mediaList) {
         audio.appendChild(source);
         // Enable lightbox pop-out on click
         audio.setAttribute('data-lightbox', 'true');
-        container.appendChild(audio);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'media-expand-btn';
+        btn.setAttribute('aria-label', 'Expand audio');
+        btn.textContent = '⤢';
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault(); ev.stopPropagation();
+          try {
+            const src2 = audio.currentSrc || (audio.querySelector('source')?.src) || audio.src;
+            window.imageLightbox && window.imageLightbox.openMedia({ kind: 'audio', src: src2 }, audio);
+          } catch {}
+        });
+        wrap.appendChild(audio);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
         added++;
       } else {
         container.appendChild(fallback('Media failed to load.'));
@@ -191,6 +220,8 @@ function renderMediaItems(mediaList) {
       }
     } else if (kind === 'video') {
       if (safe) {
+        const wrap = document.createElement('span');
+        wrap.className = 'media-with-expand';
         const video = document.createElement('video');
         video.controls = true;
         video.playsInline = true;
@@ -201,7 +232,21 @@ function renderMediaItems(mediaList) {
         video.appendChild(source);
         // Enable lightbox pop-out on click
         video.setAttribute('data-lightbox', 'true');
-        container.appendChild(video);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'media-expand-btn';
+        btn.setAttribute('aria-label', 'Expand video');
+        btn.textContent = '⤢';
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault(); ev.stopPropagation();
+          try {
+            const src2 = video.currentSrc || (video.querySelector('source')?.src) || video.src;
+            window.imageLightbox && window.imageLightbox.openMedia({ kind: 'video', src: src2 }, video);
+          } catch {}
+        });
+        wrap.appendChild(video);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
         added++;
       } else {
         container.appendChild(fallback('Media failed to load.'));

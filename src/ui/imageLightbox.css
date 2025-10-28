@@ -61,3 +61,36 @@
 .image-lightbox__audio {
   width: 100%;
 }
+
+/* Inline media affordance: expand button */
+.media-with-expand {
+  position: relative;
+  display: inline-block;
+}
+.media-with-expand .media-expand-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.25);
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  font-size: 14px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 120ms ease-in-out, transform 120ms ease-in-out;
+}
+.media-with-expand:hover .media-expand-btn,
+.media-with-expand:focus-within .media-expand-btn {
+  opacity: 1;
+}
+@media (hover: none) {
+  .media-with-expand .media-expand-btn { opacity: 0.6; }
+}
+.media-with-expand .media-expand-btn:active { transform: translateY(1px); }
