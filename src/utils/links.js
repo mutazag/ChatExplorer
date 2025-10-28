@@ -1,6 +1,7 @@
 // Conservative autolinker that converts plain http(s) URLs in HTML fragments
 // into anchor elements with data-raw-href attribute. It avoids converting
 // text inside A, CODE, PRE elements.
+import { normalizeUrl, truncateForDisplay } from './url.js';
 
 export function autolinkHtml(html) {
   if (!html) return '';
@@ -23,8 +24,14 @@ export function autolinkHtml(html) {
         const before = text.slice(lastIndex, match.index);
         if (before) frag.appendChild(document.createTextNode(before));
         const a = document.createElement('a');
-        a.setAttribute('data-raw-href', url);
-        a.textContent = url;
+        // Normalize URL for safe storage and set data-raw-href; sanitizer will enforce allowed schemes
+        const norm = normalizeUrl(url);
+        a.setAttribute('data-raw-href', norm);
+        // Truncate visible text for long URLs but keep full URL in title and aria-label
+        const display = truncateForDisplay(url, 80);
+        a.textContent = display;
+        a.setAttribute('title', norm);
+        a.setAttribute('aria-label', norm);
         frag.appendChild(a);
         lastIndex = urlRe.lastIndex;
       }
