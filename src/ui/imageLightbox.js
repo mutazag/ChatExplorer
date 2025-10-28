@@ -77,16 +77,19 @@
     // Attach pan/zoom if available
     if (window.imagePanZoom && typeof window.imagePanZoom.create === 'function') {
       try {
-        const pz = window.imagePanZoom.create(img);
-        pz.attach && pz.attach();
-        console && console.debug && console.debug('[imageLightbox] panZoom attached');
-        overlay._panZoom = pz;
-        // detach on cleanup
-        const prevCleanup = overlay._cleanup;
-        overlay._cleanup = () => {
-          try { pz.detach && pz.detach(); } catch (e) {}
-          prevCleanup && prevCleanup();
-        };
+        const imgEl = overlay.querySelector('.' + IMG_CLASS);
+        if (imgEl) {
+          const pz = window.imagePanZoom.create(imgEl);
+          pz.attach && pz.attach();
+          if (console && console.log) console.log('[imageLightbox] panZoom attached');
+          overlay._panZoom = pz;
+          // detach on cleanup
+          const prevCleanup = overlay._cleanup;
+          overlay._cleanup = () => {
+            try { pz.detach && pz.detach(); } catch (e) {}
+            prevCleanup && prevCleanup();
+          };
+        }
       } catch (e) {
         // ignore
       }
