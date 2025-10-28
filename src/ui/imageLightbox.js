@@ -270,6 +270,39 @@
     }
   });
 
+  // Capture-phase pointerdown to reliably open lightbox before native media controls handle the event
+  function getLightboxTargetFromEvent(e){
+    try {
+      const path = typeof e.composedPath === 'function' ? e.composedPath() : null;
+      const check = (node) => node && node.nodeType === 1 && (node.matches('img[data-lightbox], video[data-lightbox], audio[data-lightbox]')) ? node : null;
+      if (Array.isArray(path)) {
+        for (const node of path) {
+          const m = check(node);
+          if (m) return m;
+        }
+      }
+      // Fallback to target/closest
+      const t = e.target && e.target.closest && e.target.closest('img[data-lightbox], video[data-lightbox], audio[data-lightbox]');
+      return t || null;
+    } catch { return null; }
+  }
+  document.addEventListener('pointerdown', (e) => {
+    const target = getLightboxTargetFromEvent(e);
+    if (!target) return;
+    // Intercept to open overlay
+    e.preventDefault();
+    e.stopPropagation();
+    if (target.tagName === 'IMG') {
+      window.imageLightbox.open(target.src, target);
+    } else if (target.tagName === 'VIDEO') {
+      const src = target.currentSrc || (target.querySelector('source')?.src) || target.src;
+      window.imageLightbox.openMedia({ kind: 'video', src }, target);
+    } else if (target.tagName === 'AUDIO') {
+      const src = target.currentSrc || (target.querySelector('source')?.src) || target.src;
+      window.imageLightbox.openMedia({ kind: 'audio', src }, target);
+    }
+  }, true);
+
   // Keyboard activation for media with data-lightbox (Enter/Space)
   document.addEventListener('keydown', (e) => {
     const el = e.target;
