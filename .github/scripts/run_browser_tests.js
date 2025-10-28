@@ -15,7 +15,8 @@ const puppeteer = require('puppeteer');
     // Wait briefly for harness to run tests and render results
     await page.waitForSelector('#results', { timeout: 10000 });
     // give harness time to append results
-    await page.waitForTimeout(1000);
+    // page.waitForTimeout may not exist in all Puppeteer versions; use a plain sleep
+    await new Promise((res) => setTimeout(res, 1000));
 
     const report = await page.evaluate(() => {
       const out = [];
