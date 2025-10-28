@@ -42,15 +42,15 @@ export function renderDetail(host, conversation) {
     }
     const label = document.createElement('span');
     label.textContent = roleName + ':';
-    // For user messages, reverse DOM order so that with right-aligned/row-reverse styles
-    // it visually appears as: <icon> User:
-    // if (roleName === 'user') {
-    //   header.appendChild(label);
-    //   header.appendChild(icon);
-    // } else {
+    // For user messages we append the label first and then the icon. With
+    // right-aligned styles this produces the visual order: <icon> User:
+    if (roleName === 'user') {
+      header.appendChild(label);
+      header.appendChild(icon);
+    } else {
       header.appendChild(icon);
       header.appendChild(label);
-    // }
+    }
 
     // Bubble: sanitized markdown
     const bubble = document.createElement('div');
