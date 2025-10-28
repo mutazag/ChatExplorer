@@ -57,6 +57,7 @@
       } catch (e) {}
       wrap.appendChild(video);
       overlay.appendChild(wrap);
+      overlay._mediaEl = video;
     } else if (kind === 'audio') {
       const wrap = document.createElement('div');
       wrap.className = AUDIO_WRAP_CLASS;
@@ -74,6 +75,7 @@
       } catch (e) {}
       wrap.appendChild(audio);
       overlay.appendChild(wrap);
+      overlay._mediaEl = audio;
     }
 
     // Close when clicking overlay (but not when clicking image)
@@ -132,7 +134,12 @@
     if (document.querySelector('.' + 'image-lightbox')) return;
     const overlay = createOverlayFor(kind, src, origin);
     document.body.appendChild(overlay);
-    overlay.focus();
+    // Focus media for video/audio so Space/Enter work with native controls; overlay for image
+    if ((kind === 'video' || kind === 'audio') && overlay._mediaEl && typeof overlay._mediaEl.focus === 'function') {
+      overlay._mediaEl.focus();
+    } else {
+      overlay.focus();
+    }
     // store last focused element to restore
     overlay._origin = origin || document.activeElement;
 
@@ -254,6 +261,28 @@
     } else if (tag === 'VIDEO') {
       e.preventDefault();
       // Prefer first source src if present
+      const src = el.currentSrc || (el.querySelector('source')?.src) || el.src;
+      window.imageLightbox.openMedia({ kind: 'video', src }, el);
+    } else if (tag === 'AUDIO') {
+      e.preventDefault();
+      const src = el.currentSrc || (el.querySelector('source')?.src) || el.src;
+      window.imageLightbox.openMedia({ kind: 'audio', src }, el);
+    }
+  });
+
+  // Keyboard activation for media with data-lightbox (Enter/Space)
+  document.addEventListener('keydown', (e) => {
+    const el = e.target;
+    if (!el) return;
+    const isActivateKey = (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar');
+    if (!isActivateKey) return;
+    if (!(el.dataset && (el.dataset.lightbox !== undefined || el.hasAttribute && el.hasAttribute('data-lightbox')))) return;
+    const tag = el.tagName;
+    if (tag === 'IMG') {
+      e.preventDefault();
+      window.imageLightbox.open(el.src, el);
+    } else if (tag === 'VIDEO') {
+      e.preventDefault();
       const src = el.currentSrc || (el.querySelector('source')?.src) || el.src;
       window.imageLightbox.openMedia({ kind: 'video', src }, el);
     } else if (tag === 'AUDIO') {
