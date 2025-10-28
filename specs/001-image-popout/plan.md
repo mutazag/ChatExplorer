@@ -86,6 +86,13 @@ Decision: Implement a small in-house pan/zoom module (Option A) unless a vetted 
 - `specs/001-image-popout/data-model.md` (Phase 1)
 - `specs/001-image-popout/quickstart.md` (Phase 1)
 - `specs/001-image-popout/contracts/` (Phase 1 - README)
- - Updated tests and harness pages for image/video/audio
+- Updated tests and harness pages for image/video/audio:
+   - `tests/integration/imageLightbox-integration.html`
+   - `tests/integration/imageLightbox-metrics.html`
+   - `tests/integration/mediaLightbox-video.html`
+   - `tests/integration/mediaLightbox-audio.html`
+   - `tests/perf/imageLightbox-perf.html`
+   - `tests/perf/mediaLightbox-video-perf.html`
+   - `tests/perf/mediaLightbox-audio-perf.html`
 
 *** End of plan.md

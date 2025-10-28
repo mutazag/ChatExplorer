@@ -131,7 +131,7 @@ function renderMediaItems(mediaList) {
   for (const item of mediaList) {
     if (!item || !item.src) continue;
     const kind = item.kind || classifyMediaByExtOrMime(item.src, item.mime);
-    // TODO: item.src need to be resolved to correct local path 
+    // TODO: item.src need to be resolved to correct local path
     const src = item.src;
     const safe = isSafeSrc(src);
     const fallback = (message) => {

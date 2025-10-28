@@ -60,7 +60,7 @@
     const self = this;
 
     function onWheel(e) {
-      console && console.debug && console.debug('[imagePanZoom] wheel', e.deltaY);
+      console && console.log && console.log('[imagePanZoom] wheel', e.deltaY);
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       self.setScale(self.scale + delta, e.clientX, e.clientY);
