@@ -160,6 +160,8 @@ function renderMediaItems(mediaList) {
         img.decoding = 'async';
         img.alt = item.alt || deriveAltFromPath(src) || 'Image';
         img.src = src;
+        // Enable lightbox pop-out on click
+        img.setAttribute('data-lightbox', 'true');
         img.onerror = () => {
           const node = fallback('Media failed to load.');
           img.replaceWith(node);
