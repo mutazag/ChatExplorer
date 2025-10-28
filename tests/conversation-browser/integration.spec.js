@@ -15,7 +15,9 @@ test('integration: paging moves through 60 items by 25s', () => {
   renderList(host, data, { page, pageSize: 25, selectedId: null }, { onSelect: () => {}, onPage: (p) => { page = p; } });
   const items2 = host.querySelectorAll('[data-item]');
   assert(items2.length === 25, 'page 2 has 25');
-  next.click(); // to page 3
+  // re-query pager buttons after re-render (previous nodes were replaced)
+  const next2 = host.querySelector('[data-pager-next]');
+  next2.click(); // to page 3
   assert(page === 3, 'moved to page 3');
   renderList(host, data, { page, pageSize: 25, selectedId: null }, { onSelect: () => {}, onPage: (p) => { page = p; } });
   const items3 = host.querySelectorAll('[data-item]');
