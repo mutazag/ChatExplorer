@@ -20,8 +20,8 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 - [x] T002 Create CSS for lightbox styling at `src/ui/imageLightbox.css`
  - [x] T003 Create unit test harness for lightbox state at `tests/unit/imageLightbox.test.html`
 - [x] T004 Add integration test page `tests/integration/imageLightbox-integration.html` with sample conversation HTML referencing `data/` images
- - [ ] T031 Add video test asset(s) under `tests/assets/` (e.g., `sample-video.mp4` or `.webm`, small and license-safe) and document path in harness pages
- - [ ] T032 Add audio test asset(s) under `tests/assets/` (e.g., `sample-audio.mp3` or `.ogg`, small and license-safe) and document path in harness pages
+ - [x] T031 Add video test asset(s) under `tests/assets/` (e.g., `sample-video.mp4` or `.webm`, small and license-safe) and document path in harness pages
+ - [x] T032 Add audio test asset(s) under `tests/assets/` (e.g., `sample-audio.mp3` or `.ogg`, small and license-safe) and document path in harness pages
 
 ## Phase 2: Foundational (blocking prerequisites)
 
@@ -39,16 +39,16 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 4 (US2): Zoom & Pan (Priority P1)
 
-- [ ] T016 [US2] Write unit tests for pan/zoom state transitions in `tests/unit/imagePanZoom.test.js` (or embed in `imageLightbox.test.html`)
+- [x] T016 [US2] Write unit tests for pan/zoom state transitions in `tests/unit/imagePanZoom.test.html` (or embed in `imageLightbox.test.html`)
 - [x] T013 [US2] Implement zoom controls and UI (zoom in/out/reset buttons) in `src/ui/imageLightbox.js` and style in `src/ui/imageLightbox.css`
 - [x] T014 [US2] Implement pan/zoom logic using CSS transforms in `src/modules/imagePanZoom.js` (expose methods: setScale, panBy, reset)
 - [x] T015 [US2] Wire pointer events (pointerdown/move/up), wheel (with sensible modifier), and touch pinch handling to `imagePanZoom` in `src/ui/imageLightbox.js`
-- [ ] T017 [US2] Add integration tests for zoom/pan interactions in `tests/integration/imageLightbox-integration.html` (simulate wheel and pointer events where feasible)
+- [x] T017 [US2] Add integration tests for zoom/pan interactions in `tests/integration/imageLightbox-integration.html` (simulate wheel and pointer events where feasible)
 
 
 ## Final Phase: Polish & Cross-Cutting Concerns
 
-- [ ] T018 Polish: Add keyboard shortcuts (+/- for zoom), aria-labels for controls, and ensure responsive touch sizes in `src/ui/imageLightbox.js` and `src/ui/imageLightbox.css`
+- [x] T018 Polish: Add keyboard shortcuts (+/- for zoom), aria-labels for controls, and ensure responsive touch sizes in `src/ui/imageLightbox.js` and `src/ui/imageLightbox.css`
 
 ## Phase 5: Measurement & Metrics
 
@@ -59,19 +59,19 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 6 (US3): Video pop-out (Priority P1)
 
-- [ ] T021 [US3] Extend `src/ui/imageLightbox.js` to support `kind: 'video'` rendering using an HTML5 `<video>` with `controls`, sized proportionally to viewport (preserve intrinsic aspect ratio; default 16:9 when unknown). Do not auto-play unless initiated by user gesture.
-- [ ] T022 [US3] Mark rendered videos in `src/ui/detailView.js` with `data-lightbox="true"` (similar to images); ensure safe URL resolution via `mediaResolver`.
-- [ ] T023 [US3] Add integration test `tests/integration/mediaLightbox-video.html` to verify open/close, proportional sizing, and focus restore; ensure test video asset from `tests/assets/` is referenced via a relative path.
-- [ ] T024 [US3] Add performance harness `tests/perf/mediaLightbox-video-perf.html` to measure open latency (same SC-001 threshold); ensure test video asset from `tests/assets/` is referenced via a relative path.
-- [ ] T025 [US3] A11y: Ensure focus trap works with the video element and that Tab order reaches native controls; document keyboard interactions in quickstart.
+- [x] T021 [US3] Extend `src/ui/imageLightbox.js` to support `kind: 'video'` rendering using an HTML5 `<video>` with `controls`, sized proportionally to viewport (preserve intrinsic aspect ratio; default 16:9 when unknown). Do not auto-play unless initiated by user gesture.
+- [x] T022 [US3] Mark rendered videos in `src/ui/detailView.js` with `data-lightbox="true"` (similar to images); ensure safe URL resolution via `mediaResolver`.
+- [x] T023 [US3] Add integration test `tests/integration/mediaLightbox-video.html` to verify open/close, proportional sizing, and focus restore; ensure test video asset from `tests/assets/` is referenced via a relative path.
+- [x] T024 [US3] Add performance harness `tests/perf/mediaLightbox-video-perf.html` to measure open latency (same SC-001 threshold); ensure test video asset from `tests/assets/` is referenced via a relative path.
+- [x] T025 [US3] A11y: Ensure focus trap works with the video element and that Tab order reaches native controls; document keyboard interactions in quickstart.
 
 ## Phase 7 (US4): Audio pop-out (Priority P1)
 
-- [ ] T026 [US4] Extend `src/ui/imageLightbox.js` to support `kind: 'audio'` rendering using an HTML5 `<audio>` with `controls` centered; no zoom/pan. Target a responsive width (e.g., clamp(320px, 60vw, 640px)).
-- [ ] T027 [US4] Mark rendered audios in `src/ui/detailView.js` with `data-lightbox="true"`; ensure safe URL resolution via `mediaResolver`.
-- [ ] T028 [US4] Add integration test `tests/integration/mediaLightbox-audio.html` to verify open/close and focus restore; ensure test audio asset from `tests/assets/` is referenced via a relative path.
-- [ ] T029 [US4] Add minimal perf check in `tests/perf/mediaLightbox-audio-perf.html` (open latency under SC-001 threshold); ensure test audio asset from `tests/assets/` is referenced via a relative path; no interaction metrics required.
-- [ ] T030 [US4] A11y: Verify keyboard accessibility (Tab to controls, Space/Enter to toggle play) and document in quickstart.
+- [x] T026 [US4] Extend `src/ui/imageLightbox.js` to support `kind: 'audio'` rendering using an HTML5 `<audio>` with `controls` centered; no zoom/pan. Target a responsive width (e.g., clamp(320px, 60vw, 640px)).
+- [x] T027 [US4] Mark rendered audios in `src/ui/detailView.js` with `data-lightbox="true"`; ensure safe URL resolution via `mediaResolver`.
+- [x] T028 [US4] Add integration test `tests/integration/mediaLightbox-audio.html` to verify open/close and focus restore; ensure test audio asset from `tests/assets/` is referenced via a relative path.
+- [x] T029 [US4] Add minimal perf check in `tests/perf/mediaLightbox-audio-perf.html` (open latency under SC-001 threshold); ensure test audio asset from `tests/assets/` is referenced via a relative path; no interaction metrics required.
+- [x] T030 [US4] A11y: Verify keyboard accessibility (Tab to controls, Space/Enter to toggle play) and document in quickstart.
 
 ## Dependencies & Execution Order
 

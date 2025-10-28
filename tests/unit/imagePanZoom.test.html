@@ -1,20 +1,60 @@
 <!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Unit tests: imagePanZoom (placeholder)</title>
-  <script src="/src/modules/imagePanZoom.js"></script>
-</head>
-<body>
-  <h1>imagePanZoom unit test placeholder</h1>
-  <p>Manual sanity checks:
-    <ol>
-      <li>Open console and call: <code>pz = imagePanZoom.create(document.querySelector('#timg'));</code></li>
-      <li>Call: <code>pz.setScale(2);</code> and observe CSS transforms on the image.</li>
-      <li>Call: <code>pz.panBy(10,10);</code> and observe transforms.</li>
-      <li>Call: <code>pz.reset();</code></li>
-    </ol>
-  </p>
-  <img id="timg" src="../tests/assets/MagTech%20Transperant.png" alt="test" style="max-width:200px;">
-</body>
-</html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>imagePanZoom Unit Tests</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1rem; }
+      .pass { color: #0a0; }
+      .fail { color: #a00; }
+      #fixture img { max-width: 200px; }
+    </style>
+    <script src="../../src/modules/imagePanZoom.js"></script>
+  </head>
+  <body>
+    <h1>imagePanZoom Unit</h1>
+    <div id="results"></div>
+
+    <div id="fixture">
+      <img id="timg" alt="test" src="../assets/MagTech%20Transperant.png" />
+    </div>
+
+    <script type="module" src="../lib/harness.js"></script>
+    <script type="module">
+      import { test, assert } from '../lib/harness.js';
+
+      function styleTransform(el){ return getComputedStyle(el).transform; }
+      const img = document.getElementById('timg');
+
+      await test('setScale clamps to bounds', async () => {
+        const pz = window.imagePanZoom.create(img);
+        pz.setScale(100); // above max
+        assert(pz.scale <= pz.maxScale, 'scale should clamp to max');
+        pz.setScale(0.01); // below min
+        assert(pz.scale >= pz.minScale, 'scale should clamp to min');
+      });
+
+      await test('panBy updates transform', async () => {
+        const pz = window.imagePanZoom.create(img);
+        const before = styleTransform(img);
+        pz.panBy(10, 5);
+        // Next frame transform should differ
+        await new Promise(r => requestAnimationFrame(r));
+        const after = styleTransform(img);
+        assert(before !== after, 'transform should change after pan');
+      });
+
+      await test('reset returns to identity', async () => {
+        const pz = window.imagePanZoom.create(img);
+        pz.setScale(2); pz.panBy(10, 10);
+        await new Promise(r => requestAnimationFrame(r));
+        pz.reset();
+        await new Promise(r => requestAnimationFrame(r));
+        const t = styleTransform(img);
+        // Browser may represent identity as 'matrix(1, 0, 0, 1, 0, 0)'
+        assert(/matrix\(1, 0, 0, 1, 0, 0\)|none/.test(t), 'reset should return transform to identity');
+      });
+    </script>
+  </body>
+  </html>

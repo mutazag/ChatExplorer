@@ -2,37 +2,79 @@
 (function () {
   const OVERLAY_CLASS = 'image-lightbox';
   const IMG_CLASS = 'image-lightbox__img';
+  const VIDEO_WRAP_CLASS = 'image-lightbox__videoWrap';
+  const VIDEO_CLASS = 'image-lightbox__video';
+  const AUDIO_WRAP_CLASS = 'image-lightbox__audioWrap';
+  const AUDIO_CLASS = 'image-lightbox__audio';
 
-  function createOverlay(src, origin) {
+  function createOverlayFor(kind, src, origin) {
     const overlay = document.createElement('div');
     overlay.className = OVERLAY_CLASS;
     overlay.tabIndex = -1;
     overlay.setAttribute('role', 'dialog');
     if (window.a11y && window.a11y.setAriaLabel) {
-      window.a11y.setAriaLabel(overlay, 'Image preview');
+      const label = kind === 'video' ? 'Video preview' : (kind === 'audio' ? 'Audio preview' : 'Image preview');
+      window.a11y.setAriaLabel(overlay, label);
     } else {
-      overlay.setAttribute('aria-label', 'Image preview');
+      overlay.setAttribute('aria-label', kind === 'video' ? 'Video preview' : (kind === 'audio' ? 'Audio preview' : 'Image preview'));
     }
+    let controls = null;
+    if (kind === 'image') {
+      const img = document.createElement('img');
+      img.className = IMG_CLASS;
+      // Resolve and enforce safe URL schemes
+      try {
+        if (window.mediaResolver && window.mediaResolver.resolveImageSrc) {
+          img.src = window.mediaResolver.resolveImageSrc(src);
+        } else {
+          img.src = src;
+        }
+      } catch (e) { img.src = src; }
+      img.alt = origin && origin.alt ? origin.alt : 'Image preview';
+      overlay.appendChild(img);
 
-    const img = document.createElement('img');
-    img.className = IMG_CLASS;
-    // Resolve and enforce safe URL schemes
-    try {
-      if (window.mediaResolver && window.mediaResolver.resolveImageSrc) {
-        img.src = window.mediaResolver.resolveImageSrc(src);
-      } else {
-        img.src = src;
-      }
-    } catch (e) { img.src = src; }
-    img.alt = origin && origin.alt ? origin.alt : 'Image preview';
-
-    overlay.appendChild(img);
-
-    // Zoom controls
-    const controls = document.createElement('div');
-    controls.className = 'image-lightbox__controls';
-    controls.innerHTML = '<button data-zoom="in" aria-label="Zoom in">+</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="reset" aria-label="Reset zoom">⟳</button>';
-    overlay.appendChild(controls);
+      // Zoom controls
+      controls = document.createElement('div');
+      controls.className = 'image-lightbox__controls';
+      controls.innerHTML = '<button data-zoom="in" aria-label="Zoom in">+</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="reset" aria-label="Reset zoom">⟳</button>';
+      overlay.appendChild(controls);
+    } else if (kind === 'video') {
+      const wrap = document.createElement('div');
+      wrap.className = VIDEO_WRAP_CLASS;
+      const video = document.createElement('video');
+      video.className = VIDEO_CLASS;
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      try {
+        // For now reuse resolver (allowed schemes) for media
+        const url = (window.mediaResolver && window.mediaResolver.resolveImageSrc) ? window.mediaResolver.resolveImageSrc(src) : src;
+        if (url) {
+          const source = document.createElement('source');
+          source.src = url;
+          video.appendChild(source);
+        }
+      } catch (e) {}
+      wrap.appendChild(video);
+      overlay.appendChild(wrap);
+    } else if (kind === 'audio') {
+      const wrap = document.createElement('div');
+      wrap.className = AUDIO_WRAP_CLASS;
+      const audio = document.createElement('audio');
+      audio.className = AUDIO_CLASS;
+      audio.controls = true;
+      audio.preload = 'metadata';
+      try {
+        const url = (window.mediaResolver && window.mediaResolver.resolveImageSrc) ? window.mediaResolver.resolveImageSrc(src) : src;
+        if (url) {
+          const source = document.createElement('source');
+          source.src = url;
+          audio.appendChild(source);
+        }
+      } catch (e) {}
+      wrap.appendChild(audio);
+      overlay.appendChild(wrap);
+    }
 
     // Close when clicking overlay (but not when clicking image)
     overlay.addEventListener('click', (e) => {
@@ -41,16 +83,16 @@
       }
     });
 
-    // ESC to close and +/- for zoom
+    // ESC to close and +/- for zoom (image only)
     function onKey(e) {
       if (e.key === 'Escape') closeOverlay(overlay, origin);
-      if (e.key === '+') {
+      if (kind === 'image' && e.key === '+') {
         if (overlay._panZoom) overlay._panZoom.setScale(overlay._panZoom.scale + 0.1);
       }
-      if (e.key === '-') {
+      if (kind === 'image' && e.key === '-') {
         if (overlay._panZoom) overlay._panZoom.setScale(overlay._panZoom.scale - 0.1);
       }
-      if (e.key === '0') {
+      if (kind === 'image' && e.key === '0') {
         if (overlay._panZoom) overlay._panZoom.reset();
       }
     }
@@ -62,16 +104,18 @@
       document.removeEventListener('keydown', onKey);
     };
 
-    // Wire controls
-    controls.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      const act = btn.dataset.zoom;
-      if (!overlay._panZoom) return;
-      if (act === 'in') overlay._panZoom.setScale(overlay._panZoom.scale + 0.2);
-      if (act === 'out') overlay._panZoom.setScale(overlay._panZoom.scale - 0.2);
-      if (act === 'reset') overlay._panZoom.reset();
-    });
+    // Wire controls (image only)
+    if (kind === 'image' && controls) {
+      controls.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const act = btn.dataset.zoom;
+        if (!overlay._panZoom) return;
+        if (act === 'in') overlay._panZoom.setScale(overlay._panZoom.scale + 0.2);
+        if (act === 'out') overlay._panZoom.setScale(overlay._panZoom.scale - 0.2);
+        if (act === 'reset') overlay._panZoom.reset();
+      });
+    }
 
     // Trap focus within overlay
     if (window.a11y && window.a11y.trapFocus) {
@@ -83,10 +127,10 @@
     return overlay;
   }
 
-  function openOverlay(src, origin) {
+  function openOverlay(kind, src, origin) {
     // avoid duplicates
     if (document.querySelector('.' + 'image-lightbox')) return;
-    const overlay = createOverlay(src, origin);
+    const overlay = createOverlayFor(kind, src, origin);
     document.body.appendChild(overlay);
     overlay.focus();
     // store last focused element to restore
@@ -114,8 +158,8 @@
     }
     overlay._originFocusTarget = overlay._origin;
 
-    // Attach pan/zoom if available
-    if (window.imagePanZoom && typeof window.imagePanZoom.create === 'function') {
+    // Attach pan/zoom for images only
+    if (kind === 'image' && window.imagePanZoom && typeof window.imagePanZoom.create === 'function') {
       try {
         const imgEl = overlay.querySelector('.' + IMG_CLASS);
         if (imgEl) {
@@ -151,10 +195,10 @@
         }
       } catch (err) {}
     }
-    overlay.addEventListener('wheel', overlayWheel, { passive: false });
+    if (kind === 'image') overlay.addEventListener('wheel', overlayWheel, { passive: false });
     const prevCleanup2 = overlay._cleanup;
     overlay._cleanup = () => {
-      overlay.removeEventListener('wheel', overlayWheel);
+      if (kind === 'image') overlay.removeEventListener('wheel', overlayWheel);
       prevCleanup2 && prevCleanup2();
     };
   }
@@ -184,7 +228,13 @@
 
   // Public API
   window.imageLightbox = {
-    open: function (src, origin) { openOverlay(src, origin); },
+    open: function (src, origin) { openOverlay('image', src, origin); },
+    openMedia: function (payload, origin) {
+      // payload: { kind: 'image'|'video'|'audio', src: string }
+      const kind = (payload && payload.kind) || 'image';
+      const src = payload && payload.src;
+      openOverlay(kind, src, origin);
+    },
     close: function () {
       const overlay = document.querySelector('.' + 'image-lightbox');
       if (overlay) closeOverlay(overlay, overlay._origin);
@@ -194,9 +244,22 @@
   // Auto-bind to images with data-lightbox attribute
   document.addEventListener('click', (e) => {
     const el = e.target;
-    if (el && el.tagName === 'IMG' && (el.dataset.lightbox !== undefined || el.hasAttribute('data-lightbox'))) {
+    if (!el) return;
+    const wantsLB = el.dataset.lightbox !== undefined || el.hasAttribute('data-lightbox');
+    if (!wantsLB) return;
+    const tag = el.tagName;
+    if (tag === 'IMG') {
       e.preventDefault();
       window.imageLightbox.open(el.src, el);
+    } else if (tag === 'VIDEO') {
+      e.preventDefault();
+      // Prefer first source src if present
+      const src = el.currentSrc || (el.querySelector('source')?.src) || el.src;
+      window.imageLightbox.openMedia({ kind: 'video', src }, el);
+    } else if (tag === 'AUDIO') {
+      e.preventDefault();
+      const src = el.currentSrc || (el.querySelector('source')?.src) || el.src;
+      window.imageLightbox.openMedia({ kind: 'audio', src }, el);
     }
   });
 

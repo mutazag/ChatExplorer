@@ -31,3 +31,33 @@
   cursor: pointer;
 }
 .image-lightbox__controls button:active { transform: translateY(1px); }
+
+/* Video media in lightbox */
+.image-lightbox__videoWrap {
+  width: min(90vw, 1280px);
+  max-height: 90vh;
+  aspect-ratio: 16 / 9; /* default when metadata unknown */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-lightbox__video {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  border-radius: 4px;
+}
+
+/* Audio media in lightbox */
+.image-lightbox__audioWrap {
+  width: clamp(320px, 60vw, 640px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-lightbox__audio {
+  width: 100%;
+}

@@ -181,6 +181,8 @@ function renderMediaItems(mediaList) {
         source.src = src;
         if (item.mime) source.type = item.mime;
         audio.appendChild(source);
+        // Enable lightbox pop-out on click
+        audio.setAttribute('data-lightbox', 'true');
         container.appendChild(audio);
         added++;
       } else {
@@ -197,6 +199,8 @@ function renderMediaItems(mediaList) {
         source.src = src;
         if (item.mime) source.type = item.mime;
         video.appendChild(source);
+        // Enable lightbox pop-out on click
+        video.setAttribute('data-lightbox', 'true');
         container.appendChild(video);
         added++;
       } else {

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MediaLightbox Video — Perf Harness</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px; }
+    .sample { max-width: 640px; margin-bottom: 16px; }
+    button { padding: 8px 12px; }
+    pre { background:#f6f8fa;padding:12px;border-radius:6px; }
+    .result.pass { color: green; }
+    .result.fail { color: red; }
+  </style>
+</head>
+<body>
+  <h1>MediaLightbox Video — Performance harness</h1>
+  <p>Measures latency from activating an inline video to overlay appearing.</p>
+
+  <div class="sample">
+    <video id="sampleVideo" data-lightbox="true" controls preload="none">
+      <source src="../assets/sample-video.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <link rel="stylesheet" href="/src/ui/imageLightbox.css" />
+  <script src="/src/ui/imageLightbox.js"></script>
+
+  <button id="runBtn">Run measurement (3 iterations)</button>
+  <div id="out"></div>
+
+  <script>
+    const ITERATIONS = 3;
+    const THRESHOLD_MS = 300;
+    const SELECTORS = ['.image-lightbox'];
+
+    function findOverlay(){
+      for (const s of SELECTORS){ const el = document.querySelector(s); if (el) return el; }
+      return null;
+    }
+    function waitForOverlay(timeout=2000){
+      return new Promise(r => {
+        const t0 = performance.now();
+        const iv = setInterval(()=>{ const el = findOverlay(); if (el){ clearInterval(iv); r({found:true, time: performance.now()-t0}); }}, 16);
+        setTimeout(()=>{ clearInterval(iv); r({found:false}); }, timeout);
+      });
+    }
+    async function closeIfAny(){
+      const el = findOverlay(); if (!el) return;
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await new Promise(r=>setTimeout(r, 150));
+    }
+    async function measureOnce(){
+      const v = document.getElementById('sampleVideo');
+      const t0 = performance.now();
+      v.click();
+      const res = await waitForOverlay(2000);
+      await closeIfAny();
+      if (!res.found) return { success: false };
+      return { success: true, latency: res.time };
+    }
+    document.getElementById('runBtn').addEventListener('click', async ()=>{
+      const out = document.getElementById('out');
+      out.textContent = 'Running...';
+      const runs = [];
+      for (let i=0;i<ITERATIONS;i++){ await new Promise(r=>setTimeout(r,250)); runs.push(await measureOnce()); }
+      const ok = runs.filter(r=>r.success);
+      if (!ok.length){ out.innerHTML = '<p class="result fail">FAIL: no overlay detected</p>'; return; }
+      const avg = ok.reduce((s,r)=>s+r.latency,0)/ok.length;
+      const pass = avg <= THRESHOLD_MS;
+      out.innerHTML = `<p>Average latency: <strong>${avg.toFixed(1)}ms</strong> — ${pass ? '<span class="result pass">PASS</span>' : '<span class="result fail">FAIL</span>'}</p><pre>${JSON.stringify(runs,null,2)}</pre>`;
+    });
+  </script>
+</body>
+</html>

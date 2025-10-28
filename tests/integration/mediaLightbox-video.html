@@ -3,23 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>imageLightbox Integration</title>
+    <title>mediaLightbox Video Integration</title>
     <link rel="stylesheet" href="../../src/ui/imageLightbox.css" />
     <style>
       body { font-family: system-ui, sans-serif; margin: 1rem; }
       .pass { color: #0a0; }
       .fail { color: #a00; }
       #fixture { margin-top: 1rem; }
-      #fixture img { max-width: 200px; cursor: zoom-in; }
+      #fixture video { max-width: 360px; cursor: zoom-in; }
     </style>
   </head>
   <body>
-    <h1>imageLightbox Integration</h1>
+    <h1>mediaLightbox Video Integration</h1>
     <div id="results"></div>
 
     <div id="fixture">
       <button id="before">Before</button>
-      <img id="thumb" data-lightbox="true" alt="Sample" src="../../assets/logo.svg" />
+      <video id="vid" data-lightbox="true" controls preload="none">
+        <source src="../assets/sample-video.mp4" type="video/mp4" />
+      </video>
       <button id="after">After</button>
     </div>
 
@@ -44,23 +46,22 @@
         return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       }
 
-      await test('opens overlay on image click', async () => {
-        const img = document.getElementById('thumb');
-        img.focus();
-        img.click();
+      await test('opens overlay on video click', async () => {
+        const el = document.getElementById('vid');
+        el.focus();
+        el.click();
         await waitNextFrame();
         const overlay = document.querySelector('.image-lightbox');
         assert(!!overlay, 'overlay should exist after click');
-        const dlg = overlay.getAttribute('role');
-        assert(dlg === 'dialog', 'overlay should have role="dialog"');
+        const inside = overlay.querySelector('.image-lightbox__video');
+        assert(!!inside, 'video element should be rendered inside overlay');
       });
 
-      await test('ESC closes and restores focus', async () => {
-        const before = document.getElementById('before');
-        const img = document.getElementById('thumb');
+      await test('ESC closes and restores focus to video', async () => {
+        const el = document.getElementById('vid');
         // Open
-        img.focus();
-        img.click();
+        el.focus();
+        el.click();
         await waitNextFrame();
         const overlay = document.querySelector('.image-lightbox');
         assert(!!overlay, 'overlay should exist before closing');
@@ -70,26 +71,7 @@
         await waitNextFrame();
         const overlayGone = !document.querySelector('.image-lightbox');
         assert(overlayGone, 'overlay should be removed after ESC');
-        // Focus should be restored to the origin (the image)
-        assert(document.activeElement === img, 'focus should return to the image');
-      });
-
-      await test('wheel zoom changes transform scale', async () => {
-        const img = document.getElementById('thumb');
-        img.click();
-        await waitNextFrame();
-        const overlay = document.querySelector('.image-lightbox');
-        const imgEl = overlay.querySelector('.image-lightbox__img');
-        const beforeTransform = getComputedStyle(imgEl).transform;
-        // Dispatch a wheel event to zoom in
-        const evt = new WheelEvent('wheel', { deltaY: -100, clientX: imgEl.getBoundingClientRect().left + 10, clientY: imgEl.getBoundingClientRect().top + 10, bubbles: true, cancelable: true });
-        overlay.dispatchEvent(evt);
-        await waitNextFrame();
-        const afterTransform = getComputedStyle(imgEl).transform;
-        assert(beforeTransform !== afterTransform, 'transform should change after wheel zoom');
-        // Close
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-        await waitNextFrame();
+        assert(document.activeElement === el, 'focus should return to the triggering video');
       });
     </script>
   </body>
