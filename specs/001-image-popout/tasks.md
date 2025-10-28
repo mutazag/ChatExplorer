@@ -16,10 +16,10 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 1: Setup
 
-- [ ] T001 Create JS module for lightbox UI at `src/ui/imageLightbox.js`
-- [ ] T002 Create CSS for lightbox styling at `src/ui/imageLightbox.css`
+- [x] T001 Create JS module for lightbox UI at `src/ui/imageLightbox.js`
+- [x] T002 Create CSS for lightbox styling at `src/ui/imageLightbox.css`
 - [ ] T003 Create unit test harness for lightbox state at `tests/unit/imageLightbox.test.html`
-- [ ] T004 Add integration test page `tests/integration/imageLightbox-integration.html` with sample conversation HTML referencing `data/` images
+- [x] T004 Add integration test page `tests/integration/imageLightbox-integration.html` with sample conversation HTML referencing `data/` images
 
 ## Phase 2: Foundational (blocking prerequisites)
 
@@ -30,8 +30,8 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 ## Phase 3 (US1): Open image in pop-out (Priority P1)
 
 - [ ] T008 [US1] Add event binding in `src/ui/inlineMedia.js` to detect image activation and call `imageLightbox.open(src, originElement)`
-- [ ] T009 [US1] Implement `open(src, originElement)` and `close()` in `src/ui/imageLightbox.js` using state model and a modal DOM container (create markup dynamically)
-- [ ] T010 [US1] Implement backdrop click and ESC key handler in `src/ui/imageLightbox.js` to close the modal and restore focus to `originElement`
+- [x] T009 [US1] Implement `open(src, originElement)` and `close()` in `src/ui/imageLightbox.js` using state model and a modal DOM container (create markup dynamically)
+- [x] T010 [US1] Implement backdrop click and ESC key handler in `src/ui/imageLightbox.js` to close the modal and restore focus to `originElement`
 - [ ] T011 [US1] Write unit tests for open/close/focus-restore in `tests/unit/imageLightbox.test.html` (Mocha assertions)
 - [ ] T012 [US1] Add basic integration test that opens an inline image and verifies overlay and focus restore at `tests/integration/imageLightbox-integration.html`
 
@@ -50,8 +50,8 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 5: Measurement & Metrics
 
-- [ ] T019 Add automated performance measurement harness at `tests/perf/imageLightbox-perf.html` to measure pop-out render latency (capture time from activation to first paint of lightbox) and assert SC-001 thresholds.
-- [ ] T020 Add interaction success integration checks at `tests/integration/imageLightbox-metrics.html` that exercise zoom/pan flows and assert interaction success rates to help validate SC-002 and SC-003.
+- [x] T019 Add automated performance measurement harness at `tests/perf/imageLightbox-perf.html` to measure pop-out render latency (capture time from activation to first paint of lightbox) and assert SC-001 thresholds.
+- [x] T020 Add interaction success integration checks at `tests/integration/imageLightbox-metrics.html` that exercise zoom/pan flows and assert interaction success rates to help validate SC-002 and SC-003.
 
 ---
 
