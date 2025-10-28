@@ -94,6 +94,14 @@ As a security-conscious user, I want any auto-linked URLs to be sanitized so tha
 ## Assumptions
 
 - The app already uses a Markdown-to-HTML renderer and a sanitization step (`renderMarkdownToSafeHtml` exists). This feature will integrate into that pipeline.
+
+## Clarifications
+
+### Session 2025-10-28
+
+- Q: Where should sanitizer updates and auto-link integration be implemented? → A: Option A — update the existing `renderMarkdownToSafeHtml` in `src/utils/markdown.js` (preferred). Reason: `renderMarkdownToSafeHtml` is already in use throughout the UI; centralizing changes there keeps sanitizer logic in one place, reduces refactor risk, and minimizes surface area for regressions.
+
+*Applied effect:* For the purpose of FR-007, the canonical sanitizer is `renderMarkdownToSafeHtml` (located at `src/utils/markdown.js`). Implementation tasks should target that file for allowlist updates and integration of the autolinker post-processing step.
 - The app runs in modern browsers (Chrome, Edge, Firefox, Safari) with standard URL parsing behaviors.
 - The team prefers conservative security defaults (block unsafe schemes) over permissive auto-linking.
 

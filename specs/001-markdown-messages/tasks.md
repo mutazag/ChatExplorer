@@ -1,3 +1,74 @@
+# tasks.md — Implementation tasks for 001-markdown-messages
+
+**Feature**: Markdown Messages — auto-linking and safe Markdown rendering  
+**Branch**: `001-markdown-messages`  
+**Created**: 2025-10-28
+
+Summary: Implement a conservative auto-linker for http(s) URLs, preserve authored Markdown links, integrate with the existing Markdown -> sanitizer pipeline, add accessibility attributes for code blocks, and provide unit/integration tests.
+
+Total tasks: 13
+
+## Phase 1 — Setup
+
+- [ ] T001 [P] Create helper module for auto-linking: implement skeleton `autolinkText(text)` in `src/utils/links.js`
+- [ ] T002 [P] Add unit test scaffold for autolinker: `tests/unit/test_links.js` (tests: basic http/https linking, no double-wrap of markdown links)
+- [ ] T003 [P] Add integration test harness page for markdown rendering: `tests/integration/markdown_render.html` (load sample messages and assert anchors and code blocks)
+- [ ] T004 Integrate autolinker into Markdown pipeline: update `src/utils/markdown.js` to call `autolinkText` at the correct stage and ensure output flows to sanitizer (`renderMarkdownToSafeHtml`)
+
+## Phase 2 — Foundational (blocking)
+
+- [ ] T005 Update sanitizer rules to allow safe anchors and block unsafe schemes: `src/utils/sanitizer.js` (ensure `rel`, `target` attributes enforced and `javascript:`/`vbscript:`/`data:` for non-media are blocked)
+- [ ] T006 Implement URL normalization & truncation helper in `src/utils/links.js` (ensure long URLs get `title`/`aria-label` while visual text can truncate)
+
+## Phase 3 — User Story 1 (P1): Readable rich text in detail
+
+- [ ] T007 [US1] Implement Markdown auto-linking logic for http(s) in `src/utils/links.js` (respect existing Markdown links; skip code spans/blocks)
+- [ ] T008 [US1] Ensure code blocks preserve whitespace and include `aria-label="code block"`: update `src/utils/markdown.js` or rendering wrapper to add the attribute for `<pre>` blocks
+- [ ] T009 [US1] Wire rendering calls in UI: verify `src/ui/detailView.js` uses `renderMarkdownToSafeHtml` and that rendered HTML is injected only after sanitization (update if necessary)
+
+## Phase 4 — User Story 2 (P1): Safe links and sanitization
+
+- [ ] T010 [US2] Create unit tests for unsafe input scenarios: `tests/unit/test_links_safety.js` (tests: `javascript:` link not auto-linked, `<script>` stripped, mailto/# fragment allowed)
+- [ ] T011 [US2] Add integration security validation: `tests/integration/validate_sanitizer.js` (render fixtures and assert no script tags, unsafe hrefs, or event attributes remain)
+
+## Phase 5 — User Story 3 (P2): Plain text fallback and accessibility
+
+- [ ] T012 [US3] Implement fallback for malformed Markdown: update `src/utils/markdown.js` to escape and wrap fallback text in `<p>` and add tests in `tests/unit/test_markdown_fallback.js`
+- [ ] T013 Polish & Docs: Update `specs/001-markdown-messages/quickstart.md` with commands to run the new tests and validate rendering locally
+
+## Dependencies & Order
+
+1. Phase 1 tasks (T001–T004) are required before Phase 2 and Phase 3 tasks that integrate the autolinker.
+2. T005 (sanitizer) must be completed before final integration (T009, T011).
+3. Testing tasks (T002, T003, T010, T011, T012) can be developed in parallel with implementation where they don't rely on completed APIs (mark `[P]` where safe).
+
+## Parallel execution examples
+
+- Example A: T001 (implement `links.js`) and T005 (update sanitizer) can be worked on in parallel by two engineers because they touch separate modules; tests T002/T010 can be authored in parallel.
+- Example B: T003 (integration harness) and T008 (code block ARIA) are independent and can run in parallel.
+
+## Independent test criteria (per story)
+
+- US1 (T007–T009): Given sample markdown with headings, lists, inline code, fenced code blocks and plain URLs, the page renders `<h1>...`, `<ul>`, `<code>`, `<pre>` and anchors for http(s) URLs. Anchors open in a new tab when clicked.
+- US2 (T010–T011): Given payloads containing `<script>`, `javascript:` hrefs, and inline event attributes, none of these appear or execute in the DOM after rendering; http(s)/mailto/# links remain functional.
+- US3 (T012): Given malformed markdown or plain text, content appears as paragraphs; code blocks include `aria-label="code block"`.
+
+## MVP suggestion
+
+- Implement the minimal pipeline to satisfy US1 and US2 (T001–T009 and T010). US3 can be delivered immediately after (T012).
+
+## File map for implementers
+
+- `src/utils/links.js` — new helper for auto-linking and URL helpers
+- `src/utils/markdown.js` — existing markdown rendering wrapper to update
+- `src/utils/sanitizer.js` — existing sanitizer to update rules
+- `src/ui/detailView.js` — integration verification (ensures sanitized HTML only)
+- `tests/unit/*.js` and `tests/integration/*.js|.html` — test harness files
+- `specs/001-markdown-messages/*` — docs & quickstart updates
+
+## Format validation
+
+- All tasks above follow the required checklist format including TaskID, optional [P], and for story tasks the [US#] label and file path references.
 ---
 
 description: "Executable task list for Markdown message rendering"
