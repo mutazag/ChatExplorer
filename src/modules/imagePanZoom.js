@@ -18,8 +18,12 @@
 
   ImagePanZoom.prototype.update = function () {
     const t = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
-    this.img.style.transform = t;
-    this.img.style.willChange = 'transform';
+    // use rAF to avoid layout thrash
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = requestAnimationFrame(() => {
+      this.img.style.transform = t;
+      this.img.style.willChange = 'transform';
+    });
   };
 
   ImagePanZoom.prototype.setScale = function (scale, centerX, centerY) {
@@ -56,6 +60,7 @@
     const self = this;
 
     function onWheel(e) {
+      console && console.debug && console.debug('[imagePanZoom] wheel', e.deltaY);
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       self.setScale(self.scale + delta, e.clientX, e.clientY);
