@@ -14,3 +14,20 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
   border-radius: 4px;
 }
+
+.image-lightbox__controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+}
+.image-lightbox__controls button {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.image-lightbox__controls button:active { transform: translateY(1px); }

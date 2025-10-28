@@ -17,6 +17,12 @@
 
     overlay.appendChild(img);
 
+    // Zoom controls
+    const controls = document.createElement('div');
+    controls.className = 'image-lightbox__controls';
+    controls.innerHTML = '<button data-zoom="in" aria-label="Zoom in">+</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="reset" aria-label="Reset zoom">⟳</button>';
+    overlay.appendChild(controls);
+
     // Close when clicking overlay (but not when clicking image)
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
@@ -24,9 +30,18 @@
       }
     });
 
-    // ESC to close
+    // ESC to close and +/- for zoom
     function onKey(e) {
       if (e.key === 'Escape') closeOverlay(overlay, origin);
+      if (e.key === '+') {
+        if (overlay._panZoom) overlay._panZoom.setScale(overlay._panZoom.scale + 0.1);
+      }
+      if (e.key === '-') {
+        if (overlay._panZoom) overlay._panZoom.setScale(overlay._panZoom.scale - 0.1);
+      }
+      if (e.key === '0') {
+        if (overlay._panZoom) overlay._panZoom.reset();
+      }
     }
 
     document.addEventListener('keydown', onKey);
@@ -35,6 +50,17 @@
     overlay._cleanup = () => {
       document.removeEventListener('keydown', onKey);
     };
+
+    // Wire controls
+    controls.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const act = btn.dataset.zoom;
+      if (!overlay._panZoom) return;
+      if (act === 'in') overlay._panZoom.setScale(overlay._panZoom.scale + 0.2);
+      if (act === 'out') overlay._panZoom.setScale(overlay._panZoom.scale - 0.2);
+      if (act === 'reset') overlay._panZoom.reset();
+    });
 
     return overlay;
   }
@@ -47,6 +73,23 @@
     overlay.focus();
     // store last focused element to restore
     overlay._origin = origin || document.activeElement;
+
+    // Attach pan/zoom if available
+    if (window.imagePanZoom && typeof window.imagePanZoom.create === 'function') {
+      try {
+        const pz = window.imagePanZoom.create(img);
+        pz.attach && pz.attach();
+        overlay._panZoom = pz;
+        // detach on cleanup
+        const prevCleanup = overlay._cleanup;
+        overlay._cleanup = () => {
+          try { pz.detach && pz.detach(); } catch (e) {}
+          prevCleanup && prevCleanup();
+        };
+      } catch (e) {
+        // ignore
+      }
+    }
   }
 
   function closeOverlay(overlay, origin) {
