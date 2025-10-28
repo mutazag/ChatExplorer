@@ -83,7 +83,8 @@
     }
     if (overlay._origin && !isNaturallyFocusable(overlay._origin)) {
       try {
-        overlay._origin.setAttribute('tabindex', '-1');
+        // Use tabindex="0" to make it keyboard-focusable temporarily; we'll remove it on close.
+        overlay._origin.setAttribute('tabindex', '0');
         overlay._originTempTabindex = true;
       } catch (e) {}
     }
@@ -130,13 +131,23 @@
   function closeOverlay(overlay, origin) {
     if (!overlay) return;
     if (overlay._cleanup) overlay._cleanup();
+    // Remove overlay from DOM first, then restore focus on next frames to ensure layout/paint settled
     overlay.remove();
     try {
       const target = origin || overlay._originFocusTarget || overlay._origin || document.body;
-      if (target && typeof target.focus === 'function') target.focus();
-      if (overlay._originTempTabindex && overlay._origin) {
-        // clean up temporary tabindex
-        overlay._origin.removeAttribute('tabindex');
+      const cleanupTempTabindex = () => {
+        if (overlay._originTempTabindex && overlay._origin) {
+          try { overlay._origin.removeAttribute('tabindex'); } catch (e) {}
+        }
+      };
+      if (target && typeof target.focus === 'function') {
+        // Double rAF to ensure focus lands after DOM updates across browsers/headless
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          try { target.focus(); } catch (e) {}
+          cleanupTempTabindex();
+        }));
+      } else {
+        cleanupTempTabindex();
       }
     } catch (e) {}
   }
