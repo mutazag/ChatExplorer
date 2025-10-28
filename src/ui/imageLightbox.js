@@ -73,6 +73,21 @@
     overlay.focus();
     // store last focused element to restore
     overlay._origin = origin || document.activeElement;
+    // Determine a focusable target for restore; if origin isn't focusable, set a temporary tabindex
+    function isNaturallyFocusable(el) {
+      if (!el) return false;
+      const focusableSelectors = 'a,button,input,textarea,select,details,[tabindex]';
+      if (el.matches && el.matches(focusableSelectors)) return true;
+      // check programmatic tabIndex
+      return typeof el.tabIndex === 'number' && el.tabIndex >= 0;
+    }
+    if (overlay._origin && !isNaturallyFocusable(overlay._origin)) {
+      try {
+        overlay._origin.setAttribute('tabindex', '-1');
+        overlay._originTempTabindex = true;
+      } catch (e) {}
+    }
+    overlay._originFocusTarget = overlay._origin;
 
     // Attach pan/zoom if available
     if (window.imagePanZoom && typeof window.imagePanZoom.create === 'function') {
@@ -117,7 +132,12 @@
     if (overlay._cleanup) overlay._cleanup();
     overlay.remove();
     try {
-      (origin || overlay._origin || document.body).focus();
+      const target = origin || overlay._originFocusTarget || overlay._origin || document.body;
+      if (target && typeof target.focus === 'function') target.focus();
+      if (overlay._originTempTabindex && overlay._origin) {
+        // clean up temporary tabindex
+        overlay._origin.removeAttribute('tabindex');
+      }
     } catch (e) {}
   }
 
