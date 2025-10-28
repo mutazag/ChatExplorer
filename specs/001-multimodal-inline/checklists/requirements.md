@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Inline display of multimodal message content
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2025-10-25
+**Created**: 2025-10-28
 **Feature**: ../spec.md
 
 ## Content Quality
@@ -31,4 +31,6 @@
 
 ## Notes
 
-- Checklist completed based on spec in this feature directory. If product wants to include additional media types (e.g., SVG, AVIF), we can enumerate them in FR-002/FR-003 during planning.
+- Validation summary (2025-10-28): Performed spec validation after adding the image pop-out user story. Detailed implementation examples were intentionally moved from `spec.md` to `implementation-notes.md` so the spec remains focused on WHAT/WHY. All checklist items were verified against the current spec and marked complete.
+
+- If the team prefers stricter stakeholder-facing wording, minor wording edits can be made to remove remaining browser-specific phrasing in the Assumptions section (currently mentions HTML5 audio/video support). This was left to preserve clarity about supported environments.
