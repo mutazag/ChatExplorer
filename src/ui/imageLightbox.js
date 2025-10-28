@@ -168,28 +168,16 @@
       const target = origin || overlay._originFocusTarget || overlay._origin || document.body;
       // mark state closed
       if (overlay._state && overlay._state.close) { try { overlay._state.close(); } catch (e) {} }
-      const cleanupTempTabindex = () => {
-        if (overlay._originTempTabindex && overlay._origin) {
-          try { overlay._origin.removeAttribute('tabindex'); } catch (e) {}
-        }
-      };
       if (window.a11y && window.a11y.restoreFocus) {
         // If we didn't add a temporary tabindex earlier, allow restoreFocus to add one
         const needTemp = !overlay._originTempTabindex;
         window.a11y.restoreFocus(target, { tempTabIndex: needTemp });
-        // Defer removal of temporary tabindex we added at open until after focus lands
-        if (overlay._originTempTabindex && overlay._origin) {
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            try { overlay._origin.removeAttribute('tabindex'); } catch (e) {}
-          }));
-        }
       } else if (target && typeof target.focus === 'function') {
         requestAnimationFrame(() => requestAnimationFrame(() => {
           try { target.focus(); } catch (e) {}
-          cleanupTempTabindex();
         }));
       } else {
-        cleanupTempTabindex();
+        // no-op
       }
     } catch (e) {}
   }
