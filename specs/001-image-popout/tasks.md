@@ -26,6 +26,9 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 - [ ] T005 Implement ImageLightbox state model in `src/modules/imageLightboxState.js` (open/close/scale/pan/lastFocusedElement)
 - [ ] T006 Implement accessibility utilities in `src/utils/a11y.js` (focus trap, restoreFocus(element), setAriaLabel)
 - [ ] T007 Add small helper to resolve safe image URLs in `src/utils/mediaResolver.js` (enforce allowed schemes per FR-017)
+- [x] T005 Implement ImageLightbox state model in `src/modules/imageLightboxState.js` (open/close/scale/pan/lastFocusedElement)
+- [x] T006 Implement accessibility utilities in `src/utils/a11y.js` (focus trap, restoreFocus(element), setAriaLabel)
+- [x] T007 Add small helper to resolve safe image URLs in `src/utils/mediaResolver.js` (enforce allowed schemes per FR-017)
 
 ## Phase 3 (US1): Open image in pop-out (Priority P1)
 
@@ -37,9 +40,9 @@ This tasks file breaks the feature into small, actionable tasks organized by pha
 
 ## Phase 4 (US2): Zoom & Pan (Priority P1)
 
-- [ ] T013 [US2] Implement zoom controls and UI (zoom in/out/reset buttons) in `src/ui/imageLightbox.js` and style in `src/ui/imageLightbox.css`
-- [ ] T014 [US2] Implement pan/zoom logic using CSS transforms in `src/modules/imagePanZoom.js` (expose methods: setScale, panBy, reset)
-- [ ] T015 [US2] Wire pointer events (pointerdown/move/up), wheel (with sensible modifier), and touch pinch handling to `imagePanZoom` in `src/ui/imageLightbox.js`
+- [x] T013 [US2] Implement zoom controls and UI (zoom in/out/reset buttons) in `src/ui/imageLightbox.js` and style in `src/ui/imageLightbox.css`
+- [x] T014 [US2] Implement pan/zoom logic using CSS transforms in `src/modules/imagePanZoom.js` (expose methods: setScale, panBy, reset)
+- [x] T015 [US2] Wire pointer events (pointerdown/move/up), wheel (with sensible modifier), and touch pinch handling to `imagePanZoom` in `src/ui/imageLightbox.js`
 - [ ] T016 [US2] Write unit tests for pan/zoom state transitions in `tests/unit/imagePanZoom.test.js` (or embed in `imageLightbox.test.html`)
 - [ ] T017 [US2] Add integration tests for zoom/pan interactions in `tests/integration/imageLightbox-integration.html` (simulate wheel and pointer events where feasible)
 

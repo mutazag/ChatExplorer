@@ -8,11 +8,22 @@
     overlay.className = OVERLAY_CLASS;
     overlay.tabIndex = -1;
     overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-label', 'Image preview');
+    if (window.a11y && window.a11y.setAriaLabel) {
+      window.a11y.setAriaLabel(overlay, 'Image preview');
+    } else {
+      overlay.setAttribute('aria-label', 'Image preview');
+    }
 
     const img = document.createElement('img');
     img.className = IMG_CLASS;
-    img.src = src;
+    // Resolve and enforce safe URL schemes
+    try {
+      if (window.mediaResolver && window.mediaResolver.resolveImageSrc) {
+        img.src = window.mediaResolver.resolveImageSrc(src);
+      } else {
+        img.src = src;
+      }
+    } catch (e) { img.src = src; }
     img.alt = origin && origin.alt ? origin.alt : 'Image preview';
 
     overlay.appendChild(img);
@@ -62,6 +73,13 @@
       if (act === 'reset') overlay._panZoom.reset();
     });
 
+    // Trap focus within overlay
+    if (window.a11y && window.a11y.trapFocus) {
+      const cleanupTrap = window.a11y.trapFocus(overlay);
+      const prevCleanup = overlay._cleanup;
+      overlay._cleanup = () => { try { cleanupTrap && cleanupTrap(); } catch (e) {}; prevCleanup && prevCleanup(); };
+    }
+
     return overlay;
   }
 
@@ -73,6 +91,12 @@
     overlay.focus();
     // store last focused element to restore
     overlay._origin = origin || document.activeElement;
+
+    // create state and mark open
+    if (window.imageLightboxState && typeof window.imageLightboxState.create === 'function') {
+      overlay._state = window.imageLightboxState.create();
+      overlay._state.open(overlay._origin);
+    }
     // Determine a focusable target for restore; if origin isn't focusable, set a temporary tabindex
     function isNaturallyFocusable(el) {
       if (!el) return false;
@@ -99,6 +123,10 @@
           pz.attach && pz.attach();
           if (console && console.log) console.log('[imageLightbox] panZoom attached');
           overlay._panZoom = pz;
+          // Sync state from pan/zoom
+          if (overlay._state && overlay._state.syncFromPanZoom) {
+            overlay._state.syncFromPanZoom(pz);
+          }
           // detach on cleanup
           const prevCleanup = overlay._cleanup;
           overlay._cleanup = () => {
@@ -116,6 +144,9 @@
       try {
         if (overlay._panZoom) {
           overlay._panZoom.setScale(overlay._panZoom.scale + (e.deltaY > 0 ? -0.1 : 0.1), e.clientX, e.clientY);
+          if (overlay._state && overlay._state.setScale) {
+            overlay._state.setScale(overlay._panZoom.scale);
+          }
           e.preventDefault();
         }
       } catch (err) {}
@@ -135,13 +166,17 @@
     overlay.remove();
     try {
       const target = origin || overlay._originFocusTarget || overlay._origin || document.body;
+      // mark state closed
+      if (overlay._state && overlay._state.close) { try { overlay._state.close(); } catch (e) {} }
       const cleanupTempTabindex = () => {
         if (overlay._originTempTabindex && overlay._origin) {
           try { overlay._origin.removeAttribute('tabindex'); } catch (e) {}
         }
       };
-      if (target && typeof target.focus === 'function') {
-        // Double rAF to ensure focus lands after DOM updates across browsers/headless
+      if (window.a11y && window.a11y.restoreFocus) {
+        window.a11y.restoreFocus(target, { tempTabIndex: false });
+        cleanupTempTabindex();
+      } else if (target && typeof target.focus === 'function') {
         requestAnimationFrame(() => requestAnimationFrame(() => {
           try { target.focus(); } catch (e) {}
           cleanupTempTabindex();
