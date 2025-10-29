@@ -13,8 +13,15 @@ export function buildTooltipSummary(msg) {
       createdTime: Number.isFinite(meta?.createdTime) ? meta.createdTime : (msg?.create_time ?? null)
     };
     if (role === 'assistant' && meta?.modelSlug) {
-      return { ...base, modelSlug: String(meta.modelSlug) };
+      base.modelSlug = String(meta.modelSlug);
     }
+    // Optionally include extra fields if present
+    if (meta?.status) base.status = String(meta.status);
+    if (Array.isArray(meta?.selected_sources)) base.selected_sources = [...meta.selected_sources];
+    if (Array.isArray(meta?.prompt_expansion_predictions)) base.prompt_expansion_predictions = [...meta.prompt_expansion_predictions];
+    if (Array.isArray(meta?.safe_urls)) base.safe_urls = [...meta.safe_urls];
+    if (typeof meta?.is_user_system_message === 'boolean') base.is_user_system_message = meta.is_user_system_message;
+    if (meta?.user_context_message_data && typeof meta.user_context_message_data === 'object') base.user_context_message_data = { ...meta.user_context_message_data };
     // Drop undefined to keep output tidy
     return Object.fromEntries(Object.entries(base).filter(([, v]) => v !== undefined));
   } catch {
@@ -28,6 +35,11 @@ function createTooltipEl(target, summary, container) {
   el.setAttribute('data-tooltip', '');
   el.setAttribute('role', 'tooltip');
   el.setAttribute('data-for', String(summary.id || ''));
+  // Stable id for aria-describedby
+  try {
+    const base = String(summary.id || 'x');
+    el.id = `tooltip-for-${base}`;
+  } catch { /* noop */ }
   el.style.position = 'absolute';
   el.style.zIndex = '9999';
   el.style.maxWidth = '360px';
@@ -37,7 +49,7 @@ function createTooltipEl(target, summary, container) {
   el.style.pointerEvents = 'none';
   // Minimal content: JSON-like string; tests only check inclusion
   try {
-    const pretty = JSON.stringify(summary);
+    const pretty = JSON.stringify(makeDisplaySummary(summary));
     el.textContent = pretty;
   } catch {
     el.textContent = String(summary?.role || '');
@@ -105,25 +117,57 @@ export function hideTooltip() {
 
 export function attachTooltipHandlers(target, msg) {
   if (!target) return;
-  const onFocus = () => showTooltip(target, msg);
-  const onBlur = () => hideTooltip();
+  let currentTip = null;
+  const show = () => {
+    currentTip = showTooltip(target, msg);
+    try { if (currentTip && currentTip.id) target.setAttribute('aria-describedby', currentTip.id); } catch {}
+  };
+  const hide = () => {
+    hideTooltip();
+    try { target.removeAttribute('aria-describedby'); } catch {}
+    currentTip = null;
+  };
+  const onFocus = () => show();
+  const onBlur = () => hide();
+  const onEnter = () => show();
+  const onLeave = () => hide();
   const onKey = (e) => {
-    if (e.key === 'Escape') { hideTooltip(); target.blur?.(); }
+    if (e.key === 'Escape') { hide(); target.blur?.(); }
   };
   target.addEventListener('focus', onFocus);
   target.addEventListener('blur', onBlur);
+  target.addEventListener('mouseenter', onEnter);
+  target.addEventListener('mouseleave', onLeave);
   target.addEventListener('keydown', onKey);
   // Clean-up if element is removed
   const obs = new MutationObserver(() => {
     if (!document.body.contains(target)) {
-      hideTooltip();
+      hide();
       try {
         target.removeEventListener('focus', onFocus);
         target.removeEventListener('blur', onBlur);
+        target.removeEventListener('mouseenter', onEnter);
+        target.removeEventListener('mouseleave', onLeave);
         target.removeEventListener('keydown', onKey);
       } catch {}
       obs.disconnect();
     }
   });
   obs.observe(document.body, { childList: true, subtree: true });
+}
+
+// Create a display-safe summary where long strings are truncated
+function makeDisplaySummary(summary, maxLen = 40) {
+  const clone = {};
+  for (const [k, v] of Object.entries(summary || {})) {
+    if (typeof v === 'string') {
+      clone[k] = v.length > maxLen ? truncateMiddle(v, maxLen) : v;
+    } else if (Array.isArray(v) && v.every((x) => typeof x === 'string')) {
+      clone[k] = v.map((s) => (s.length > maxLen ? truncateMiddle(s, maxLen) : s));
+    } else {
+      // Keep numbers, booleans, objects as-is (object may be large but is useful for debugging)
+      clone[k] = v;
+    }
+  }
+  return clone;
 }

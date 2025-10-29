@@ -14,8 +14,8 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Verify feature branch and planning artifacts exist for `005-visual-themes-tooltips-plan`
-- [ ] T002 Ensure test harness is accessible in-browser under `tests/` (no new deps)
+- [x] T001 Verify feature branch and planning artifacts exist for `005-visual-themes-tooltips-plan`
+- [x] T002 Ensure test harness is accessible in-browser under `tests/` (no new deps)
 
 ---
 
@@ -24,9 +24,9 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 **Goal**: Provide deterministic metadata and utilities required by tooltips.
 
 - [x] T010 [P] Add unit tests for middle-ellipsis utility in `tests/unit/text.truncateMiddle.test.js`
-- [ ] T011 [P] Implement `truncateMiddle(str, max=40)` in `src/utils/text.js`
+- [x] T011 [P] Implement `truncateMiddle(str, max=40)` in `src/utils/text.js`
 - [x] T012 Add unit tests for normalization meta mapping in `tests/unit/parse.meta.test.js`
-- [ ] T013 Implement normalization meta enrichment in `src/data/conversations/parse.js`
+- [x] T013 Implement normalization meta enrichment in `src/data/conversations/parse.js`
   - Populate `message.meta = { nodeId, parentId?, contentType, createdTime, modelSlug? }`
   - `nodeId` from mapping key; `parentId` from mapping[parent].
   - `modelSlug` from `message.metadata.model_slug || message.metadata.default_model_slug` (assistant)
@@ -48,15 +48,16 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 
 ### Implementation for User Story 6
 
-- [ ] T022 [P] [US6] Create tooltip module `src/ui/tooltip.js` (buildSummary, showTooltip, hideTooltip, flip if near edge)
-- [ ] T023 [US6] Add tooltip styles (including reduced-motion) in `styles.css`
-- [ ] T024 [US6] Update `src/ui/detailView.js` to:
+- [x] T022 [P] [US6] Create tooltip module `src/ui/tooltip.js` (buildSummary, showTooltip, hideTooltip, flip if near edge)
+- [x] T023 [US6] Add tooltip styles (including reduced-motion) in `styles.css`
+- [x] T024 [US6] Update `src/ui/detailView.js` to:
   - Make role icons focusable (tabindex=0)
   - Wire hover/focus handlers to show tooltip via `aria-describedby`
   - Populate tooltip from `message.meta` (include modelSlug for assistant only)
   - Hide on blur/Esc; ensure no overlap with timestamp reveal behavior
-- [ ] T025 [P] [US6] Implement middle-ellipsis usage for long values in tooltip (max ~40 chars)
-- [ ] T026 [US6] Ensure tooltip placement avoids viewport clipping (flip logic in `tooltip.js`)
+  (DONE: icons focusable; focus/hover show tooltip; aria-describedby set/cleared; hides on blur/Esc)
+- [x] T025 [P] [US6] Implement middle-ellipsis usage for long values in tooltip (max ~40 chars)
+- [x] T026 [US6] Ensure tooltip placement avoids viewport clipping (flip logic in `tooltip.js`)
 
 **Checkpoint**: User Story 6 is fully functional and independently testable
 
@@ -65,7 +66,7 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 ## Phase 4: Polish & Cross-Cutting Concerns
 
 - [ ] T030 [P] Update `/specs/005-visual-themes-tooltips-plan/quickstart.md` with any new test notes
-- [ ] T031 Verify reduced-motion preference respected (no excessive animations)
+- [ ] T031 Verify reduced-motion preference respected (no excessive animations) (PARTIAL: tooltip transitions gated by prefers-reduced-motion)
 - [ ] T032 Validate ARIA announcements with a screen reader
 - [ ] T033 Browser QA: Chrome, Firefox, Safari, Edge (basic smoke for tooltip)
 - [ ] T034 Responsive QA: 320px, 768px, 1280px widths – tooltip readable, no horizontal scroll

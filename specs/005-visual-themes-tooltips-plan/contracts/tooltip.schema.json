@@ -10,7 +10,13 @@
     "parentId": { "type": "string" },
     "contentType": { "type": "string", "minLength": 1 },
     "createdTime": { "type": ["number", "string"] },
-    "modelSlug": { "type": "string" }
+    "modelSlug": { "type": "string" },
+    "status": { "type": "string" },
+    "selected_sources": { "type": "array", "items": { "type": "string" } },
+    "prompt_expansion_predictions": { "type": "array", "items": { "type": "string" } },
+    "safe_urls": { "type": "array", "items": { "type": "string", "format": "uri" } },
+    "is_user_system_message": { "type": "boolean" },
+    "user_context_message_data": { "type": "object" }
   },
   "required": ["role", "id", "contentType"],
   "allOf": [
