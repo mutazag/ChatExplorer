@@ -73,6 +73,7 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 [data-detail] .msg .msg-header { display: inline-flex; gap: .35rem; align-items: center; font-size: .9rem; color: var(--muted); justify-self: start; text-align: start; }
 [data-detail] .msg .msg-header img { width: 18px; height: 18px; opacity: .9; }
 [data-detail] .msg .bubble { display: inline-block; max-width: min(720px, 100%); padding: .5rem .65rem; border-radius: 14px; box-shadow: var(--elev); border: 1px solid var(--border); background: var(--bubble-assistant); text-align: start; }
+[data-detail] .msg .bubble.bubble--media-only { min-width: 260px; }
 [data-detail] .msg--assistant .bubble { background: var(--bubble-assistant); justify-self: start; }
 [data-detail] .msg--user .bubble { background: var(--bubble-user); justify-self: end; }
 [data-detail] .msg--user .bubble { text-align: start; }

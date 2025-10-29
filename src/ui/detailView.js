@@ -64,6 +64,10 @@ export function renderDetail(host, conversation) {
     if (Array.isArray(m.media) && m.media.length) {
       const mediaEl = renderMediaItems(m.media);
       if (mediaEl) bubble.appendChild(mediaEl);
+      // If there is no textual content, mark as media-only so CSS can size appropriately
+      if (!safeHtml || !safeHtml.trim()) {
+        bubble.classList.add('bubble--media-only');
+      }
     }
     row.appendChild(bubble);
     // Timestamp (hidden by default; reveal via hover/focus/tap)

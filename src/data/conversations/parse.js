@@ -56,9 +56,14 @@ function reconstructActivePathMessages(c, assetIndex) {
     const m = n && n.message;
     if (!m) continue;
     const role = (m.author && m.author.role) || null;
-    const hidden = role === 'system' && m.metadata && m.metadata.is_visually_hidden_from_conversation === true;
+    // Hide messages explicitly marked as visually hidden regardless of role
+    const hidden = m.metadata && m.metadata.is_visually_hidden_from_conversation === true;
     if (hidden) continue;
     const { text, hasImage, media } = toRenderableContent(m.content, assetIndex, String(c.conversation_id));
+    // Skip rendering if there is no textual content and no media to show
+    const hasText = !!(text && String(text).trim());
+    const hasMedia = Array.isArray(media) && media.length > 0;
+    if (!hasText && !hasMedia) continue;
     // Build deterministic meta mapping for tooltips (US6)
     const nodeId = String(n && n.id ? n.id : (m.id || ''));
     const parentId = n && n.parent ? String(n.parent) : (m && m.metadata && m.metadata.parent_id ? String(m.metadata.parent_id) : undefined);
@@ -118,6 +123,10 @@ function toRenderableContent(content, assetIndex, conversationId) {
       if (typeof p === 'string') {
         text += (text ? ' ' : '') + p;
       } else if (p && typeof p === 'object') {
+        // Treat audio transcriptions with text as textual content
+        if (p.content_type === 'audio_transcription' && typeof p.text === 'string' && p.text.trim()) {
+          text += (text ? ' ' : '') + p.text.trim();
+        }
         if (p.content_type === 'image_asset_pointer') {
           const pointer = parseAssetPointer(p.asset_pointer || p.url || '');
           const resolved = resolveFirst(assetIndex, pointer, conversationId, 'image');
