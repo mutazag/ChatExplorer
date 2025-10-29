@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: ChatExplorer UI Actions (Conceptual)
+  version: 1.0.0
+  description: |
+    Conceptual contract to describe UI actions for data set selection. This is NOT a backend API;
+    it documents the expected request/response shapes between UI modules.
+servers:
+  - url: http://localhost/ui
+    description: Conceptual only; no network calls are made.
+paths:
+  /actions/selectDataSet:
+    post:
+      summary: Select a data set (client-side action)
+      description: Switch the active data set and update visible conversations without page reload.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dataSetId]
+              properties:
+                dataSetId:
+                  type: string
+                  description: Identifier of the data set to activate
+      responses:
+        '200':
+          description: Selection applied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  activeDataSetId:
+                    type: string
+                  status:
+                    type: string
+                    enum: [ok]
+  /queries/listDataSets:
+    get:
+      summary: List available data sets (client-side query)
+      responses:
+        '200':
+          description: Available data sets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name]
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        summary:
+                          type: string
