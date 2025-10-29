@@ -1,6 +1,7 @@
 import { renderMarkdownToSafeHtml } from '../utils/markdown.js';
 import { classifyMediaByExtOrMime, isSafeSrc } from '../utils/media.js';
 import { getState } from '../state/appState.js';
+import { attachTooltipHandlers } from './tooltip.js';
 import { setHashForId } from '../router/hash.js';
 
 export function renderDetail(host, conversation) {
@@ -40,17 +41,15 @@ export function renderDetail(host, conversation) {
       icon.src = 'assets/assistant-robot.svg';
       icon.alt = 'Assistant';
     }
+    // Make icon keyboard-focusable to enable tooltip on focus
+    icon.tabIndex = 0;
+    try { attachTooltipHandlers(icon, m); } catch {}
     const label = document.createElement('span');
     label.textContent = roleName + ':';
     // For user messages we append the label first and then the icon. With
     // right-aligned styles this produces the visual order: <icon> User:
-    if (roleName === 'user') {
-      header.appendChild(label);
-      header.appendChild(icon);
-    } else {
-      header.appendChild(icon);
-      header.appendChild(label);
-    }
+    header.appendChild(icon);
+    header.appendChild(label);
 
     // Bubble: sanitized markdown
     const bubble = document.createElement('div');

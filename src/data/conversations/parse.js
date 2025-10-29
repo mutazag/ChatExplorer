@@ -59,14 +59,45 @@ function reconstructActivePathMessages(c, assetIndex) {
     const hidden = role === 'system' && m.metadata && m.metadata.is_visually_hidden_from_conversation === true;
     if (hidden) continue;
     const { text, hasImage, media } = toRenderableContent(m.content, assetIndex, String(c.conversation_id));
+    // Build deterministic meta mapping for tooltips (US6)
+    const nodeId = String(n && n.id ? n.id : (m.id || ''));
+    const parentId = n && n.parent ? String(n.parent) : (m && m.metadata && m.metadata.parent_id ? String(m.metadata.parent_id) : undefined);
+    const contentType = m && m.content && m.content.content_type ? String(m.content.content_type) : '';
+    const createdTime = toNumberOrNull(m.create_time);
+    const modelSlug = (role === 'assistant' && m && m.metadata) ? (m.metadata.model_slug || m.metadata.default_model_slug || null) : null;
+    // Optional extras surfaced if present
+    let status = null;
+    if (m && m.status != null && m.status !== '') {
+      status = String(m.status);
+    } else if (m && m.metadata && m.metadata.status != null && m.metadata.status !== '') {
+      status = String(m.metadata.status);
+    }
+    const selected_sources = m && m.metadata && Array.isArray(m.metadata.selected_sources) ? m.metadata.selected_sources.slice(0) : null;
+    const prompt_expansion_predictions = m && m.metadata && Array.isArray(m.metadata.prompt_expansion_predictions) ? m.metadata.prompt_expansion_predictions.slice(0) : null;
+    const safe_urls = m && m.metadata && Array.isArray(m.metadata.safe_urls) ? m.metadata.safe_urls.slice(0) : null;
+    const is_user_system_message = m && m.metadata && typeof m.metadata.is_user_system_message === 'boolean' ? m.metadata.is_user_system_message : null;
+    const user_context_message_data = m && m.metadata && m.metadata.user_context_message_data && typeof m.metadata.user_context_message_data === 'object' ? { ...m.metadata.user_context_message_data } : null;
     msgs.push({
       id: String(m.id || n.id || ''),
       role: role || 'unknown',
-      create_time: toNumberOrNull(m.create_time),
+      create_time: createdTime,
       update_time: toNumberOrNull(m.update_time),
       text: text,
       hasImage: hasImage || false,
       media: Array.isArray(media) ? media : [],
+      meta: {
+        nodeId,
+        ...(parentId ? { parentId } : {}),
+        contentType,
+        createdTime,
+        ...(modelSlug ? { modelSlug } : {}),
+        ...(status ? { status } : {}),
+        ...(selected_sources ? { selected_sources } : {}),
+        ...(prompt_expansion_predictions ? { prompt_expansion_predictions } : {}),
+        ...(safe_urls ? { safe_urls } : {}),
+        ...(typeof is_user_system_message === 'boolean' ? { is_user_system_message } : {}),
+        ...(user_context_message_data ? { user_context_message_data } : {}),
+      },
     });
   }
   return msgs;
