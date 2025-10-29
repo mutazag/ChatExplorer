@@ -54,3 +54,18 @@ jobs:
           source counts.env
           echo "Files: ${FILES} | Dirs: ${DIRS}" >> $GITHUB_STEP_SUMMARY
           echo "Manifest path: $MANIFEST" >> $GITHUB_STEP_SUMMARY
+
+          # OPTIONAL: Publish a GitHub Release for long-term retention
+          # - name: Publish Release (optional)
+          #   if: ${{ github.ref == 'refs/heads/master' }}
+          #   uses: softprops/action-gh-release@v2
+          #   with:
+          #     tag_name: build-${{ github.sha }}
+          #     name: Build ${{ github.sha }}
+          #     body: |
+          #       CD build artifacts for commit ${{ github.sha }}.
+          #       Includes runtime code and data directory structure; see manifest.json for details.
+          #     files: |
+          #       artifact-out/build-artifacts/**
+          #   env:
+          #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -93,6 +93,9 @@ description: "Task list for CD Build Artifacts feature"
 - [ ] T016 [P] Update specs/001-cd-build-artifacts/quickstart.md with workflow usage and retrieval notes
 - [ ] T017 [P] Add README badge for CD workflow in README.md
 - [ ] T018 Add optional step to publish a GitHub Release (commented) in .github/workflows/cd-build-artifacts.yml
+ - [x] T016 [P] Update specs/001-cd-build-artifacts/quickstart.md with workflow usage and retrieval notes
+ - [x] T017 [P] Add README badge for CD workflow in README.md
+ - [x] T018 Add optional step to publish a GitHub Release (commented) in .github/workflows/cd-build-artifacts.yml
 
 ---
 
