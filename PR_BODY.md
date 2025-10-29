@@ -1,37 +1,42 @@
-Title: feat(markdown): autolink plain URLs and sanitize Markdown output (001-markdown-messages)
+Title: feat(cd): build artifacts workflow with manifest validation (001-cd-build-artifacts)
 
 Summary:
-- Adds autolinking for plain http(s) URLs in message Markdown while preserving authored Markdown links.
-- Centralizes sanitization in `src/utils/markdown.js`: converts placeholder anchors (`data-raw-href`) to real anchors with safe attributes and strips unsafe tags/attributes/schemes.
-- Adds URL normalization/truncation helpers and unit tests. Adds a browser-harness CI workflow that runs the tests headless via Puppeteer.
+- Adds a CI workflow that packages runtime code and the data/ directory structure into a deployable build artifact, excluding specs/tests and other non-runtime files.
+- Generates a manifest.json capturing all included files and metadata (commit SHA, createdAt, name) and validates it against deny rules to guarantee exclusions.
+- Uploads the artifact to GitHub Actions with 90-day retention by default; provides a commented optional Release step for longer retention.
+- Documents usage in a feature quickstart and adds a README badge linking to the workflow.
 
-Files of interest:
-- `src/utils/markdown.js` — renderMarkdownToSafeHtml: rendering, autolinker integration, sanitizer.
-- `src/utils/links.js` — autolinker helper (inserts `data-raw-href`).
-- `src/utils/url.js` — normalize/truncate helpers.
-- `tests/unit/` — unit tests for autolinker and sanitizer behavior.
-- `.github/workflows/browser-tests.yml` and `.github/scripts/run_browser_tests.js` — CI harness for browser tests.
+What’s included:
+- .github/workflows/cd-build-artifacts.yml — CI workflow: checkout → setup Node → package → validate → upload → job summary (pure Node, no external deps). Optional Release step is commented.
+- scripts/cd/build-artifacts.mjs — Copies runtime files (index.html, styles.css, assets/**, src/**) and replicates the data/ tree (no file contents beyond structure where applicable); writes manifest.json under artifact-out/build-artifacts/.
+- scripts/cd/validate-manifest.mjs — Enforces deny rules and fails the job on violation.
+- scripts/cd/filters.json — Deny patterns (e.g., specs/, tests/, **/*.test.*).
+- specs/001-cd-build-artifacts/contracts/manifest.schema.json — Contract for manifest shape.
+- specs/001-cd-build-artifacts/quickstart.md — How to trigger (push to master or manual dispatch), validate, and retrieve artifacts.
+- README.md — Adds a workflow status badge for discoverability.
 
-How to test locally:
-1) Start a local static server at repo root and open the browser test harness at `http://localhost:8000/tests/index.html`.
-   - A simple Python server works: `python -m http.server 8000` (run from repo root).
-2) Open the harness in a browser and confirm unit & integration tests pass.
-3) Manually exercise `renderMarkdownToSafeHtml(...)` by loading messages in the UI and verifying:
-   - Plain http(s) URLs become anchors that open in a new tab (`target="_blank"`) and include `rel="noopener noreferrer nofollow"`.
-   - Authored Markdown links are preserved and sanitized.
-   - Unsafe schemes (e.g., `javascript:`) are never converted into active anchors.
+Behavior and guarantees:
+- Only runtime code and data directory structure are packaged; specs/, tests/, and other prohibited paths are excluded by construction and validated post-packaging.
+- Artifact name: build-artifacts-<sha>; retention ~90 days (subject to org policy).
+- Job summary prints manifest counts and key paths for quick inspection.
 
-CI notes:
-- The workflow runs the browser harness headless using Puppeteer. The runner includes a compatibility fallback for Puppeteer environments without `page.waitForTimeout`.
+How to verify:
+1) Trigger the workflow via manual dispatch from the Actions tab or by pushing to master.
+2) Inspect the workflow run → Summary for manifest counts and included roots.
+3) Download the artifact and confirm contents match runtime + data tree only; verify manifest.json exists with expected metadata.
+4) Intentionally add a prohibited file (e.g., tests/tmp.test.js) to confirm the validator fails the run.
 
-Notes for reviewer:
-- Focus review on `renderMarkdownToSafeHtml` for sanitizer rules and any potential allowlist gaps.
-- If your repo's default branch is `main` instead of `master`, base the PR on `main` when creating it.
+Acceptance criteria:
+- Build artifact contains only runtime files plus data/ tree; specs/tests are excluded.
+- Manifest is generated and validated; the workflow fails on violations.
+- Artifact is uploaded and retained; documentation and badge are present.
 
-Checklist (minimal):
-- [ ] Sanity: unit tests for autolinker & sanitizer pass locally.
-- [ ] Integration: browser harness tests green in GitHub Actions.
-- [ ] Security: verify sanitizer disallows dangerous schemes and strips event handlers.
-- [ ] UX: links open in new tab and have safe rel attributes.
+Checklist:
+- [ ] CI green on this PR.
+- [ ] Artifact uploaded contains expected files and structure.
+- [ ] Optional Release step reviewed and left commented (or enabled in a follow-up if long-term retention is required).
+
+Notes:
+- Default base branch here is master; switch to main if your repo’s default differs.
 
 Signed-off-by: PR generator

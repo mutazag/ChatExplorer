@@ -1,0 +1,71 @@
+name: CD Build Artifacts
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build-artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build artifact (package runtime + data tree)
+        run: |
+          node --version
+          node scripts/cd/build-artifacts.mjs
+
+      - name: Validate manifest (no specs/tests)
+        run: |
+          node scripts/cd/validate-manifest.mjs artifact-out/build-artifacts/manifest.json scripts/cd/filters.json
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+          path: artifact-out/build-artifacts
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Job summary
+        shell: bash
+        run: |
+          MANIFEST=artifact-out/build-artifacts/manifest.json
+          echo "# Build Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "Artifact: build-artifacts-${GITHUB_SHA}" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: ${GITHUB_SHA}" >> $GITHUB_STEP_SUMMARY
+          node -e '
+            const fs = require("fs");
+            const m = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            const files = m.items.filter(x => x.type === "file").length;
+            const dirs = m.items.filter(x => x.type === "dir").length;
+            console.log(`FILES=${files}`); console.log(`DIRS=${dirs}`);
+          ' "$MANIFEST" | tee counts.env
+          source counts.env
+          echo "Files: ${FILES} | Dirs: ${DIRS}" >> $GITHUB_STEP_SUMMARY
+          echo "Manifest path: $MANIFEST" >> $GITHUB_STEP_SUMMARY
+
+          # OPTIONAL: Publish a GitHub Release for long-term retention
+          # - name: Publish Release (optional)
+          #   if: ${{ github.ref == 'refs/heads/master' }}
+          #   uses: softprops/action-gh-release@v2
+          #   with:
+          #     tag_name: build-${{ github.sha }}
+          #     name: Build ${{ github.sha }}
+          #     body: |
+          #       CD build artifacts for commit ${{ github.sha }}.
+          #       Includes runtime code and data directory structure; see manifest.json for details.
+          #     files: |
+          #       artifact-out/build-artifacts/**
+          #   env:
+          #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,7 @@
 # 🚀 NewChatBrowser
 
+[![CD Build Artifacts](https://github.com/mutazag/ChatExplorer/actions/workflows/cd-build-artifacts.yml/badge.svg)](https://github.com/mutazag/ChatExplorer/actions/workflows/cd-build-artifacts.yml)
+
 Lightweight client-side conversation browser for ChatGPT exports with inline multimodal rendering.
 
 This repository provides a small, dependency-free web app to browse exported ChatGPT conversations locally. It supports rendering multimodal message parts (images, audio, video) inline in the conversation thread and resolves asset pointers (e.g. `file-service://file-<ID>`) to files found in the selected export dataset.

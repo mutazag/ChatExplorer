@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/artifact-manifest.json",
+  "title": "ArtifactManifest",
+  "type": "object",
+  "required": ["artifactId", "generatedAt", "items"],
+  "properties": {
+    "artifactId": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "type"],
+        "properties": {
+          "path": { "type": "string" },
+          "type": { "type": "string", "enum": ["dir", "file"] },
+          "size": { "type": "number" },
+          "count": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

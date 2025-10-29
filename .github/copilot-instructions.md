@@ -12,6 +12,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-25
 - No persistence; session state only (theme, pane visibility in memory). (001-visual-themes)
 - JavaScript (ES6+), HTML5 + None (vanilla JS). Prefer built-in regex-based auto-linking or a small vendored library if justified. (001-markdown-messages)
 - No new storage; uses existing in-memory message objects and static `data/` datasets. (001-markdown-messages)
+- N/A for runtime changes; app remains JavaScript (ES6+), HTML5, CSS3 + None for app; CD uses GitHub Actions built-ins and `actions/upload-artifact@v4` (001-cd-build-artifacts)
+- Static files; artifacts stored in GitHub Actions with 90-day retention (org policy may override) (001-cd-build-artifacts)
 
 - JavaScript (ES6+), HTML5, CSS3 + None (vanilla). Tests: existing in-browser harness. (001-multimodal-inline)
 
@@ -32,9 +34,9 @@ npm test; npm run lint
 JavaScript (ES6+), HTML5, CSS3: Follow standard conventions
 
 ## Recent Changes
+- 001-cd-build-artifacts: Added N/A for runtime changes; app remains JavaScript (ES6+), HTML5, CSS3 + None for app; CD uses GitHub Actions built-ins and `actions/upload-artifact@v4`
 - 001-image-popout: Added [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION] + [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]
 - 001-markdown-messages: Added JavaScript (ES6+), HTML5 + None (vanilla JS). Prefer built-in regex-based auto-linking or a small vendored library if justified.
-- 001-multimodal-inline: Added JavaScript (ES6+), HTML5, CSS3 + None (vanilla). Tests run in-browser via the existing harness in `tests/`.
 
 
 <!-- MANUAL ADDITIONS START -->
