@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/tooltip.schema.json",
+  "title": "TooltipSummary",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "role": { "type": "string", "enum": ["user", "assistant", "system", "unknown"] },
+    "id": { "type": "string", "minLength": 1 },
+    "parentId": { "type": "string" },
+    "contentType": { "type": "string", "minLength": 1 },
+    "createdTime": { "type": ["number", "string"] },
+    "modelSlug": { "type": "string" }
+  },
+  "required": ["role", "id", "contentType"],
+  "allOf": [
+    {
+      "if": { "properties": { "role": { "const": "assistant" } } },
+      "then": { "properties": { "modelSlug": { "type": "string", "minLength": 1 } } }
+    }
+  ]
+}
