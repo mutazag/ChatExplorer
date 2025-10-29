@@ -1,14 +1,14 @@
 <!--
 Sync Impact Report
 ==================
-Version: 1.0.0 → 1.1.0
-Modified Principles: Added new principle VI (UI & Branding)
-Added Sections: Principle VI. UI & Branding; Added UI gates to templates
+Version: 1.1.0 → 1.2.0
+Modified Principles: Added new principle VII (Source Control & Branching)
+Added Sections: Principle VII. Source Control & Branching; Added branching gate to plan template
 Removed Sections: None
 Templates Status:
-  ✅ .specify/templates/plan-template.md - updated (added UI & Branding gate)
-  ✅ .specify/templates/spec-template.md - reviewed (no change needed)
-  ✅ .specify/templates/tasks-template.md - updated (logo + responsive tasks)
+  ✅ .specify/templates/plan-template.md - updated (added Source Control & Branching gate)
+  ✅ .specify/templates/spec-template.md - reviewed (already includes Feature Branch field)
+  ✅ .specify/templates/tasks-template.md - reviewed (no change needed)
 Follow-up TODOs: None
 -->
 
@@ -77,6 +77,21 @@ Accessibility MUST meet WCAG AA basics: 4.5:1 color contrast, visible focus stat
 **Rationale**: A responsive, branded UI improves usability and consistency, while local assets and
 minimal CSS maintain performance, privacy, and long-term maintainability.
 
+### VII. Source Control & Branching
+
+All feature work (specification, plan, implementation, and testing) MUST occur on a dedicated
+feature branch. Branches MUST follow the convention `[###-feature-name]` using zero‑padded
+numeric prefix and kebab‑case name (e.g., `001-image-popout`). Work MUST NOT be committed directly
+to `master`.
+
+- Create the feature branch BEFORE generating or editing any files for that feature.
+- One feature per branch; avoid mixing unrelated changes.
+- All pull requests MUST originate from a feature branch and target `master`.
+- Each PR MUST include tests and reference the feature path under `specs/[###-feature-name]/`.
+
+**Rationale**: Dedicated feature branches provide isolation, clear traceability from spec to code,
+clean review diffs, safer reverts, and predictable CI.
+
 ## Technology Stack Constraints
 
 **Mandatory Technologies**:
@@ -109,6 +124,9 @@ minimal CSS maintain performance, privacy, and long-term maintainability.
 
 **Feature Development Process**:
 
+0. Branching: Create a dedicated branch named `[###-feature-name]`; all work for this feature
+  MUST occur on this branch. No direct commits to `master`.
+
 1. Specification phase: Document user stories with acceptance scenarios
 2. Test-first: Write failing tests for all functions/modules
 3. Implementation: Write minimal code to pass tests
@@ -125,6 +143,8 @@ minimal CSS maintain performance, privacy, and long-term maintainability.
 - Complexity violations MUST be justified in plan.md
 - UI MUST render responsively without layout breakage at 320px, 768px, and 1280px widths
 - Header MUST display the MagTech.ai logo sourced from `assets/`
+- PR MUST originate from a feature branch `[###-feature-name]` and target `master`; no direct
+  commits to `master`
 
 **Quality Standards**:
 
@@ -157,4 +177,4 @@ This constitution supersedes all other development practices and conventions.
 - Rejected simpler alternatives MUST be explicitly stated
 - Annual review of constitution alignment with project evolution
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-25
+**Version**: 1.2.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-29

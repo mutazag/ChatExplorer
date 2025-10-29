@@ -142,6 +142,13 @@ Notes:
 - Follow repository conventions (vanilla JS, no build step). Small, focused PRs are preferred.
 - Run and update tests under `tests/` when changing rendering behavior.
 
+### Branching
+
+- All feature work (spec, plan, implementation, tests) MUST happen on a dedicated feature branch
+	named `[###-feature-name]` (e.g., `001-image-popout`).
+- Do not commit directly to `master`. Open PRs from the feature branch targeting `master`.
+- Each PR MUST include tests and reference the feature docs under `specs/[###-feature-name]/`.
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
