@@ -23,9 +23,9 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 
 **Goal**: Provide deterministic metadata and utilities required by tooltips.
 
-- [ ] T010 [P] Add unit tests for middle-ellipsis utility in `tests/unit/text.truncateMiddle.test.js`
+- [x] T010 [P] Add unit tests for middle-ellipsis utility in `tests/unit/text.truncateMiddle.test.js`
 - [ ] T011 [P] Implement `truncateMiddle(str, max=40)` in `src/utils/text.js`
-- [ ] T012 Add unit tests for normalization meta mapping in `tests/unit/parse.meta.test.js`
+- [x] T012 Add unit tests for normalization meta mapping in `tests/unit/parse.meta.test.js`
 - [ ] T013 Implement normalization meta enrichment in `src/data/conversations/parse.js`
   - Populate `message.meta = { nodeId, parentId?, contentType, createdTime, modelSlug? }`
   - `nodeId` from mapping key; `parentId` from mapping[parent].
@@ -43,8 +43,8 @@ description: "Tasks for Visual Themes – Role Icon Tooltips (US6)"
 
 ### Tests for User Story 6 (MANDATORY per constitution)
 
-- [ ] T020 [US6] Integration test for tooltip show/hide + content in `tests/integration/tooltip.us6.test.js`
-- [ ] T021 [P] [US6] Unit test for tooltip summary builder in `tests/unit/tooltip.summary.test.js`
+- [x] T020 [US6] Integration test for tooltip show/hide + content in `tests/integration/tooltip.us6.test.js`
+- [x] T021 [P] [US6] Unit test for tooltip summary builder in `tests/unit/tooltip.summary.test.js`
 
 ### Implementation for User Story 6
 
