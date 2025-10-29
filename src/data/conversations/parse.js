@@ -59,14 +59,27 @@ function reconstructActivePathMessages(c, assetIndex) {
     const hidden = role === 'system' && m.metadata && m.metadata.is_visually_hidden_from_conversation === true;
     if (hidden) continue;
     const { text, hasImage, media } = toRenderableContent(m.content, assetIndex, String(c.conversation_id));
+    // Build deterministic meta mapping for tooltips (US6)
+    const nodeId = String(n && n.id ? n.id : (m.id || ''));
+    const parentId = n && n.parent ? String(n.parent) : (m && m.metadata && m.metadata.parent_id ? String(m.metadata.parent_id) : undefined);
+    const contentType = m && m.content && m.content.content_type ? String(m.content.content_type) : '';
+    const createdTime = toNumberOrNull(m.create_time);
+    const modelSlug = (role === 'assistant' && m && m.metadata) ? (m.metadata.model_slug || m.metadata.default_model_slug || null) : null;
     msgs.push({
       id: String(m.id || n.id || ''),
       role: role || 'unknown',
-      create_time: toNumberOrNull(m.create_time),
+      create_time: createdTime,
       update_time: toNumberOrNull(m.update_time),
       text: text,
       hasImage: hasImage || false,
       media: Array.isArray(media) ? media : [],
+      meta: {
+        nodeId,
+        ...(parentId ? { parentId } : {}),
+        contentType,
+        createdTime,
+        ...(modelSlug ? { modelSlug } : {}),
+      },
     });
   }
   return msgs;
