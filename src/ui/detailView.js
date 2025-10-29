@@ -48,13 +48,6 @@ export function renderDetail(host, conversation) {
     label.textContent = roleName + ':';
     // For user messages we append the label first and then the icon. With
     // right-aligned styles this produces the visual order: <icon> User:
-    // if (roleName === 'user') {
-    //   header.appendChild(label);
-    //   header.appendChild(icon);
-    // } else {
-    //   header.appendChild(icon);
-    //   header.appendChild(label);
-    // }
     header.appendChild(icon);
     header.appendChild(label);
 
