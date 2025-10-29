@@ -144,5 +144,5 @@ Notes:
 
 ## License
 
-This repository doesn't include a license file by default. Add a `LICENSE` file if you plan to publish or redistribute.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
