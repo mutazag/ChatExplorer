@@ -22,8 +22,8 @@ description: "Task list for CD Build Artifacts feature"
 
 **Purpose**: Initialize CI/CD scaffolding and repository plumbing for artifact creation
 
-- [ ] T001 Create CD workflow skeleton at .github/workflows/cd-build-artifacts.yml
-- [ ] T002 Add scripts directory for CD utilities at scripts/cd/ (empty placeholder .gitkeep)
+- [x] T001 Create CD workflow skeleton at .github/workflows/cd-build-artifacts.yml
+- [x] T002 Add scripts directory for CD utilities at scripts/cd/ (empty placeholder .gitkeep)
 
 ---
 
@@ -31,10 +31,10 @@ description: "Task list for CD Build Artifacts feature"
 
 **Purpose**: Core tooling and configs required across all user stories
 
-- [ ] T003 [P] Add allowlist/denylist configuration at scripts/cd/filters.json
-- [ ] T004 [P] Implement artifact packager at scripts/cd/build-artifacts.mjs
-- [ ] T005 [P] Implement manifest schema and validator at scripts/cd/validate-manifest.mjs
-- [ ] T006 Wire foundational steps into .github/workflows/cd-build-artifacts.yml (checkout, setup node, run packager, upload)
+- [x] T003 [P] Add allowlist/denylist configuration at scripts/cd/filters.json
+- [x] T004 [P] Implement artifact packager at scripts/cd/build-artifacts.mjs
+- [x] T005 [P] Implement manifest schema and validator at scripts/cd/validate-manifest.mjs
+- [x] T006 Wire foundational steps into .github/workflows/cd-build-artifacts.yml (checkout, setup node, run packager, upload)
 
 **Checkpoint**: Foundation ready — workflow can package a minimal artifact locally
 
@@ -48,10 +48,10 @@ description: "Task list for CD Build Artifacts feature"
 
 ### Implementation
 
-- [ ] T007 [P] [US1] In scripts/cd/build-artifacts.mjs: include index.html, styles.css, assets/**, src/**
-- [ ] T008 [P] [US1] In scripts/cd/build-artifacts.mjs: replicate data/ directory tree without content files
-- [ ] T009 [US1] In .github/workflows/cd-build-artifacts.yml: upload artifact with name build-artifacts-${{ github.sha }} and retention-days: 90
-- [ ] T010 [US1] Write manifest.json alongside artifact output (scripts/cd/build-artifacts.mjs)
+- [x] T007 [P] [US1] In scripts/cd/build-artifacts.mjs: include index.html, styles.css, assets/**, src/**
+- [x] T008 [P] [US1] In scripts/cd/build-artifacts.mjs: replicate data/ directory tree without content files
+- [x] T009 [US1] In .github/workflows/cd-build-artifacts.yml: upload artifact with name build-artifacts-${{ github.sha }} and retention-days: 90
+- [x] T010 [US1] Write manifest.json alongside artifact output (scripts/cd/build-artifacts.mjs)
 
 **Checkpoint**: US1 artifact produced and retained; manifest present
 
@@ -65,8 +65,8 @@ description: "Task list for CD Build Artifacts feature"
 
 ### Implementation
 
-- [ ] T011 [P] [US2] Add metadata fields (commit, createdAt, name) into manifest.json (scripts/cd/build-artifacts.mjs)
-- [ ] T012 [US2] Add job summary step to print artifact name, manifest stats, and direct download hint in .github/workflows/cd-build-artifacts.yml
+- [x] T011 [P] [US2] Add metadata fields (commit, createdAt, name) into manifest.json (scripts/cd/build-artifacts.mjs)
+- [x] T012 [US2] Add job summary step to print artifact name, manifest stats, and direct download hint in .github/workflows/cd-build-artifacts.yml
 
 **Checkpoint**: US2 discoverability proven via job summary; retrieval confirmed via Actions UI
 
@@ -80,9 +80,9 @@ description: "Task list for CD Build Artifacts feature"
 
 ### Implementation
 
-- [ ] T013 [P] [US3] In scripts/cd/filters.json: define deny patterns (specs/**, tests/**, .specify/**, **/*.test.*)
-- [ ] T014 [P] [US3] In scripts/cd/validate-manifest.mjs: assert zero prohibited paths; print violations and exit 1 on failure
-- [ ] T015 [US3] In .github/workflows/cd-build-artifacts.yml: add validation step after packaging to run validator against manifest.json
+- [x] T013 [P] [US3] In scripts/cd/filters.json: define deny patterns (specs/**, tests/**, .specify/**, **/*.test.*)
+- [x] T014 [P] [US3] In scripts/cd/validate-manifest.mjs: assert zero prohibited paths; print violations and exit 1 on failure
+- [x] T015 [US3] In .github/workflows/cd-build-artifacts.yml: add validation step after packaging to run validator against manifest.json
 
 **Checkpoint**: US3 validation working; builds fail safely on violations
 
