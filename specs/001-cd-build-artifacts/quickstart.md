@@ -1,6 +1,6 @@
 # Quickstart: CD Build Artifacts
 
-This guide explains how to trigger the CD workflow that packages runtime code and the `data/` folder structure (no specs/tests) into a retained artifact.
+This guide explains how to trigger the CD workflow that packages runtime code and the `data/` folder (including dataset files, no specs/tests) into a retained artifact.
 
 ## Trigger
 - Push or merge to `master`.
@@ -11,7 +11,7 @@ This guide explains how to trigger the CD workflow that packages runtime code an
   - index.html, styles.css
   - assets/** (runtime assets only)
   - src/** (application code)
-  - data/** (directory structure only; no content files)
+  - data/** (datasets included)
   - manifest.json (paths included; counts/sizes where applicable)
 
 ## How to retrieve

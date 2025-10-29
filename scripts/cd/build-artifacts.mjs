@@ -29,24 +29,7 @@ async function copyDir(srcDir, destDir, manifest) {
   }
 }
 
-/**
- * Recursively create only directory structure (no files)
- */
-async function replicateDirsOnly(srcDir, destDir, manifest) {
-  // If data directory doesn't exist, still ensure root exists in output
-  const exists = await fs.access(srcDir).then(() => true).catch(() => false);
-  await fs.mkdir(destDir, { recursive: true });
-  manifest.items.push({ path: path.relative(repoRoot, destDir).replace(/\\/g, '/'), type: 'dir' });
-  if (!exists) return;
-  const entries = await fs.readdir(srcDir, { withFileTypes: true });
-  for (const entry of entries) {
-    const srcPath = path.join(srcDir, entry.name);
-    const destPath = path.join(destDir, entry.name);
-    if (entry.isDirectory()) {
-      await replicateDirsOnly(srcPath, destPath, manifest);
-    }
-  }
-}
+// (removed) replicateDirsOnly: we now include full data/ contents to ensure datasets are present in artifacts
 
 async function main() {
   const commit = process.env.GITHUB_SHA || 'local';
@@ -87,10 +70,17 @@ async function main() {
     await copyDir(src, dest, manifest);
   }
 
-  // Replicate data/ directory hierarchy (no files)
+  // Include data/ directory (with files) so datasets are available in the artifact
   const dataSrc = path.join(repoRoot, 'data');
   const dataDest = path.join(OUT_ROOT, 'data');
-  await replicateDirsOnly(dataSrc, dataDest, manifest);
+  const dataExists = await fs.access(dataSrc).then(() => true).catch(() => false);
+  if (dataExists) {
+    await copyDir(dataSrc, dataDest, manifest);
+  } else {
+    // Ensure a data/ root exists in the artifact for stability
+    await fs.mkdir(dataDest, { recursive: true });
+    manifest.items.push({ path: path.relative(repoRoot, dataDest).replace(/\\/g, '/'), type: 'dir' });
+  }
 
   // Write manifest.json
   const manifestPath = path.join(OUT_ROOT, 'manifest.json');
