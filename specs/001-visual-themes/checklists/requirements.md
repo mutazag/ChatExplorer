@@ -1,7 +1,7 @@
-# Specification Quality Checklist: Visual Themes Enhancements
+# Specification Quality Checklist: Visual Themes Enhancements (Tooltips)
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2025-10-25
+**Created**: 2025-10-29
 **Feature**: specs/001-visual-themes/spec.md
 
 ## Content Quality
@@ -31,4 +31,4 @@
 
 ## Notes
 
-- Checklist validated against the spec; no outstanding issues found.
+- Update on 2025-10-29 adds User Story 6 (role icon tooltip with JSON context) and FR-008..FR-012, plus SC-007..SC-009. Revalidated: all checks pass.
