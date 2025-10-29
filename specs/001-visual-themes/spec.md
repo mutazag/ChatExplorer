@@ -5,6 +5,8 @@
 **Status**: Draft  
 **Input**: User description: "Visual Themes enhancements: add dark and light mode with a toggle switch, add the ability to hide and show the left pane, by default it is shown, when size is being viewed in a mobile device, optimise the display of the chat list to allow more real estate for the conversation history view, and lastly add styling to the conversation view to visually separate user messages from assistant messages, user messages are aligned to the right and assistant is aligned to the left, user has a human icon next to user title, and assistant has a robot icon next to it, make the text appear in a rounded rectangle and visually distinctive for each of the roles, and add a hover over functionality when mouse is over a message to slightly pop it up to highlight it and show timestamp of the message under the message bubble"
 
+Update (2025-10-29): Include role-icon tooltips that surface relevant JSON context from `data/newchat/conversations.json` used to construct the message bubble. On hover/focus of the role icon, a tooltip appears showing a concise summary (see FRs below).
+
 ## User Scenarios & Testing (mandatory)
 
 ### User Story 1 - Switch themes (Priority: P1)
@@ -81,6 +83,23 @@ Acceptance Scenarios:
 2. Given keyboard navigation, When a message receives focus, Then the same timestamp is revealed without requiring hover.
 3. Given a touch device, When I tap a message, Then the timestamp is revealed without requiring hover.
 
+---
+
+### User Story 6 - Role icon tooltip with JSON context (Priority: P2)
+
+As a user, when I hover or focus the role icon next to a message, I see a tooltip with key context fields from the underlying conversation JSON so I can understand provenance (e.g., ids, role, model for assistant, content type, and time).
+
+Why this priority: Helpful transparency for debugging/QA and power users without cluttering the main UI.
+
+Independent Test: Hover/focus the role icon on both user and assistant messages; verify a tooltip appears within 100ms, is readable, accessible via keyboard, and shows the expected fields mapped from the correct JSON node.
+
+Acceptance Scenarios:
+
+1. Given an assistant message with known metadata, When I hover the robot icon, Then a tooltip appears containing: role, message id, parent id (if any), content type, created time, and assistant model (if present).
+2. Given a user message, When I hover the human icon, Then a tooltip appears containing: role, message id, content type, and created time; no model field is shown.
+3. Given a long field value (e.g., request_id), When I hover the icon, Then the value is truncated with an ellipsis and a copy affordance is optional/out of scope in this iteration.
+4. Given keyboard navigation, When the icon receives focus, Then the tooltip shows with the same content and is announced via ARIA as appropriate; on blur it hides.
+
 ### Edge Cases
 
 - Very long messages: bubbles wrap text gracefully without overlapping icons or controls.
@@ -88,6 +107,9 @@ Acceptance Scenarios:
 - Accessibility: color contrast meets guidelines; information is not conveyed by color alone; timestamp reveal is accessible via keyboard focus.
 - Reduced motion: hover/focus effects respect reduced-motion preferences.
 - Time zones/localization: timestamp formatting is human-readable regardless of locale.
+- Missing fields: if a field isn’t present in JSON, it’s omitted (no "undefined" text shown).
+- Very large values: tooltip truncates long values (e.g., > 40 chars) with middle-ellipsis.
+- Placement: tooltip repositions to avoid off-screen clipping.
 
 ## Requirements (mandatory)
 
@@ -100,12 +122,18 @@ Acceptance Scenarios:
 - FR-005: On hover with a pointing device, System MUST subtly elevate the message bubble and reveal its timestamp beneath; equivalent behavior MUST be available via keyboard focus and touch interaction.
 - FR-006: System MUST meet basic accessibility expectations: keyboard operable controls, sufficient color contrast for themes, and no color-only distinctions.
 - FR-007: Visual transitions MUST be performant and feel instantaneous to users (see Success Criteria for timing thresholds) and respect reduced-motion preferences.
+- FR-008: On hover or keyboard focus of the role icon, System MUST display a tooltip with a concise summary of the message’s JSON context sourced from `data/newchat/conversations.json`.
+- FR-009: Tooltip content MUST include these fields when available: role, message id, parent id (if present), content type, created time; for assistant messages also include model slug (e.g., `metadata.model_slug` or `default_model_slug`).
+- FR-010: Tooltip MUST be accessible: the icon is focusable, tooltip is associated via ARIA (e.g., `aria-describedby`), and appears on focus; it hides on blur/escape.
+- FR-011: Tooltip MUST truncate overly long values (e.g., request_id) with a middle-ellipsis and MUST not overflow the viewport; it SHOULD respect reduced-motion.
+- FR-012: Mapping between UI message and JSON MUST be deterministic; the tooltip MUST reflect the exact node used to render the message bubble.
 
 ### Key Entities
 
 - Preference State: { theme: "light" | "dark" }
 - Layout State: { leftPaneVisible: boolean, viewportCategory: "small" | "medium" | "large" }
 - Message (UI): { role: "user" | "assistant", text, timestamp }
+- Message Metadata Summary (UI): { id, role, parentId?, contentType, createdTime, modelSlug? }
 
 ## Success Criteria (mandatory)
 
@@ -117,6 +145,9 @@ Acceptance Scenarios:
 - SC-004: 95% of test participants correctly identify message roles (user vs assistant) at a glance.
 - SC-005: Hover/focus/tap reveals timestamps reliably, with reveal/hide transitions occurring within 150ms.
 - SC-006: Color contrast for text and key UI elements meets commonly accepted accessibility guidelines.
+- SC-007: Tooltip appears within 100ms on typical devices and is dismissible via escape/blur within 150ms.
+- SC-008: Mapping accuracy is 100% in test cases (tooltip fields match the underlying JSON node for the bubble).
+- SC-009: No more than 1 line of truncation per long field; tooltip width adapts to avoid horizontal scroll.
 
 ## Assumptions
 
@@ -124,6 +155,7 @@ Acceptance Scenarios:
 - Left pane visibility does not persist across sessions unless specified in a future enhancement.
 - Small-screen behavior is determined by typical mobile viewport widths.
 - Icons used to represent user and assistant are recognizable and non-branded.
+- "Relevant JSON data" is defined as: role, message id, parent id (if available), content type, created time, and assistant model slug when present. Additional fields like request_id MAY be included in a future iteration.
 
 ## Dependencies & Constraints
 
@@ -136,6 +168,7 @@ Acceptance Scenarios:
 - Theme customization beyond light/dark (e.g., custom palettes).
 - Persisting user preferences across sessions.
 - Advanced timestamp customization (e.g., relative time vs absolute) beyond a simple human-readable format.
+- Copy-to-clipboard within the tooltip; full raw JSON viewer.
 # Feature Specification: [FEATURE NAME]
 
 **Feature Branch**: `[###-feature-name]`  
