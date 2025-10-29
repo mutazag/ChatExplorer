@@ -1,8 +1,8 @@
 # Feature Specification: CD Build Artifacts
 
-**Feature Branch**: `001-cd-build-artifacts`  
-**Created**: 2025-10-29  
-**Status**: Draft  
+**Feature Branch**: `001-cd-build-artifacts`
+**Created**: 2025-10-29
+**Status**: Draft
 **Input**: User description: "CD workflow should make a build copy of source code and data folder structure, without any spec or test artefacts, the build artefacts is then retained to be later on used for deployments"
 
 ## User Scenarios & Testing (mandatory)
