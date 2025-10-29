@@ -17,14 +17,14 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]  
-**Storage**: [e.g., Local JSON files, Browser File API, Static HTML or NEEDS CLARIFICATION]  
-**Testing**: [e.g., Mocha (browser), Jest (Node.js for unit tests) or NEEDS CLARIFICATION]  
+**Language/Version**: [e.g., JavaScript ES6+, HTML5 or NEEDS CLARIFICATION]
+**Primary Dependencies**: [e.g., None (vanilla), Mocha (testing only) or NEEDS CLARIFICATION]
+**Storage**: [e.g., Local JSON files, Browser File API, Static HTML or NEEDS CLARIFICATION]
+**Testing**: [e.g., Mocha (browser), Jest (Node.js for unit tests) or NEEDS CLARIFICATION]
 **Target Platform**: [e.g., Modern browsers (Chrome, Firefox, Safari, Edge) or NEEDS CLARIFICATION]
-**Project Type**: [e.g., client-side web application - determines source structure]  
-**Performance Goals**: [e.g., <100ms file parsing, smooth 60fps UI or NEEDS CLARIFICATION]  
-**Constraints**: [e.g., No build step, offline-capable, no external API calls or NEEDS CLARIFICATION]  
+**Project Type**: [e.g., client-side web application - determines source structure]
+**Performance Goals**: [e.g., <100ms file parsing, smooth 60fps UI or NEEDS CLARIFICATION]
+**Constraints**: [e.g., No build step, offline-capable, no external API calls or NEEDS CLARIFICATION]
 **Scale/Scope**: [e.g., Support ChatGPT exports up to 10MB, 1000s of conversations or NEEDS CLARIFICATION]
 
 ## Constitution Check
@@ -38,6 +38,8 @@
 - [ ] **File-Based Data**: Feature reads from static files (JSON/HTML) with documented format?
 - [ ] **Browser Compatibility**: Feature uses standard Web APIs compatible with modern browsers?
 - [ ] **UI & Branding**: UI is responsive (320px–desktop) and includes the MagTech.ai logo from local assets?
+- [ ] **Source Control & Branching**: All work for this feature occurs on a dedicated feature branch
+  named `[###-feature-name]` (PR targets `master`; no direct commits to `master`)?
 
 **Result**: ✅ PASS | ⚠️ VIOLATIONS REQUIRE JUSTIFICATION IN COMPLEXITY TABLE
 
