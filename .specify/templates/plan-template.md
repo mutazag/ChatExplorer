@@ -40,6 +40,9 @@
 - [ ] **UI & Branding**: UI is responsive (320px–desktop) and includes the MagTech.ai logo from local assets?
 - [ ] **Source Control & Branching**: All work for this feature occurs on a dedicated feature branch
   named `[###-feature-name]` (PR targets `master`; no direct commits to `master`)?
+- [ ] **Commit & PR Consent Gate**: Assistant/automation will ONLY propose commit/push/PR as a next
+  step and WILL NOT push, open PRs, or merge without explicit developer approval (see Constitution
+  Principle VIII)?
 
 **Result**: ✅ PASS | ⚠️ VIOLATIONS REQUIRE JUSTIFICATION IN COMPLEXITY TABLE
 

@@ -1,14 +1,14 @@
 <!--
 Sync Impact Report
 ==================
-Version: 1.1.0 → 1.2.0
-Modified Principles: Added new principle VII (Source Control & Branching)
-Added Sections: Principle VII. Source Control & Branching; Added branching gate to plan template
+Version: 1.2.0 → 1.3.0
+Modified Principles: (new) VIII. Commit & PR Consent Gate
+Added Sections: Principle VIII. Commit & PR Consent Gate; Added consent gate to plan template; Added governance note to tasks template
 Removed Sections: None
 Templates Status:
-  ✅ .specify/templates/plan-template.md - updated (added Source Control & Branching gate)
-  ✅ .specify/templates/spec-template.md - reviewed (already includes Feature Branch field)
-  ✅ .specify/templates/tasks-template.md - reviewed (no change needed)
+  ✅ .specify/templates/plan-template.md - updated (added Commit & PR Consent Gate)
+  ⚪ .specify/templates/spec-template.md - reviewed (no change needed)
+  ✅ .specify/templates/tasks-template.md - updated (assistant/automation consent note)
 Follow-up TODOs: None
 -->
 
@@ -92,6 +92,20 @@ to `master`.
 **Rationale**: Dedicated feature branches provide isolation, clear traceability from spec to code,
 clean review diffs, safer reverts, and predictable CI.
 
+### VIII. Commit & PR Consent Gate
+
+Assistants, scripts, and automation MUST NOT create commits, push branches, open pull requests,
+or merge changes without explicit developer approval. Automation MUST propose "commit/push/PR" as
+the next step once work reaches a meaningful checkpoint and await developer consent.
+
+- Default posture is local iteration until developer signals readiness.
+- Draft PRs MAY be opened only after approval or when explicitly requested by the developer.
+- Commit messages and PR bodies MUST summarize scope and link to the relevant spec/plan/tasks.
+- Any action beyond local file edits (e.g., tagging, releases) REQUIRES developer approval.
+
+**Rationale**: Protects developer iteration cycles, prevents premature publication of incomplete
+work, and maintains clear human oversight over repository history and review cadence.
+
 ## Technology Stack Constraints
 
 **Mandatory Technologies**:
@@ -146,6 +160,11 @@ clean review diffs, safer reverts, and predictable CI.
 - PR MUST originate from a feature branch `[###-feature-name]` and target `master`; no direct
   commits to `master`
 
+**Assistant/Automation Boundaries**:
+
+- Propose commit/push/PR as a next step; DO NOT push, open PRs, or merge without explicit
+  developer approval (see Principle VIII).
+
 **Quality Standards**:
 
 - Functions MUST be pure where possible (no side effects)
@@ -177,4 +196,4 @@ This constitution supersedes all other development practices and conventions.
 - Rejected simpler alternatives MUST be explicitly stated
 - Annual review of constitution alignment with project evolution
 
-**Version**: 1.2.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-29
+**Version**: 1.3.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-29
