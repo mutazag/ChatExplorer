@@ -1,6 +1,5 @@
 import { test, assert } from '../lib/harness.js';
 
-// Import as default function after implementation; for now test will fail
 import { truncateMiddle } from '../../src/utils/text.js';
 
 test('truncateMiddle: returns input when length <= max', () => {
