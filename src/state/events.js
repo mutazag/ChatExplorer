@@ -11,8 +11,15 @@ function mapState() {
 }
 
 export function onActiveDataSetChanged(handler) {
-  // Bridge appState's 'dataset:selected' event to a normalized state shape
-  return on('dataset:selected', () => handler(mapState()));
+  // Bridge appState's 'dataset:selected' event, prefer the emitted snapshot to avoid races
+  return on('dataset:selected', (snapshot) => {
+    const s = snapshot || getState();
+    handler({
+      activeDataSetId: s?.selectedDataset?.id ?? null,
+      theme: s?.theme,
+      leftPaneVisible: s?.leftPaneVisible,
+    });
+  });
 }
 
 export function setActiveDataSetId(id) {
