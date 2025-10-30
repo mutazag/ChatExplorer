@@ -53,6 +53,7 @@ export function initDataSetControl(host, opts = {}) {
     // Non-test mode: provide a compact button that opens the chooser.
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.setAttribute('aria-label', 'Choose data set');
     btn.title = 'Choose data set';
     btn.textContent = 'Data Sets';
     btn.addEventListener('click', () => {

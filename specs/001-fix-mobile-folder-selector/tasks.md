@@ -47,7 +47,7 @@
 ### Tests for User Story 1 (MANDATORY)
 
 - [x] T010 [P] [US1] Unit tests for `selectDataSet` in `tests/unit/modules/dataSelection.spec.js`
-- [ ] T011 [P] [US1] Integration test for mobile discovery and selection in `tests/integration/mobile/folder-selector-choose.spec.js`
+ - [x] T011 [P] [US1] Integration test for mobile discovery and selection in `tests/integration/mobile/folder-selector-choose.spec.js`
 
 ### Implementation for User Story 1
 
@@ -84,8 +84,8 @@
 - [ ] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
 - [ ] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
  - [x] T021 [US2] Indicate active data set in control UI (label/summary) in `src/ui/mobile/datasetControl.js`
- - [ ] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
- - [ ] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
+ - [x] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
+ - [x] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
 
 **Checkpoint**: US1 and US2 independently functional and testable
 
@@ -100,12 +100,12 @@
 ### Tests for User Story 3 (MANDATORY)
 
 - [x] T024 [P] [US3] Unit tests for accessibility helpers in `tests/unit/utils/a11y.spec.js`
-- [ ] T025 [P] [US3] Integration tests for keyboard focus and labeling across themes in `tests/integration/mobile/folder-selector-a11y.spec.js`
+ - [x] T025 [P] [US3] Integration tests for keyboard focus and labeling across themes in `tests/integration/mobile/folder-selector-a11y.spec.js`
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Apply ARIA attributes and keyboard bindings in `src/ui/mobile/datasetControl.js`
-- [ ] T027 [US3] Update theme CSS to ensure contrast and layering (no occlusion) in `styles.css`
+ - [x] T026 [P] [US3] Apply ARIA attributes and keyboard bindings in `src/ui/mobile/datasetControl.js`
+ - [x] T027 [US3] Update theme CSS to ensure contrast and layering (no occlusion) in `styles.css`
 - [ ] T028 [US3] Implement truncation + tooltip for long names in `src/ui/mobile/datasetControl.js` and `styles.css`
  - [x] T028 [US3] Implement truncation + tooltip for long names in `src/ui/mobile/datasetControl.js` and `styles.css`
 

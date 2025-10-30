@@ -2,6 +2,8 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: system-ui, Segoe UI, Roboto, sans-serif; }
 .app-header { display: flex; gap: .5rem; align-items: center; padding: .5rem 1rem; border-bottom: 1px solid rgba(0,0,0,.1); }
+/* Ensure header stays above scrolling content; helps avoid occlusion */
+.app-header { position: sticky; top: 0; z-index: 10; background: var(--bg); }
 .logo { width: 32px; height: 32px; }
 .spacer { flex: 1; }
 .layout { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 56px); }
@@ -125,6 +127,8 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
     padding: .25rem .5rem;
     gap: .35rem;
     touch-action: manipulation;
+    border: 1px solid var(--border);
+    border-radius: 6px;
   }
   .dataset-control > * { pointer-events: none; }
   .dataset-control .label {
