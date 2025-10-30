@@ -49,6 +49,14 @@ function updateControlsVisibility() {
   } catch { /* noop */ }
 }
 
+function ensureLeftVisible(show = true) {
+  try {
+    const root = document.documentElement; // .show-left .left { display:block } under mobile CSS
+    if (!root) return;
+    if (show) root.classList.add('show-left'); else root.classList.remove('show-left');
+  } catch { /* noop */ }
+}
+
 btnPick.addEventListener('click', async () => {
   try {
     const filesOrDatasets = await pickFolderOrFiles();
@@ -56,6 +64,7 @@ btnPick.addEventListener('click', async () => {
       // Show dataset choices in the left pane
       const datasets = filesOrDatasets.__datasets__;
       if (datasets.length === 0) {
+        ensureLeftVisible(true);
         renderEmptyDatasets(left, {
           onBrowseClick: async () => {
             const files = await browseFilesLegacy();
@@ -64,6 +73,7 @@ btnPick.addEventListener('click', async () => {
             const sorted = sortConversations(normalized);
             setConversations(sorted, stats);
             draw();
+            ensureLeftVisible(false);
           }
         });
       } else if (datasets.length === 1) {
@@ -77,6 +87,7 @@ btnPick.addEventListener('click', async () => {
         draw();
         updateControlsVisibility();
       } else {
+        ensureLeftVisible(true);
         renderDatasetChoices(left, datasets, {
           activeId: getState().selectedDataset?.id,
           onChoose: async (d) => {
@@ -88,6 +99,7 @@ btnPick.addEventListener('click', async () => {
             setConversations(sorted, stats);
             draw();
             updateControlsVisibility();
+            ensureLeftVisible(false);
           }
         });
       }
@@ -102,6 +114,7 @@ btnPick.addEventListener('click', async () => {
     setConversations(sorted, stats);
     draw();
     updateControlsVisibility();
+    ensureLeftVisible(false);
   } catch (err) {
     errorLive.textContent = err.message || String(err);
   }
@@ -111,6 +124,7 @@ async function showDatasetChooser() {
   try {
     const datasets = await discoverDatasets();
     if (datasets.length === 0) {
+      ensureLeftVisible(true);
       renderEmptyDatasets(left, {
         onBrowseClick: async () => {
           const files = await browseFilesLegacy();
@@ -120,6 +134,7 @@ async function showDatasetChooser() {
           setConversations(sorted, stats);
           draw();
           updateControlsVisibility();
+          ensureLeftVisible(false);
         }
       });
     } else if (datasets.length === 1) {
@@ -132,6 +147,7 @@ async function showDatasetChooser() {
       draw();
       updateControlsVisibility();
     } else {
+      ensureLeftVisible(true);
       renderDatasetChoices(left, datasets, {
         activeId: getState().selectedDataset?.id,
         onChoose: async (d) => {
@@ -143,6 +159,7 @@ async function showDatasetChooser() {
           setConversations(sorted, stats);
           draw();
           updateControlsVisibility();
+          ensureLeftVisible(false);
         }
       });
     }
