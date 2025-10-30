@@ -28,10 +28,11 @@
 
 **Purpose**: Core utilities and state needed before any user story work
 
-- [ ] T005 Add responsive CSS for mobile dataset control visibility and touch targets in `styles.css` (≤ 768px media query; truncation helpers)
+- [ ] T005 Add responsive CSS for mobile data set control visibility and touch targets in `styles.css` (≤ 768px media query; truncation helpers)
 - [ ] T006 [P] Create accessibility helpers in `src/utils/a11y.js` (apply aria-labels, focus management)
-- [ ] T007 [P] Ensure eventing for `activeDataSetId` changes in `src/state/events.js` (or `src/state/` module extension)
-- [ ] T008 Implement `selectDataSet(dataSetId)` in `src/modules/dataSelection.js` to update session and notify listeners (no reload)
+- [ ] T007 [P] Unit tests for state eventing on `activeDataSetId` change in `tests/unit/state/events.spec.js`
+- [ ] T008 [P] Ensure eventing for `activeDataSetId` changes in `src/state/events.js` (or `src/state/` module extension)
+
 
 **Checkpoint**: Foundation ready — user stories can proceed
 
@@ -50,8 +51,8 @@
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Implement `src/modules/dataSelection.js` (session update + event dispatch)
-- [ ] T013 [P] [US1] Create mobile dataset control component in `src/ui/mobile/datasetControl.js`
+ - [ ] T012 [P] [US1] Implement `src/modules/dataSelection.js` including `selectDataSet(dataSetId)` (session update + event dispatch)
+ - [ ] T013 [P] [US1] Create mobile data set control component in `src/ui/mobile/datasetControl.js`
 - [ ] T014 [US1] Add control to DOM and bind to chooser in `index.html` and `src/app.js` (visible ≤ 768px)
 - [ ] T015 [US1] Wire conversation list refresh on `activeDataSetId` change in `src/app.js`
 - [ ] T016 [US1] Handle "no data sets" case gracefully in `src/ui/mobile/datasetControl.js`
@@ -112,6 +113,7 @@
 - [ ] T032 Browser compatibility testing (Chrome, Firefox, Safari, Edge) using `tests/index.html`
 - [ ] T033 Responsive validation at 320px, 375px, 768px, 1280px widths against spec success criteria
 - [ ] T034 [P] Add extra edge case tests (orientation change, high zoom, long names) in `tests/integration/mobile/`
+ - [ ] T035 [P] Add integration test for modal stacking/focus when chooser opens while another modal is present in `tests/integration/mobile/folder-selector-stacking.spec.js`
 
 ---
 
@@ -139,7 +141,7 @@
 
 - Setup: T002, T003, T004
 - Foundational: T006, T007
-- US1: T010, T011, T012, T013
+ - US1: T010, T011, T012, T013
 - US2: T018, T019, T020
 - US3: T024, T025, T026
 - Polish: T029, T031, T034
@@ -149,11 +151,13 @@
 ## Parallel Example: User Story 1
 
 ```text
-Run together:
+Run together (tests first):
 - T010 Unit tests for selectDataSet (tests/unit/modules/dataSelection.spec.js)
 - T011 Integration test for mobile discovery/selection (tests/integration/mobile/folder-selector-choose.spec.js)
+
+Then:
 - T012 Implement dataSelection module (src/modules/dataSelection.js)
-- T013 Create mobile dataset control component (src/ui/mobile/datasetControl.js)
+- T013 Create mobile data set control component (src/ui/mobile/datasetControl.js)
 ```
 
 ---

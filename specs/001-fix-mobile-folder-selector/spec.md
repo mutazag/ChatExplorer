@@ -30,7 +30,7 @@ On a mobile device (small viewport), a user can discover and open a clearly visi
 
 **Acceptance Scenarios**:
 
-1. **Given** a mobile viewport ≤ 768px width and no data set selected, **When** the user taps the folder selection control, **Then** the data set chooser is shown and the user can select a data set.
+1. **Given** a mobile viewport ≤ 768px width and no data set selected, **When** the user taps the data set control, **Then** the data set chooser is shown and the user can select a data set.
 2. **Given** a mobile viewport and a chosen data set, **When** the user selects a different data set, **Then** the app displays conversations for the new data set within the same session.
 
 ---
@@ -51,7 +51,7 @@ A returning mobile user can switch between data sets at any time using the same 
 
 ### User Story 3 - Mobile accessibility and theme integrity (Priority: P3)
 
-The folder selection control is usable with touch and keyboard, has a descriptive label for assistive technologies, and remains readable/visible across supported visual themes.
+The data set control is usable with touch and keyboard, has a descriptive label for assistive technologies, and remains readable/visible across supported visual themes.
 
 **Why this priority**: Maintains inclusive access and prevents regressions with 001-visual-themes.
 
@@ -92,7 +92,7 @@ The folder selection control is usable with touch and keyboard, has a descriptiv
 - **FR-006**: The control MUST be operable via touch and keyboard, with a descriptive accessible name announced by assistive technologies.
 - **FR-007**: The solution MUST handle cases where no data sets are available by informing the user and providing a non-blocking path to dismiss.
 - **FR-008**: The mobile control MUST be present on initial load and remain reachable after orientation changes and viewport resizes.
-- **FR-009**: The control MUST scale appropriately for mobile touch targets (meets standard mobile touch target guidelines) and support long data set names without breaking layout.
+- **FR-009**: The control MUST meet a minimum touch target size of 44×44 px (or equivalent area) and support long data set names without breaking layout.
 
 ### Key Entities *(include if feature involves data)*
 

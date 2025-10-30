@@ -7,7 +7,7 @@
 
 ## Summary
 
-Ensure the data set selection control is visible and usable on mobile viewports (320–768px), enabling users to choose and switch data sets without leaving mobile view. Technical approach (from research): expose a clearly visible mobile entry point (toolbar button or overflow menu item) gated by CSS media queries, ensure accessible labeling and touch target sizing, and route selection to existing in-browser data selection logic without page reloads.
+Ensure the data set control is visible and usable on mobile viewports (320–768px), enabling users to choose and switch data sets without leaving mobile view. Technical approach (from research): expose a clearly visible mobile data set control (toolbar button or overflow menu to open the chooser) gated by CSS media queries, ensure accessible labeling and touch target sizing, and route selection to existing in-browser data selection logic without page reloads.
 
 ## Technical Context
 
