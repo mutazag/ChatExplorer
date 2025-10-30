@@ -46,7 +46,7 @@
 
 ### Tests for User Story 1 (MANDATORY)
 
-- [ ] T010 [P] [US1] Unit tests for `selectDataSet` in `tests/unit/modules/dataSelection.spec.js`
+- [x] T010 [P] [US1] Unit tests for `selectDataSet` in `tests/unit/modules/dataSelection.spec.js`
 - [ ] T011 [P] [US1] Integration test for mobile discovery and selection in `tests/integration/mobile/folder-selector-choose.spec.js`
 
 ### Implementation for User Story 1
