@@ -1,5 +1,5 @@
 import { selectDataSet } from '../../modules/dataSelection.js';
-import { setAria } from '../../utils/a11y.js';
+import '../../utils/a11y.js'; // side-effect: window.a11y
 import { onActiveDataSetChanged, getSessionState } from '../../state/events.js';
 import { discoverDatasets } from '../../data/datasets/discovery.js';
 
@@ -9,6 +9,15 @@ import { discoverDatasets } from '../../data/datasets/discovery.js';
  * @param {HTMLElement} host
  * @param {{ testMode?: boolean }} [opts]
  */
+function setAria(el, attrs = {}) {
+  if (!el) return;
+  const setAriaLabel = (window.a11y && window.a11y.setAriaLabel) || ((node, v) => v && node.setAttribute('aria-label', String(v)));
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'aria-label') { setAriaLabel(el, v); continue; }
+    if (v === false || v == null) el.removeAttribute(k); else el.setAttribute(k, String(v));
+  }
+}
+
 export function initDataSetControl(host, opts = {}) {
   if (!host) throw new Error('host container required');
   const root = document.createElement('div');

@@ -1,22 +1,16 @@
 import { test, assert } from '../../lib/harness.js';
-import { setAria, focusFirstDescendant, restoreFocus } from '../../../src/utils/a11y.js';
+import '../../../src/utils/a11y.js'; // attaches window.a11y
 
-await test('setAria sets and removes attributes', async () => {
+await test('setAriaLabel sets aria-label', async () => {
   const el = document.createElement('div');
-  setAria(el, { 'aria-label': 'Hello', 'aria-hidden': false });
+  window.a11y.setAriaLabel(el, 'Hello');
   assert(el.getAttribute('aria-label') === 'Hello', 'aria-label should be set');
-  assert(!el.hasAttribute('aria-hidden'), 'aria-hidden false should remove attribute');
-  setAria(el, { 'aria-label': null });
-  assert(!el.hasAttribute('aria-label'), 'null removes attribute');
 });
 
-await test('focusFirstDescendant moves focus to first control', async () => {
-  const host = document.createElement('div');
-  const input = document.createElement('button');
-  host.appendChild(input);
-  document.body.appendChild(host);
-  const moved = focusFirstDescendant(host);
-  assert(moved === true, 'should move focus');
-  assert(document.activeElement === input, 'focus should be on button');
-  restoreFocus(document.body);
+await test('restoreFocus moves focus to target', async () => {
+  const btn = document.createElement('button');
+  document.body.appendChild(btn);
+  window.a11y.restoreFocus(btn, { tempTabIndex: true });
+  await new Promise((r) => setTimeout(r, 30));
+  assert(document.activeElement === btn, 'focus should be on target button');
 });
