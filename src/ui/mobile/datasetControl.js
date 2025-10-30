@@ -15,13 +15,17 @@ export function initDataSetControl(host, opts = {}) {
   setAria(root, { role: 'group', 'aria-label': 'Data set' });
 
   if (opts.testMode) {
-    // Minimal button for integration testing that picks a fixed dataset id
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.setAttribute('data-test-pick', 'TEST_MOBILE_A');
-    btn.textContent = 'Pick TEST_MOBILE_A';
-    btn.addEventListener('click', () => selectDataSet('TEST_MOBILE_A'));
-    root.appendChild(btn);
+    // Minimal buttons for integration testing of switching behavior
+    const mk = (id) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('data-test-pick', id);
+      b.textContent = `Pick ${id}`;
+      b.addEventListener('click', () => selectDataSet(id));
+      return b;
+    };
+    root.appendChild(mk('TEST_MOBILE_A'));
+    root.appendChild(mk('TEST_MOBILE_B'));
   } else {
     // Non-test mode: provide a compact button that opens the chooser.
     const btn = document.createElement('button');

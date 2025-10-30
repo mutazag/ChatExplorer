@@ -74,12 +74,12 @@
 
 ### Tests for User Story 2 (MANDATORY)
 
-- [ ] T018 [P] [US2] Unit tests for idempotent selection and event emission in `tests/unit/modules/dataSelection.switch.spec.js`
-- [ ] T019 [P] [US2] Integration test for switching A→B in `tests/integration/mobile/folder-selector-switch.spec.js`
+- [x] T018 [P] [US2] Unit tests for idempotent selection and event emission in `tests/unit/modules/dataSelection.switch.spec.js`
+- [x] T019 [P] [US2] Integration test for switching A→B in `tests/integration/mobile/folder-selector-switch.spec.js`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Enhance `src/modules/dataSelection.js` to prevent redundant updates (same id) and debounce rapid changes
+- [x] T020 [P] [US2] Enhance `src/modules/dataSelection.js` to prevent redundant updates (same id) and debounce rapid changes
 - [ ] T021 [US2] Indicate active data set in control UI (label/summary) in `src/ui/mobile/datasetControl.js`
 - [ ] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
 - [ ] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
