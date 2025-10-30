@@ -66,7 +66,9 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 [data-detail] .msg-media img { max-width: 100%; height: auto; max-height: 40vh; object-fit: contain; border-radius: 6px; display: block; background: rgba(0,0,0,.03); }
 
 [data-detail] .msg-media audio,
-[data-detail] .msg-media video { width: 100%; max-width: 640px; outline: none; }
+[data-detail] .msg-media video { width: 100%; max-width: 640px; outline: none; display: block; }
+/* Ensure audio controls always have visible height on all engines */
+[data-detail] .msg-media audio { min-height: 36px; }
 [data-detail] .msg-media a.media-fallback { display: inline-block; padding: .25rem .5rem; border-radius: 4px; border: 1px solid rgba(0,0,0,.15); text-decoration: none; }
 
 /* Message bubbles by role */
