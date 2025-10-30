@@ -1,8 +1,12 @@
 const listeners = new Map();
+// Use same breakpoint as layout collapse for a consistent "mobile view" definition
+const __IS_MOBILE__ = (() => {
+  try { return !!(window && window.matchMedia && window.matchMedia('(max-width: 860px)').matches); } catch { return false; }
+})();
 const state = {
   conversations: [],
   page: 1,
-  pageSize: 25,
+  pageSize: __IS_MOBILE__ ? 5 : 25,
   selectedId: null,
   stats: null,
   selectedDataset: null,
