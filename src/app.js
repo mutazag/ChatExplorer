@@ -8,7 +8,6 @@ import { renderDetail } from './ui/detailView.js';
 import { renderStatusChip } from './ui/badges/statusChip.js';
 import { on, getState, setConversations, setSelection, setPage, setSelectedDataset } from './state/appState.js';
 import { onActiveDataSetChanged } from './state/events.js';
-import { initDataSetControl } from './ui/mobile/datasetControl.js';
 import { initThemeToggle, initPaneToggle } from './ui/controls.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
 
@@ -172,13 +171,7 @@ if (btnChangeDataset) {
   btnChangeDataset.addEventListener('click', () => { showDatasetChooser(); });
 }
 
-// Mount the mobile data set control into the header; visible only on small screens via CSS
-try {
-  const header = document.querySelector('.app-header');
-  if (header) {
-    initDataSetControl(header, { onOpenChooser: () => showDatasetChooser() });
-  }
-} catch { /* ignore mount errors */ }
+// dataset-control removed from UI per request
 
 // Initialize controls visibility
 updateControlsVisibility();

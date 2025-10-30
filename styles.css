@@ -114,8 +114,7 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 /* Hide mobile picker by default on larger screens */
 .mobile-list { display: none; }
 
-/* Data set control: hidden by default on larger screens */
-.dataset-control { display: none; }
+/* dataset-control removed from UI */
 
 /* Mobile visibility and touch targets for data set control */
 @media (max-width: 768px) {
@@ -130,28 +129,7 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
   .app-header #btn-theme,
   .app-header #btn-pane,
   .app-header #btn-pick,
-  .app-header #btn-change-dataset,
-  .app-header .dataset-control { order: 2; }
-  .dataset-control {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    padding: .25rem .5rem;
-    gap: .35rem;
-    touch-action: manipulation;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-  }
-  .dataset-control > * { pointer-events: none; }
-  .dataset-control .label {
-    max-width: 40vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 500;
-  }
+  .app-header #btn-change-dataset { order: 2; }
 }
 
 /* Dataset list styles */
