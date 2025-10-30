@@ -51,8 +51,8 @@
 
 ### Implementation for User Story 1
 
- - [ ] T012 [P] [US1] Implement `src/modules/dataSelection.js` including `selectDataSet(dataSetId)` (session update + event dispatch)
- - [ ] T013 [P] [US1] Create mobile data set control component in `src/ui/mobile/datasetControl.js`
+ - [x] T012 [P] [US1] Implement `src/modules/dataSelection.js` including `selectDataSet(dataSetId)` (session update + event dispatch)
+ - [x] T013 [P] [US1] Create mobile data set control component in `src/ui/mobile/datasetControl.js`
 - [ ] T014 [US1] Add control to DOM and bind to chooser in `index.html` and `src/app.js` (visible ≤ 768px)
 - [ ] T015 [US1] Wire conversation list refresh on `activeDataSetId` change in `src/app.js`
 - [ ] T016 [US1] Handle "no data sets" case gracefully in `src/ui/mobile/datasetControl.js`
