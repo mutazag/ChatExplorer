@@ -2,6 +2,8 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: system-ui, Segoe UI, Roboto, sans-serif; }
 .app-header { display: flex; gap: .5rem; align-items: center; padding: .5rem 1rem; border-bottom: 1px solid rgba(0,0,0,.1); }
+/* Ensure header stays above scrolling content; helps avoid occlusion */
+.app-header { position: sticky; top: 0; z-index: 10; background: var(--bg); }
 .logo { width: 32px; height: 32px; }
 .spacer { flex: 1; }
 .layout { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 56px); }
@@ -111,6 +113,24 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
 /* Hide mobile picker by default on larger screens */
 .mobile-list { display: none; }
+
+/* dataset-control removed from UI */
+
+/* Mobile visibility and touch targets for data set control */
+@media (max-width: 768px) {
+  /* Mobile header reflow: logo + title on first line, controls on second line */
+  .app-header { flex-wrap: wrap; gap: .35rem .5rem; align-items: center; }
+  .app-header .logo { width: 28px; height: 28px; order: 0; }
+  .app-header h1 { order: 0; font-size: 1.1rem; line-height: 1.2; margin: 0; }
+  /* Acts as a line break between title row and controls row */
+  .app-header .spacer { order: 1; flex-basis: 100%; height: 0; padding: 0; }
+  /* Controls row: status, theme, pane, dataset controls */
+  .app-header .status,
+  .app-header #btn-theme,
+  .app-header #btn-pane,
+  .app-header #btn-pick,
+  .app-header #btn-change-dataset { order: 2; }
+}
 
 /* Dataset list styles */
 .dataset-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
