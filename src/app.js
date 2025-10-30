@@ -7,6 +7,8 @@ import { renderList } from './ui/listView.js';
 import { renderDetail } from './ui/detailView.js';
 import { renderStatusChip } from './ui/badges/statusChip.js';
 import { on, getState, setConversations, setSelection, setPage, setSelectedDataset } from './state/appState.js';
+import { onActiveDataSetChanged } from './state/events.js';
+import { initDataSetControl } from './ui/mobile/datasetControl.js';
 import { initThemeToggle, initPaneToggle } from './ui/controls.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
 
@@ -153,6 +155,14 @@ if (btnChangeDataset) {
   btnChangeDataset.addEventListener('click', () => { showDatasetChooser(); });
 }
 
+// Mount the mobile data set control into the header; visible only on small screens via CSS
+try {
+  const header = document.querySelector('.app-header');
+  if (header) {
+    initDataSetControl(header, { onOpenChooser: () => showDatasetChooser() });
+  }
+} catch { /* ignore mount errors */ }
+
 // Initialize controls visibility
 updateControlsVisibility();
 
@@ -179,3 +189,29 @@ function draw() {
 const initial = parseHash();
 if (initial.id) setSelection(initial.id);
 onHashChange(({ id }) => { if (id) { setSelection(id); draw(); } });
+
+// Wire conversation list refresh when activeDataSetId changes via the new event bridge (US1/T015)
+onActiveDataSetChanged(async (state) => {
+  try {
+    const id = state?.activeDataSetId;
+    const s = getState();
+    if (!id) return;
+    if (s.selectedDataset?.id === id && Array.isArray(s.conversations) && s.conversations.length > 0) {
+      // Already loaded for this dataset; no-op
+      return;
+    }
+    const datasets = await discoverDatasets();
+    const d = datasets.find((x) => String(x.id) === String(id));
+    if (!d) return;
+    setSelectedDataset(d);
+    const raw = await fetchConversationsJson(d.path);
+    const files = await listDatasetFiles(d.path, { maxDepth: 2 });
+    const { normalized, stats } = normalizeConversationsWithWarnings(raw, files);
+    const sorted = sortConversations(normalized);
+    setConversations(sorted, stats);
+    draw();
+    updateControlsVisibility();
+  } catch (err) {
+    errorLive.textContent = err.message || String(err);
+  }
+});

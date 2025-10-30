@@ -1,5 +1,6 @@
 import { selectDataSet } from '../../modules/dataSelection.js';
 import { setAria } from '../../utils/a11y.js';
+import { discoverDatasets } from '../../data/datasets/discovery.js';
 
 /**
  * Initialize the mobile data set control inside a host container.
@@ -22,16 +23,24 @@ export function initDataSetControl(host, opts = {}) {
     btn.addEventListener('click', () => selectDataSet('TEST_MOBILE_A'));
     root.appendChild(btn);
   } else {
-    // Placeholder UI; real chooser wiring will be added in later tasks
+    // Non-test mode: provide a compact button that opens the chooser.
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.title = 'Choose data set';
     btn.textContent = 'Data Sets';
     btn.addEventListener('click', () => {
-      // In non-test mode, this will open the full chooser (to be implemented)
-      // For now, no-op.
+      if (typeof opts.onOpenChooser === 'function') opts.onOpenChooser();
     });
     root.appendChild(btn);
+
+    // Graceful handling for no data sets: if none discovered, adjust label.
+    // This check is non-blocking and optional; chooser will handle the full UX.
+    discoverDatasets().then((list) => {
+      if (Array.isArray(list) && list.length === 0) {
+        btn.textContent = 'Browse…';
+        btn.title = 'Browse files to load conversations';
+      }
+    }).catch(() => {/* ignore */});
   }
 
   host.appendChild(root);

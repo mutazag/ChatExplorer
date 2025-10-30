@@ -57,6 +57,10 @@
 - [ ] T015 [US1] Wire conversation list refresh on `activeDataSetId` change in `src/app.js`
 - [ ] T016 [US1] Handle "no data sets" case gracefully in `src/ui/mobile/datasetControl.js`
 - [ ] T017 [US1] Verify tests pass for US1 (run harness; fix regressions)
+ - [x] T014 [US1] Add control to DOM and bind to chooser in `index.html` and `src/app.js` (visible ≤ 768px)
+ - [x] T015 [US1] Wire conversation list refresh on `activeDataSetId` change in `src/app.js`
+ - [x] T016 [US1] Handle "no data sets" case gracefully in `src/ui/mobile/datasetControl.js`
+ - [ ] T017 [US1] Verify tests pass for US1 (run harness; fix regressions)
 
 **Checkpoint**: US1 independently functional and testable
 
