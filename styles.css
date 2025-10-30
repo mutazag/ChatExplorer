@@ -119,6 +119,19 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
 /* Mobile visibility and touch targets for data set control */
 @media (max-width: 768px) {
+  /* Mobile header reflow: logo + title on first line, controls on second line */
+  .app-header { flex-wrap: wrap; gap: .35rem .5rem; align-items: center; }
+  .app-header .logo { width: 28px; height: 28px; order: 0; }
+  .app-header h1 { order: 0; font-size: 1.1rem; line-height: 1.2; margin: 0; }
+  /* Acts as a line break between title row and controls row */
+  .app-header .spacer { order: 1; flex-basis: 100%; height: 0; padding: 0; }
+  /* Controls row: status, theme, pane, dataset controls */
+  .app-header .status,
+  .app-header #btn-theme,
+  .app-header #btn-pane,
+  .app-header #btn-pick,
+  .app-header #btn-change-dataset,
+  .app-header .dataset-control { order: 2; }
   .dataset-control {
     display: inline-flex;
     align-items: center;

@@ -27,6 +27,12 @@ export function initPaneToggle(buttonEl, { layoutEl, leftPaneEl } = {}) {
     buttonEl.setAttribute('aria-expanded', visible ? 'true' : 'false');
     if (layout) layout.classList.toggle('is-pane-hidden', !visible);
     if (left) left.toggleAttribute('hidden', !visible);
+    // On narrow screens, the left pane is hidden by default via CSS; ensure it's forced visible when requested
+    try {
+      if (window.matchMedia && window.matchMedia('(max-width: 860px)').matches) {
+        document.documentElement.classList.toggle('show-left', !!visible);
+      }
+    } catch { /* noop */ }
     buttonEl.textContent = visible ? 'Hide Pane' : 'Show Pane';
   };
   // initial
