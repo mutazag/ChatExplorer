@@ -12,6 +12,14 @@ let _pendingId = null;
 export function selectDataSet(dataSetId) {
   const curr = getSessionState().activeDataSetId;
   if (String(curr) === String(dataSetId)) return; // idempotent: no-op
+
+  // On the very first selection (no current dataset), emit immediately for determinism
+  // and to avoid test/headless flakiness. Subsequent rapid switches remain debounced.
+  if (curr == null && _debounceTimer == null && _pendingId == null) {
+    setActiveDataSetId(dataSetId);
+    return;
+  }
+
   _pendingId = dataSetId;
   if (_debounceTimer) clearTimeout(_debounceTimer);
   _debounceTimer = setTimeout(() => {

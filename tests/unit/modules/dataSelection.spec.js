@@ -10,9 +10,9 @@ function subscribeOnce() {
 
 await test('selectDataSet updates activeDataSetId and emits event', async () => {
   const p = subscribeOnce();
-  selectDataSet('US1_A');
+  selectDataSet('extract1');
   const state = await p;
-  assert(state.activeDataSetId === 'US1_A', 'activeDataSetId should equal US1_A');
+  assert(state.activeDataSetId === 'extract1', 'activeDataSetId should equal extract1');
   const snap = getSessionState();
-  assert(snap.activeDataSetId === 'US1_A', 'session snapshot should reflect US1_A');
+  assert(snap.activeDataSetId === 'extract1', 'session snapshot should reflect extract1');
 });
