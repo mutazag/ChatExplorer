@@ -17,10 +17,10 @@
 
 **Purpose**: Verify baseline structure and prepare scaffolding for this feature
 
-- [ ] T001 Verify MagTech.ai logo exists at `assets/` and is referenced in `index.html` header; add if missing
-- [ ] T002 [P] Ensure mobile viewport meta tag is present and correct in `index.html`
-- [ ] T003 [P] Verify in-browser test harness in `tests/index.html` supports new spec files; add loader entries if needed
-- [ ] T004 [P] Create scaffolding (if missing): `src/ui/mobile/`, `src/modules/`, `tests/unit/modules/`, `tests/integration/mobile/`
+- [x] T001 Verify MagTech.ai logo exists at `assets/` and is referenced in `index.html` header; add if missing
+- [x] T002 [P] Ensure mobile viewport meta tag is present and correct in `index.html`
+- [x] T003 [P] Verify in-browser test harness in `tests/index.html` supports new spec files; add loader entries if needed
+- [x] T004 [P] Create scaffolding (if missing): `src/ui/mobile/`, `src/modules/`, `tests/unit/modules/`, `tests/integration/mobile/`
 
 ---
 
@@ -28,10 +28,10 @@
 
 **Purpose**: Core utilities and state needed before any user story work
 
-- [ ] T005 Add responsive CSS for mobile data set control visibility and touch targets in `styles.css` (≤ 768px media query; truncation helpers)
-- [ ] T006 [P] Create accessibility helpers in `src/utils/a11y.js` (apply aria-labels, focus management)
-- [ ] T007 [P] Unit tests for state eventing on `activeDataSetId` change in `tests/unit/state/events.spec.js`
-- [ ] T008 [P] Ensure eventing for `activeDataSetId` changes in `src/state/events.js` (or `src/state/` module extension)
+- [x] T005 Add responsive CSS for mobile data set control visibility and touch targets in `styles.css` (≤ 768px media query; truncation helpers)
+- [x] T006 [P] Create accessibility helpers in `src/utils/a11y.js` (apply aria-labels, focus management)
+- [x] T007 [P] Unit tests for state eventing on `activeDataSetId` change in `tests/unit/state/events.spec.js`
+- [x] T008 [P] Ensure eventing for `activeDataSetId` changes in `src/state/events.js` (or `src/state/` module extension)
 
 
 **Checkpoint**: Foundation ready — user stories can proceed
