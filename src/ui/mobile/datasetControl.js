@@ -1,5 +1,6 @@
 import { selectDataSet } from '../../modules/dataSelection.js';
 import { setAria } from '../../utils/a11y.js';
+import { onActiveDataSetChanged, getSessionState } from '../../state/events.js';
 import { discoverDatasets } from '../../data/datasets/discovery.js';
 
 /**
@@ -14,6 +15,18 @@ export function initDataSetControl(host, opts = {}) {
   root.className = 'dataset-control';
   setAria(root, { role: 'group', 'aria-label': 'Data set' });
 
+  // Active dataset label
+  const label = document.createElement('span');
+  label.className = 'label';
+  label.title = '';
+  const updateLabel = () => {
+    const id = getSessionState().activeDataSetId;
+    label.textContent = id ? String(id) : 'No dataset';
+    label.title = label.textContent;
+  };
+  updateLabel();
+  onActiveDataSetChanged(updateLabel);
+
   if (opts.testMode) {
     // Minimal buttons for integration testing of switching behavior
     const mk = (id) => {
@@ -26,6 +39,7 @@ export function initDataSetControl(host, opts = {}) {
     };
     root.appendChild(mk('TEST_MOBILE_A'));
     root.appendChild(mk('TEST_MOBILE_B'));
+    root.appendChild(label);
   } else {
     // Non-test mode: provide a compact button that opens the chooser.
     const btn = document.createElement('button');
@@ -36,6 +50,7 @@ export function initDataSetControl(host, opts = {}) {
       if (typeof opts.onOpenChooser === 'function') opts.onOpenChooser();
     });
     root.appendChild(btn);
+    root.appendChild(label);
 
     // Graceful handling for no data sets: if none discovered, adjust label.
     // This check is non-blocking and optional; chooser will handle the full UX.

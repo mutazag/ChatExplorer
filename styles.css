@@ -127,6 +127,13 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
     touch-action: manipulation;
   }
   .dataset-control > * { pointer-events: none; }
+  .dataset-control .label {
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
 }
 
 /* Dataset list styles */

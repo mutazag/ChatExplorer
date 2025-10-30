@@ -83,6 +83,9 @@
 - [ ] T021 [US2] Indicate active data set in control UI (label/summary) in `src/ui/mobile/datasetControl.js`
 - [ ] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
 - [ ] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
+ - [x] T021 [US2] Indicate active data set in control UI (label/summary) in `src/ui/mobile/datasetControl.js`
+ - [ ] T022 [US2] Preserve theme/layout state across selection changes in `src/app.js`
+ - [ ] T023 [US2] Confirm no page reloads occur; ensure integration test asserts DOM update only
 
 **Checkpoint**: US1 and US2 independently functional and testable
 
@@ -96,7 +99,7 @@
 
 ### Tests for User Story 3 (MANDATORY)
 
-- [ ] T024 [P] [US3] Unit tests for accessibility helpers in `tests/unit/utils/a11y.spec.js`
+- [x] T024 [P] [US3] Unit tests for accessibility helpers in `tests/unit/utils/a11y.spec.js`
 - [ ] T025 [P] [US3] Integration tests for keyboard focus and labeling across themes in `tests/integration/mobile/folder-selector-a11y.spec.js`
 
 ### Implementation for User Story 3
@@ -104,6 +107,7 @@
 - [ ] T026 [P] [US3] Apply ARIA attributes and keyboard bindings in `src/ui/mobile/datasetControl.js`
 - [ ] T027 [US3] Update theme CSS to ensure contrast and layering (no occlusion) in `styles.css`
 - [ ] T028 [US3] Implement truncation + tooltip for long names in `src/ui/mobile/datasetControl.js` and `styles.css`
+ - [x] T028 [US3] Implement truncation + tooltip for long names in `src/ui/mobile/datasetControl.js` and `styles.css`
 
 **Checkpoint**: All stories independently functional and testable
 
