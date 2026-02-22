@@ -23,6 +23,10 @@ body { margin: 0; font-family: system-ui, Segoe UI, Roboto, sans-serif; }
   --bubble-user: #e8f0ff;
   --bubble-assistant: #f5f7fa;
   --elev: 0 1px 2px rgba(0,0,0,.08);
+  /* Z-index scale — keeps stacking contexts predictable */
+  --z-tooltip: 100;
+  --z-lightbox-overlay: 300;
+  --z-lightbox-content: 310;
 }
 [data-theme="dark"] {
   --bg: #0b1020;
@@ -60,6 +64,20 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 [data-detail] th.align-left, [data-detail] td.align-left { text-align: left; }
 [data-detail] th.align-center, [data-detail] td.align-center { text-align: center; }
 [data-detail] th.align-right, [data-detail] td.align-right { text-align: right; }
+
+/* Blockquotes */
+[data-detail] blockquote { border-left: 3px solid var(--border); padding-left: 1rem; margin: .5rem 0; color: var(--muted); }
+[data-detail] blockquote p { margin: 0; }
+
+/* Strikethrough */
+[data-detail] del { color: var(--muted); }
+
+/* Task lists */
+[data-detail] li.task-item { list-style: none; margin-left: -1.25rem; }
+[data-detail] li.task-item input[type="checkbox"] { margin-right: .4rem; accent-color: #3b82f6; }
+
+/* Table overflow on mobile */
+[data-detail] table { overflow-x: auto; display: block; max-width: 100%; }
 
 /* Inline media styles */
 [data-detail] .msg-media { margin: .4rem 0; display: grid; gap: .5rem; }
@@ -168,6 +186,7 @@ button:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
 /* Base tooltip styles; JS sets positioning. */
 [data-tooltip] {
+  z-index: var(--z-tooltip);
   color: var(--tooltip-fg);
   background: var(--tooltip-bg);
   border: 1px solid var(--tooltip-border);

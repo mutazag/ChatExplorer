@@ -1,3 +1,14 @@
+/**
+ * Dataset selection event bridge.
+ *
+ * This module provides a stable, minimal API for selecting datasets and
+ * listening for dataset changes. It deliberately decouples consumers from
+ * appState's internal event naming ('dataset:selected') so that internal
+ * refactoring of appState does not break external consumers or tests.
+ *
+ * Use this module (not appState directly) when wiring dataset selection
+ * from UI controls, the mobile dataset dropdown, or the event-bridge tests.
+ */
 // State eventing helpers for dataset selection (tests-first contract)
 import { on, getState, setSelectedDataset } from './appState.js';
 

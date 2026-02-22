@@ -1,14 +1,21 @@
-import { renderMarkdownToSafeHtml } from '../utils/markdown.js';
-import { classifyMediaByExtOrMime, isSafeSrc } from '../utils/media.js';
-import { getState } from '../state/appState.js';
-import { attachTooltipHandlers } from './tooltip.js';
-import { setHashForId } from '../router/hash.js';
+import { renderMessage } from './messageRenderer.js';
+import { renderMediaItems } from './mediaRenderer.js';
+import { renderDetailHeader } from './detailHeader.js';
 
+/**
+ * Renders a conversation's messages into the given host element.
+ * Orchestrates message + media assembly; all element construction
+ * is delegated to messageRenderer and mediaRenderer.
+ * @param {HTMLElement} host - Container element to render into
+ * @param {object|null} conversation - Conversation object with messages array
+ */
 export function renderDetail(host, conversation) {
   host.innerHTML = '';
-  // Mobile: dropdown conversation selector (visible via CSS at small widths)
-  const mobilePicker = renderMobileConversationPicker();
-  if (mobilePicker) host.appendChild(mobilePicker);
+
+  // Mobile: sticky conversation selector (hidden on desktop via CSS)
+  const header = renderDetailHeader();
+  if (header) host.appendChild(header);
+
   if (!conversation) {
     const empty = document.createElement('p');
     empty.textContent = 'No conversation selected.';
@@ -21,268 +28,26 @@ export function renderDetail(host, conversation) {
     host.appendChild(empty);
     return;
   }
+
   const msgs = [...conversation.messages].sort((a, b) => (a.create_time ?? 0) - (b.create_time ?? 0));
   const wrapper = document.createElement('div');
   wrapper.setAttribute('data-detail', '');
+
   for (const m of msgs) {
-    const row = document.createElement('div');
-    row.setAttribute('data-msg', '');
-    const roleName = (m.role || 'unknown');
-    row.className = 'msg ' + (roleName === 'user' ? 'msg--user' : 'msg--assistant');
-
-    // Header: icon + role label
-    const header = document.createElement('div');
-    header.className = 'msg-header';
-    const icon = document.createElement('img');
-    if (roleName === 'user') {
-      icon.src = 'assets/user-human.svg';
-      icon.alt = 'User';
-    } else {
-      icon.src = 'assets/assistant-robot.svg';
-      icon.alt = 'Assistant';
-    }
-    // Make icon keyboard-focusable to enable tooltip on focus
-    icon.tabIndex = 0;
-    try { attachTooltipHandlers(icon, m); } catch {}
-    const label = document.createElement('span');
-    label.textContent = roleName + ':';
-    // For user messages we append the label first and then the icon. With
-    // right-aligned styles this produces the visual order: <icon> User:
-    header.appendChild(icon);
-    header.appendChild(label);
-
-    // Bubble: sanitized markdown
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    // Auto-detect text direction based on first strong character
-    bubble.setAttribute('dir', 'auto');
-    const safeHtml = renderMarkdownToSafeHtml(m.text || '');
-    bubble.innerHTML = safeHtml;
-
-    row.appendChild(header);
-    // Render media items INSIDE the bubble
-    if (Array.isArray(m.media) && m.media.length) {
-      const mediaEl = renderMediaItems(m.media);
-      if (mediaEl) bubble.appendChild(mediaEl);
-      // If there is no textual content, mark as media-only so CSS can size appropriately
-      if (!safeHtml || !safeHtml.trim()) {
-        bubble.classList.add('bubble--media-only');
+    const row = renderMessage(m);
+    const mediaEl = Array.isArray(m.media) && m.media.length ? renderMediaItems(m.media) : null;
+    if (mediaEl) {
+      const bubble = row.querySelector('.bubble');
+      if (bubble) {
+        bubble.appendChild(mediaEl);
+        // Mark media-only bubbles so CSS can set appropriate min-width
+        if (!m.text || !m.text.trim()) {
+          bubble.classList.add('bubble--media-only');
+        }
       }
-    }
-    row.appendChild(bubble);
-    // Timestamp (hidden by default; reveal via hover/focus/tap)
-    if (m.create_time) {
-      const ts = document.createElement('div');
-      ts.className = 'timestamp';
-      try {
-        const d = new Date(m.create_time * 1000 || m.create_time);
-        ts.textContent = d.toLocaleString();
-      } catch {
-        ts.textContent = String(m.create_time);
-      }
-      row.appendChild(ts);
-      // Touch/click support to toggle visibility
-      row.addEventListener('click', () => {
-        row.classList.toggle('is-tapped');
-      });
     }
     wrapper.appendChild(row);
   }
+
   host.appendChild(wrapper);
-}
-
-function renderMobileConversationPicker() {
-  try {
-    const state = getState();
-    const list = Array.isArray(state.conversations) ? state.conversations : [];
-    if (!list.length) return null;
-    const box = document.createElement('div');
-    box.className = 'mobile-list';
-    box.setAttribute('data-mobile-list', '');
-    const label = document.createElement('label');
-    label.textContent = 'Conversation:';
-    label.htmlFor = 'mobile-conv-select';
-    const sel = document.createElement('select');
-    sel.id = 'mobile-conv-select';
-    sel.setAttribute('aria-label', 'Select conversation');
-    for (let i = 0; i < list.length; i++) {
-      const c = list[i];
-      const opt = document.createElement('option');
-      opt.value = String(c.id);
-      const title = c.title || `Conversation ${i + 1}`;
-      opt.textContent = title;
-      if (String(c.id) === String(state.selectedId)) opt.selected = true;
-      sel.appendChild(opt);
-    }
-    sel.addEventListener('change', () => {
-      const id = sel.value;
-      // Update hash so app.js hash listener sets selection and redraws
-      setHashForId(id);
-    });
-    box.appendChild(label);
-    box.appendChild(sel);
-    return box;
-  } catch {
-    return null;
-  }
-}
-
-function renderMediaItems(mediaList) {
-  const container = document.createElement('div');
-  container.className = 'msg-media';
-  let added = 0;
-  for (const item of mediaList) {
-    if (!item || !item.src) continue;
-    const kind = item.kind || classifyMediaByExtOrMime(item.src, item.mime);
-    // TODO: item.src need to be resolved to correct local path
-    const src = item.src;
-    const safe = isSafeSrc(src);
-    const fallback = (message) => {
-      const a = document.createElement('a');
-      a.className = 'media-fallback';
-      a.textContent = 'Download media';
-      if (safe) a.href = src;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer nofollow';
-      if (message) {
-        const span = document.createElement('span');
-        span.textContent = message + ' ';
-        const frag = document.createDocumentFragment();
-        frag.appendChild(span);
-        frag.appendChild(a);
-        const wrapper = document.createElement('div');
-        wrapper.appendChild(frag);
-        return wrapper;
-      }
-      return a;
-    };
-    if (kind === 'image') {
-      if (safe) {
-        const wrap = document.createElement('span');
-        wrap.className = 'media-with-expand';
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.alt = item.alt || deriveAltFromPath(src) || 'Image';
-        img.src = src;
-        // Enable lightbox pop-out on click
-        img.setAttribute('data-lightbox', 'true');
-        img.onerror = () => {
-          const node = fallback('Media failed to load.');
-          wrap.replaceWith(node);
-        };
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'media-expand-btn';
-        btn.setAttribute('aria-label', 'Expand image');
-        btn.textContent = '⤢';
-        btn.addEventListener('click', (ev) => {
-          ev.preventDefault(); ev.stopPropagation();
-          try { window.imageLightbox && window.imageLightbox.open(img.src, img); } catch {}
-        });
-        wrap.appendChild(img);
-        wrap.appendChild(btn);
-        container.appendChild(wrap);
-        added++;
-      } else {
-        container.appendChild(fallback('Media failed to load.'));
-        added++;
-      }
-    } else if (kind === 'audio') {
-      if (safe) {
-        const wrap = document.createElement('span');
-        wrap.className = 'media-with-expand';
-        const audio = document.createElement('audio');
-        audio.controls = true;
-        audio.setAttribute('aria-label', (item.alt || 'Audio') + (item.role ? ` from ${item.role}` : ''));
-        const source = document.createElement('source');
-        source.src = src;
-        if (item.mime) source.type = item.mime;
-        audio.appendChild(source);
-        // Enable lightbox pop-out on click
-        audio.setAttribute('data-lightbox', 'true');
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'media-expand-btn';
-        btn.setAttribute('aria-label', 'Expand audio');
-        btn.textContent = '⤢';
-        btn.addEventListener('click', (ev) => {
-          ev.preventDefault(); ev.stopPropagation();
-          try {
-            const src2 = audio.currentSrc || (audio.querySelector('source')?.src) || audio.src;
-            window.imageLightbox && window.imageLightbox.openMedia({ kind: 'audio', src: src2 }, audio);
-          } catch {}
-        });
-        wrap.appendChild(audio);
-        wrap.appendChild(btn);
-        container.appendChild(wrap);
-        added++;
-      } else {
-        container.appendChild(fallback('Media failed to load.'));
-        added++;
-      }
-    } else if (kind === 'video') {
-      if (safe) {
-        const wrap = document.createElement('span');
-        wrap.className = 'media-with-expand';
-        const video = document.createElement('video');
-        video.controls = true;
-        video.playsInline = true;
-        video.setAttribute('aria-label', (item.alt || 'Video') + (item.role ? ` from ${item.role}` : ''));
-        const source = document.createElement('source');
-        source.src = src;
-        if (item.mime) source.type = item.mime;
-        video.appendChild(source);
-        // Enable lightbox pop-out on click
-        video.setAttribute('data-lightbox', 'true');
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'media-expand-btn';
-        btn.setAttribute('aria-label', 'Expand video');
-        btn.textContent = '⤢';
-        btn.addEventListener('click', (ev) => {
-          ev.preventDefault(); ev.stopPropagation();
-          try {
-            const src2 = video.currentSrc || (video.querySelector('source')?.src) || video.src;
-            window.imageLightbox && window.imageLightbox.openMedia({ kind: 'video', src: src2 }, video);
-          } catch {}
-        });
-        wrap.appendChild(video);
-        wrap.appendChild(btn);
-        container.appendChild(wrap);
-        added++;
-      } else {
-        container.appendChild(fallback('Media failed to load.'));
-        added++;
-      }
-    } else {
-      // Unknown type: provide a safe download link
-      container.appendChild(fallback());
-      added++;
-    }
-  }
-  return added ? container : null;
-}
-
-function deriveAltFromPath(p) {
-  try {
-    const clean = String(p || '').split('?')[0].split('#')[0];
-    const parts = clean.split('/');
-    const file = parts[parts.length - 1] || '';
-    return file.replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ').trim();
-  } catch {
-    return '';
-  }
-}
-
-// Simple RTL detector based on presence of strong RTL characters
-function isProbablyRtl(text) {
-  try {
-    const s = String(text || '');
-    // Arabic, Hebrew, Syriac, Arabic Presentation Forms, etc.
-    const rtlRe = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-    return rtlRe.test(s);
-  } catch {
-    return false;
-  }
 }

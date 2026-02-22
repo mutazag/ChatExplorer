@@ -41,6 +41,7 @@ JavaScript (ES6+), HTML5, CSS3: Follow standard conventions
 - 005-visual-themes-tooltips-plan: Added JavaScript (ES6+), HTML5, CSS3 (vanilla) + None (vanilla); tests via in-browser harness under `tests/`
 - 001-cd-build-artifacts: Added N/A for runtime changes; app remains JavaScript (ES6+), HTML5, CSS3 + None for app; CD uses GitHub Actions built-ins and `actions/upload-artifact@v4`
 
-
+# slahs commands
+We'are going to be using from .github/prompts
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

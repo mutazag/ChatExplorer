@@ -15,12 +15,13 @@ async function probeConversations(path) {
       const lm = head.headers.get('Last-Modified');
       return { ok: true, modifiedAt: toIso(lm) };
     }
-  } catch (_) { /* noop */ }
+  } catch (_) { /* intentionally silent: HEAD may not be supported; fall back to GET */ }
   try {
     const get = await fetch(url, { method: 'GET', cache: 'no-store' });
     const lm = get.headers.get('Last-Modified');
     return { ok: !!get.ok, modifiedAt: toIso(lm) };
   } catch (_) {
+    // intentionally silent: network error means dataset is unavailable
     return { ok: false };
   }
 }
@@ -38,6 +39,7 @@ async function parseDirectoryIndex(html) {
     // De-duplicate
     return Array.from(new Set(names));
   } catch (_) {
+    // intentionally silent: malformed HTML directory listing — return empty list
     return [];
   }
 }
@@ -55,7 +57,7 @@ export async function discoverDatasets() {
         candidates = names.map((id) => ({ id, name: id, path: `data/${id}` }));
       }
     }
-  } catch (_) { /* ignore */ }
+  } catch (_) { /* intentionally silent: /data directory may not exist or may not serve HTML index */ }
 
   // Validate by probing for conversations.json
   const fmt = (iso) => {
@@ -63,7 +65,7 @@ export async function discoverDatasets() {
     try {
       const d = new Date(iso);
       return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-    } catch { return 'Unknown'; }
+    } catch { return 'Unknown'; /* intentionally silent: date formatting failure is non-critical */ }
   };
   const validated = [];
   for (const c of candidates) {
@@ -102,6 +104,7 @@ async function readDirectoryIndex(path) {
     const dirs = hrefs.filter((h) => h.endsWith('/')).map((h) => h.replace(/\/$/, ''));
     return { files, dirs };
   } catch (_) {
+    // intentionally silent: directory listing failed (network error or non-HTML response)
     return { files: [], dirs: [] };
   }
 }

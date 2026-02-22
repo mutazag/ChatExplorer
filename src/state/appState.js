@@ -3,6 +3,37 @@ const listeners = new Map();
 const __IS_MOBILE__ = (() => {
   try { return !!(window && window.matchMedia && window.matchMedia('(max-width: 860px)').matches); } catch { return false; }
 })();
+
+// localStorage keys — prefixed to avoid collision with other apps on the same origin
+const STORAGE_KEYS = { theme: 'ce_theme', pane: 'ce_pane' };
+
+function loadPersistedState() {
+  try {
+    return {
+      theme: localStorage.getItem(STORAGE_KEYS.theme) || 'light',
+      // 'false' string means hidden; anything else (null, 'true') means visible
+      leftPaneVisible: localStorage.getItem(STORAGE_KEYS.pane) !== 'false',
+    };
+  } catch {
+    // intentionally silent: localStorage may be unavailable (private browsing, storage quota exceeded)
+    return { theme: 'light', leftPaneVisible: true };
+  }
+}
+
+function persistTheme(theme) {
+  try { localStorage.setItem(STORAGE_KEYS.theme, theme); } catch {
+    // intentionally silent: storage may be unavailable
+  }
+}
+
+function persistPane(visible) {
+  try { localStorage.setItem(STORAGE_KEYS.pane, String(visible)); } catch {
+    // intentionally silent: storage may be unavailable
+  }
+}
+
+const _persisted = loadPersistedState();
+
 const state = {
   conversations: [],
   page: 1,
@@ -10,8 +41,8 @@ const state = {
   selectedId: null,
   stats: null,
   selectedDataset: null,
-  theme: 'light',
-  leftPaneVisible: true,
+  theme: _persisted.theme,
+  leftPaneVisible: _persisted.leftPaneVisible,
 };
 
 function emit(type, detail) {
@@ -56,11 +87,16 @@ export function setSelectedDataset(dataset) {
 
 export function setTheme(theme) {
   state.theme = theme === 'dark' ? 'dark' : 'light';
+  persistTheme(state.theme);
   emit('theme:changed', getState());
 }
 
 export function setLeftPaneVisible(visible) {
   state.leftPaneVisible = !!visible;
+  persistPane(state.leftPaneVisible);
   emit('pane:changed', getState());
 }
 
+export function setError(message) {
+  emit('error:occurred', { message });
+}
