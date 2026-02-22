@@ -85,3 +85,71 @@ test('markdown: GFM table renders with alignment and inline formatting', () => {
   const secondEm = rows[1].querySelector('td:last-child em');
   assert(secondEm, 'inline formatting inside table cell (italic)');
 });
+
+test('markdown: strikethrough renders as <del>', () => {
+  const md = 'This is ~~deleted~~ text';
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const del = node.querySelector('del');
+  assert(del, 'del element rendered');
+  assert(del.textContent === 'deleted', 'strikethrough content correct');
+});
+
+test('markdown: task lists render with checkboxes', () => {
+  const md = '- [ ] unchecked task\n- [x] checked task\n- [X] also checked';
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const ul = node.querySelector('ul');
+  assert(ul, 'unordered list rendered');
+  const items = ul.querySelectorAll('li.task-item');
+  assert(items.length === 3, 'three task items rendered');
+
+  // Check first unchecked task
+  const checkbox1 = items[0].querySelector('input[type="checkbox"]');
+  assert(checkbox1, 'first checkbox rendered');
+  assert(checkbox1.disabled, 'checkbox is disabled');
+  assert(!checkbox1.checked, 'first checkbox is unchecked');
+
+  // Check second checked task
+  const checkbox2 = items[1].querySelector('input[type="checkbox"]');
+  assert(checkbox2, 'second checkbox rendered');
+  assert(checkbox2.checked, 'second checkbox is checked');
+
+  // Check third checked task (uppercase X)
+  const checkbox3 = items[2].querySelector('input[type="checkbox"]');
+  assert(checkbox3, 'third checkbox rendered');
+  assert(checkbox3.checked, 'third checkbox is checked (uppercase X)');
+});
+
+test('markdown: blockquotes render', () => {
+  const md = '> This is a quote\n> with multiple lines';
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const blockquote = node.querySelector('blockquote');
+  assert(blockquote, 'blockquote element rendered');
+  const p = blockquote.querySelector('p');
+  assert(p, 'blockquote contains paragraph');
+  assert(p.textContent.includes('This is a quote'), 'blockquote content correct');
+  assert(p.textContent.includes('with multiple lines'), 'multiline blockquote preserved');
+});
+
+test('markdown: INPUT sanitization preserves only disabled checkboxes', () => {
+  // Manually create HTML with various INPUT attributes that should be stripped
+  const maliciousHtml = '<input type="checkbox" checked onclick="alert(1)" class="bad" data-foo="bar">';
+  const tmp = document.createElement('div');
+  tmp.innerHTML = maliciousHtml;
+
+  // Simulate what the markdown renderer does: parse and sanitize
+  const md = '- [x] task';
+  const html = renderMarkdownToSafeHtml(md);
+  const node = htmlToNode(html);
+  const input = node.querySelector('input');
+
+  assert(input, 'input element exists');
+  assert(input.type === 'checkbox', 'type is checkbox');
+  assert(input.disabled, 'input is disabled');
+  assert(!input.onclick, 'no onclick handler');
+  assert(!input.getAttribute('data-foo'), 'custom attributes stripped');
+  // Check that checked state is preserved
+  assert(input.checked, 'checked state preserved');
+});

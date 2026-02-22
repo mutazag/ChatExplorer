@@ -38,4 +38,4 @@ How to verify:
 
 Notes:
 - Base: master.
-- No persistence added; all changes are UI and state-level only.
+- Persistence: Theme and left-pane visibility are persisted to localStorage (src/state/appState.js); dataset selection is session-level only.

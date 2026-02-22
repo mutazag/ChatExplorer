@@ -104,3 +104,12 @@ ImagePanZoom.prototype.detach = function () {
 
 // Named export — consumers import { create } from './imagePanZoom.js'
 export function create(img) { return new ImagePanZoom(img); }
+
+// Backwards-compatible global shim for existing test harnesses / non-module usage
+if (typeof window !== 'undefined') {
+  if (!window.imagePanZoom) {
+    window.imagePanZoom = {};
+  }
+  // Preserve other properties on window.imagePanZoom, only (re)define create
+  window.imagePanZoom.create = create;
+}

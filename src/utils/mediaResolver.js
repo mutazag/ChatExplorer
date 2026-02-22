@@ -12,3 +12,9 @@ export function resolveImageSrc(input) {
     return '';
   }
 }
+
+// Backwards compatibility: expose as window.mediaResolver when loaded via classic <script src>
+if (typeof window !== 'undefined') {
+  window.mediaResolver = window.mediaResolver || {};
+  window.mediaResolver.resolveImageSrc = resolveImageSrc;
+}
