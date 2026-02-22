@@ -11,12 +11,8 @@ import { onActiveDataSetChanged } from './state/events.js';
 import { initThemeToggle, initPaneToggle } from './ui/controls.js';
 import { parseHash, setHashForId, onHashChange } from './router/hash.js';
 
-// Side-effect imports to enable the image lightbox feature across the app
-import './utils/a11y.js';
-import './utils/mediaResolver.js';
-import './modules/imageLightboxState.js';
-import './modules/imagePanZoom.js';
-import './ui/imageLightbox.js';
+// Side-effect imports: initialises lightbox, a11y helpers, and media resolver
+import './bootstrap.js';
 
 const left = document.getElementById('left');
 const right = document.getElementById('right');
@@ -45,7 +41,7 @@ function updateControlsVisibility() {
     const hasSelection = !!(s.selectedDataset || (Array.isArray(s.conversations) && s.conversations.length > 0));
     if (btnPick) btnPick.hidden = hasSelection; // Hide select after first successful selection
     if (btnChangeDataset) btnChangeDataset.hidden = !hasSelection; // Show change button when we have an active dataset
-  } catch { /* noop */ }
+  } catch { /* intentionally silent: DOM may not be fully initialised */ }
 }
 
 function ensureLeftVisible(show = true) {
@@ -53,7 +49,7 @@ function ensureLeftVisible(show = true) {
     const root = document.documentElement; // .show-left .left { display:block } under mobile CSS
     if (!root) return;
     if (show) root.classList.add('show-left'); else root.classList.remove('show-left');
-  } catch { /* noop */ }
+  } catch { /* intentionally silent: classList manipulation is non-critical */ }
 }
 
 btnPick.addEventListener('click', async () => {

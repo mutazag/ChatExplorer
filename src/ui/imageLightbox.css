@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.85);
-  z-index: 9999;
+  z-index: var(--z-lightbox-overlay, 9999);
 }
 .image-lightbox img.image-lightbox__img {
   max-width: 95vw;

@@ -1,6 +1,7 @@
 // Minimal Markdown to safe HTML renderer
 import { autolinkHtml } from './links.js';
-// Supports: headings, bold, italic, inline code, fenced code blocks, paragraphs, links, UL/OL lists
+// Supports: headings, bold, italic, strikethrough, inline code, fenced code blocks,
+// paragraphs, links, UL/OL lists, task lists, blockquotes, tables (GFM-style)
 // Then sanitizes against an allowlist of tags/attributes
 
 function escapeHtml(str) {
@@ -36,11 +37,12 @@ function parseInline(md) {
   let html = escapeHtml(md);
   // links: [text](url)
   html = html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (all, text, href) => {
-    // Escape already done; store href raw for now; will sanitize later
     const safeText = text;
     const safeHref = href; // sanitized later
     return `<a data-raw-href="${safeHref}">${safeText}</a>`;
   });
+  // strikethrough ~~text~~
+  html = html.replace(/~~([^~]+)~~/g, '<del>$1</del>');
   // bold **text**
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   // italic *text*
@@ -58,6 +60,18 @@ function groupBlocks(text) {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
+
+    // Blockquote: lines starting with "> "
+    if (/^>\s/.test(line)) {
+      const bqLines = [];
+      while (i < lines.length && /^>/.test(lines[i])) {
+        bqLines.push(lines[i].replace(/^>\s?/, ''));
+        i++;
+      }
+      blocks.push({ type: 'blockquote', text: bqLines.join('\n') });
+      continue;
+    }
+
     // Tables (GFM-style pipe tables)
     // Detect a header line with '|' followed by a separator line of --- style
     const next = lines[i + 1];
@@ -111,17 +125,24 @@ function groupBlocks(text) {
     if (/^\s*\d+\.\s+/.test(line)) {
       const items = [];
       while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*\d+\.\s+/, ''));
+        items.push({ isTask: false, text: lines[i].replace(/^\s*\d+\.\s+/, '') });
         i++;
       }
       blocks.push({ type: 'ol', items });
       continue;
     }
-    // Unordered list
+    // Unordered list (including task lists: - [ ] / - [x])
     if (/^\s*[-*]\s+/.test(line)) {
       const items = [];
       while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*[-*]\s+/, ''));
+        const raw = lines[i].replace(/^\s*[-*]\s+/, '');
+        const taskMatch = /^\[([ xX])\]\s+(.*)$/.exec(raw);
+        if (taskMatch) {
+          const checked = taskMatch[1].toLowerCase() === 'x';
+          items.push({ isTask: true, checked, text: taskMatch[2] });
+        } else {
+          items.push({ isTask: false, text: raw });
+        }
         i++;
       }
       blocks.push({ type: 'ul', items });
@@ -132,9 +153,9 @@ function groupBlocks(text) {
       i++;
       continue;
     }
-    // Paragraph: accumulate until blank line
+    // Paragraph: accumulate until blank line or block-level element
     const para = [];
-    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6})\s+/.test(lines[i]) && !/^\s*\d+\.\s+/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i])) {
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6})\s+/.test(lines[i]) && !/^\s*\d+\.\s+/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i]) && !/^>/.test(lines[i])) {
       para.push(lines[i]);
       i++;
     }
@@ -152,11 +173,20 @@ function renderBlocksToHtml(blocks) {
     } else if (b.type === 'p') {
       const inner = parseInline(b.text);
       html.push(`<p>${inner}</p>`);
+    } else if (b.type === 'blockquote') {
+      const inner = parseInline(b.text);
+      html.push(`<blockquote><p>${inner}</p></blockquote>`);
     } else if (b.type === 'ul') {
-      const items = b.items.map(t => `<li>${parseInline(t)}</li>`).join('');
+      const items = b.items.map(item => {
+        if (item.isTask) {
+          const checked = item.checked ? ' checked' : '';
+          return `<li class="task-item"><input type="checkbox"${checked} disabled> ${parseInline(item.text)}</li>`;
+        }
+        return `<li>${parseInline(item.text)}</li>`;
+      }).join('');
       html.push(`<ul>${items}</ul>`);
     } else if (b.type === 'ol') {
-      const items = b.items.map(t => `<li>${parseInline(t)}</li>`).join('');
+      const items = b.items.map(item => `<li>${parseInline(item.text)}</li>`).join('');
       html.push(`<ol>${items}</ol>`);
     } else if (b.type === 'table') {
       const colClass = (i) => {
@@ -177,7 +207,12 @@ function renderBlocksToHtml(blocks) {
 }
 
 function sanitizeHtml(html) {
-  const allowedTags = new Set(['P','BR','STRONG','EM','CODE','PRE','UL','OL','LI','A','H1','H2','H3','H4','H5','H6','TABLE','THEAD','TBODY','TR','TH','TD']);
+  const allowedTags = new Set([
+    'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'UL', 'OL', 'LI', 'A',
+    'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+    'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD',
+    'BLOCKQUOTE', 'DEL', 'INPUT'
+  ]);
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
 
@@ -190,27 +225,41 @@ function sanitizeHtml(html) {
         node.replaceWith(text);
         return; // replaced
       }
-      // Attributes
-      [...node.attributes].forEach(attr => {
-        const name = attr.name.toLowerCase();
-        if (name.startsWith('on')) node.removeAttribute(attr.name);
-        if (tag === 'A' && name === 'href') {
-          const href = attr.value.trim();
-          const allowed = href.startsWith('https://') || href.startsWith('http://') || href.startsWith('mailto:') || href.startsWith('#');
-          if (!allowed) node.removeAttribute('href');
-        } else if (tag !== 'A') {
-          // remove any other attributes except basic global ones if present
-          if (!['class','aria-label'].includes(name)) node.removeAttribute(attr.name);
+      // INPUT: only allow disabled checkboxes (task list items)
+      if (tag === 'INPUT') {
+        // Preserve original checked state before stripping attributes
+        const wasChecked = node.hasAttribute('checked') || node.defaultChecked;
+        // Remove all attributes, then enforce type=checkbox and disabled
+        [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
+        node.setAttribute('type', 'checkbox');
+        node.setAttribute('disabled', '');
+        // Restore checked state for this node if it was originally checked
+        if (wasChecked) {
+          node.checked = true;
+          node.setAttribute('checked', '');
         }
-      });
-      if (tag === 'A') {
-        if (node.hasAttribute('href')) {
-          node.setAttribute('target','_blank');
-          node.setAttribute('rel','noopener noreferrer nofollow');
+      } else {
+        // Attributes
+        [...node.attributes].forEach(attr => {
+          const name = attr.name.toLowerCase();
+          if (name.startsWith('on')) node.removeAttribute(attr.name);
+          if (tag === 'A' && name === 'href') {
+            const href = attr.value.trim();
+            const allowed = href.startsWith('https://') || href.startsWith('http://') || href.startsWith('mailto:') || href.startsWith('#');
+            if (!allowed) node.removeAttribute('href');
+          } else if (tag !== 'A') {
+            if (!['class', 'aria-label'].includes(name)) node.removeAttribute(attr.name);
+          }
+        });
+        if (tag === 'A') {
+          if (node.hasAttribute('href')) {
+            node.setAttribute('target', '_blank');
+            node.setAttribute('rel', 'noopener noreferrer nofollow');
+          }
         }
-      }
-      if (tag === 'PRE') {
-        if (!node.hasAttribute('aria-label')) node.setAttribute('aria-label','code block');
+        if (tag === 'PRE') {
+          if (!node.hasAttribute('aria-label')) node.setAttribute('aria-label', 'code block');
+        }
       }
     }
     // Recurse
@@ -249,15 +298,11 @@ export function renderMarkdownToSafeHtml(markdown) {
     const raw = a.getAttribute('data-raw-href') || '';
     a.removeAttribute('data-raw-href');
     const href = String(raw).trim();
-    // Enforce allowed schemes early: http(s), mailto, and fragment anchors
     const allowed = href.startsWith('https://') || href.startsWith('http://') || href.startsWith('mailto:') || href.startsWith('#');
     if (allowed) {
       a.setAttribute('href', href);
-      // Pre-set safe navigation attributes; sanitizer will still verify later
       a.setAttribute('target', '_blank');
       a.setAttribute('rel', 'noopener noreferrer nofollow');
-    } else {
-      // Do not set href for unsafe schemes; leave as plain text (sanitizer will finalize)
     }
   });
   const withHrefs = linkTmp.innerHTML;

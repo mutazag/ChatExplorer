@@ -1,3 +1,7 @@
+// Optional perf/integration test harness using Playwright.
+// Requires: npm install playwright
+// NOT run in CI. Use for manual performance verification only.
+// See scripts/test-browser.js for the canonical gating test suite.
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -62,7 +66,7 @@ function createServer(){
   const base = `http://localhost:${PORT}`;
   const server = createServer();
   await new Promise((resolve) => server.listen(PORT, resolve));
-  console.log(`[dev-server] Serving ${path.resolve(ROOT, '..')} at ${base}`);
+  console.log(`[dev-server] Serving ${ROOT} at ${base}`);
 
   const results = {};
   const browser = await chromium.launch({ headless: true });
