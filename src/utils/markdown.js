@@ -227,15 +227,16 @@ function sanitizeHtml(html) {
       }
       // INPUT: only allow disabled checkboxes (task list items)
       if (tag === 'INPUT') {
+        // Preserve original checked state before stripping attributes
+        const wasChecked = node.hasAttribute('checked') || node.defaultChecked;
         // Remove all attributes, then enforce type=checkbox and disabled
         [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
         node.setAttribute('type', 'checkbox');
         node.setAttribute('disabled', '');
-        // Restore checked state from original HTML if present
-        if (html.includes('checked')) {
-          // The checked attribute was already set in the innerHTML string;
-          // since we cleared all attributes, re-check via the parsed node's defaultChecked.
-          // This is a best-effort approach for the read-only viewer.
+        // Restore checked state for this node if it was originally checked
+        if (wasChecked) {
+          node.checked = true;
+          node.setAttribute('checked', '');
         }
       } else {
         // Attributes

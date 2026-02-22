@@ -23,7 +23,13 @@ function createOverlayFor(kind, src, origin) {
   if (kind === 'image') {
     const img = document.createElement('img');
     img.className = IMG_CLASS;
-    img.src = resolveImageSrc(src) || src;
+    let resolvedSrc = '';
+    try {
+      resolvedSrc = resolveImageSrc(src);
+    } catch (e) {
+      // intentionally silent: invalid image URL — overlay shows broken image icon
+    }
+    img.src = resolvedSrc || '';
     img.alt = origin && origin.alt ? origin.alt : 'Image preview';
     overlay.appendChild(img);
 

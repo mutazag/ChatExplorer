@@ -55,3 +55,12 @@ export function restoreFocus(target, opts) {
     }));
   } catch (e) {}
 }
+
+// Backwards compatibility: expose as window.a11y when loaded via classic <script src>
+if (typeof window !== 'undefined') {
+  window.a11y = window.a11y || {};
+  window.a11y.setAriaLabel = setAriaLabel;
+  window.a11y.getFocusable = getFocusable;
+  window.a11y.trapFocus = trapFocus;
+  window.a11y.restoreFocus = restoreFocus;
+}
